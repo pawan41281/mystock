@@ -10,9 +10,11 @@ import org.mystock.service.ClientService;
 import org.mystock.vo.ClientVo;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -41,5 +43,54 @@ public class ClientController {
 	public ResponseEntity<ApiResponseVo<ClientVo>> save(@RequestBody ClientVo clientVo) {
 		clientVo = clientService.save(clientVo);
 		return ResponseEntity.ok(ApiResponseVoWrapper.success(null, clientVo, null));
+	}
+	
+	@GetMapping("email")
+	@Operation(summary = "Find Operation", description = "Find clients by email")
+	public ResponseEntity<ApiResponseVo<List<ClientVo>>> getClientsByEmail(@RequestParam String email) {
+		List<ClientVo> list = clientService.findByEmailIgnoreCase(email);
+		Map<String, String> metadata = new HashMap<>();
+		metadata.put("recordcount", String.valueOf(list.size()));
+		return ResponseEntity.ok(ApiResponseVoWrapper.success(null, list, metadata));
+	}
+	
+	@GetMapping("mobile/{mobile}")
+	@Operation(summary = "Find Operation", description = "Find clients by mobile")
+	public ResponseEntity<ApiResponseVo<List<ClientVo>>> getClientsByMobile(@PathVariable String mobile) {
+		List<ClientVo> list = clientService.findByMobile(mobile);
+		Map<String, String> metadata = new HashMap<>();
+		metadata.put("recordcount", String.valueOf(list.size()));
+		return ResponseEntity.ok(ApiResponseVoWrapper.success(null, list, metadata));
+	}
+	
+	@GetMapping("gstno/{gstNo}")
+	@Operation(summary = "Find Operation", description = "Find clients by GST Number")
+	public ResponseEntity<ApiResponseVo<List<ClientVo>>> getClientsByGstNo(@PathVariable String gstNo) {
+		List<ClientVo> list = clientService.findByGstNoIgnoreCase(gstNo);
+		Map<String, String> metadata = new HashMap<>();
+		metadata.put("recordcount", String.valueOf(list.size()));
+		return ResponseEntity.ok(ApiResponseVoWrapper.success(null, list, metadata));
+	}
+	
+	@GetMapping("status/{status}")
+	@Operation(summary = "Find Operation", description = "Find clients by status")
+	public ResponseEntity<ApiResponseVo<List<ClientVo>>> getClientsByStatus(@PathVariable boolean status) {
+		List<ClientVo> list = clientService.findByStatus(status);
+		Map<String, String> metadata = new HashMap<>();
+		metadata.put("recordcount", String.valueOf(list.size()));
+		return ResponseEntity.ok(ApiResponseVoWrapper.success(null, list, metadata));
+	}
+	
+	@GetMapping("email/mobile/gstno/status")
+	@Operation(summary = "Find Operation", description = "Find clients by email or mobile or gstno or status")
+	public ResponseEntity<ApiResponseVo<List<ClientVo>>> findByEmailOrMobileOrGstNoOrStatus(
+			@RequestParam(required = false) String email,
+			@RequestParam(required = false) String mobile,
+			@RequestParam(required = false) String gstNo,
+			@RequestParam(required = false) boolean status) {
+		List<ClientVo> list = clientService.findByEmailOrMobileOrGstNoOrStatus(email, mobile, gstNo, status);
+		Map<String, String> metadata = new HashMap<>();
+		metadata.put("recordcount", String.valueOf(list.size()));
+		return ResponseEntity.ok(ApiResponseVoWrapper.success(null, list, metadata));
 	}
 }

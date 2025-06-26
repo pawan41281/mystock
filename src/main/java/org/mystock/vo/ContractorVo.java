@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class ContractorVo {
 	
 	private Long id;
-	private String contractorname;
+	private String contractorName;
 	private String address;
 	private String city;
 	private String state;

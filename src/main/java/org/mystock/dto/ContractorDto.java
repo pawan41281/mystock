@@ -23,7 +23,7 @@ public class ContractorDto {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@Column(name = "jibworkername", length = 100, nullable = false)
+	@Column(name = "contractorname", length = 100, nullable = false)
 	private String contractorName;
 
 	@Column(name = "address", length = 240)

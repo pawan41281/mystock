@@ -10,9 +10,11 @@ import org.mystock.service.ContractorService;
 import org.mystock.vo.ContractorVo;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,7 +24,7 @@ import lombok.AllArgsConstructor;
 @RestController
 @RequestMapping("/v1/contractors/")
 @AllArgsConstructor
-@Tag(name="Contractor Operations")
+@Tag(name = "Contractor Operations")
 public class ContractorController {
 
 	private final ContractorService contractorService;
@@ -41,5 +43,54 @@ public class ContractorController {
 	public ResponseEntity<ApiResponseVo<ContractorVo>> save(@RequestBody ContractorVo contractorVo) {
 		contractorVo = contractorService.save(contractorVo);
 		return ResponseEntity.ok(ApiResponseVoWrapper.success(null, contractorVo, null));
+	}
+
+	@GetMapping("email")
+	@Operation(summary = "Find Operation", description = "Find contractors by email")
+	public ResponseEntity<ApiResponseVo<List<ContractorVo>>> getClientsByEmail(@RequestParam String email) {
+		List<ContractorVo> list = contractorService.findByEmailIgnoreCase(email);
+		Map<String, String> metadata = new HashMap<>();
+		metadata.put("recordcount", String.valueOf(list.size()));
+		return ResponseEntity.ok(ApiResponseVoWrapper.success(null, list, metadata));
+	}
+
+	@GetMapping("mobile/{mobile}")
+	@Operation(summary = "Find Operation", description = "Find contractors by mobile")
+	public ResponseEntity<ApiResponseVo<List<ContractorVo>>> getClientsByMobile(@PathVariable String mobile) {
+		List<ContractorVo> list = contractorService.findByMobile(mobile);
+		Map<String, String> metadata = new HashMap<>();
+		metadata.put("recordcount", String.valueOf(list.size()));
+		return ResponseEntity.ok(ApiResponseVoWrapper.success(null, list, metadata));
+	}
+
+	@GetMapping("gstno/{gstNo}")
+	@Operation(summary = "Find Operation", description = "Find contractors by GST Number")
+	public ResponseEntity<ApiResponseVo<List<ContractorVo>>> getClientsByGstNo(@PathVariable String gstNo) {
+		List<ContractorVo> list = contractorService.findByGstNoIgnoreCase(gstNo);
+		Map<String, String> metadata = new HashMap<>();
+		metadata.put("recordcount", String.valueOf(list.size()));
+		return ResponseEntity.ok(ApiResponseVoWrapper.success(null, list, metadata));
+	}
+
+	@GetMapping("status/{status}")
+	@Operation(summary = "Find Operation", description = "Find contractors by status")
+	public ResponseEntity<ApiResponseVo<List<ContractorVo>>> getClientsByStatus(@PathVariable boolean status) {
+		List<ContractorVo> list = contractorService.findByStatus(status);
+		Map<String, String> metadata = new HashMap<>();
+		metadata.put("recordcount", String.valueOf(list.size()));
+		return ResponseEntity.ok(ApiResponseVoWrapper.success(null, list, metadata));
+	}
+
+	@GetMapping("email/mobile/gstno/status")
+	@Operation(summary = "Find Operation", description = "Find contractors by email or mobile or gstno or status")
+	public ResponseEntity<ApiResponseVo<List<ContractorVo>>> findByEmailOrMobileOrGstNoOrStatus(
+			@RequestParam(required = false) String email, 
+			@RequestParam(required = false) String mobile, 
+			@RequestParam(required = false) String gstNo,
+			@RequestParam(required = false) boolean status) {
+		List<ContractorVo> list = contractorService.findByEmailOrMobileOrGstNoOrStatus(email, mobile, gstNo, status);
+		Map<String, String> metadata = new HashMap<>();
+		metadata.put("recordcount", String.valueOf(list.size()));
+		return ResponseEntity.ok(ApiResponseVoWrapper.success(null, list, metadata));
 	}
 }
