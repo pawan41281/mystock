@@ -118,5 +118,26 @@ public class ContractTransactionServiceImpl implements ContractTransactionServic
 		}
 		return voList;
 	}
+	
+
+
+	@Override
+	public ContractTransactionVo delete(Long id) {
+		ContractTransactionVo contractTransactionVo = null;
+		Optional<ContractTransactionDto> contractTransactionDto = contractTransactionRepository.findById(id);
+		if(contractTransactionDto.isPresent()) {
+			contractTransactionVo = contractTransactionMapper.convert(contractTransactionDto.get());
+		}
+		return contractTransactionVo;
+	}
+
+	@Override
+	public List<ContractTransactionVo> deleteByChalaanNumber(Integer chalaanNumber) {
+		List<ContractTransactionVo> voList = findByChalaanNumber(chalaanNumber);
+		if(voList!=null && voList.size()>0) {
+			contractTransactionRepository.deleteByChalaanNumber(chalaanNumber);
+		}
+		return voList;
+	}
 
 }

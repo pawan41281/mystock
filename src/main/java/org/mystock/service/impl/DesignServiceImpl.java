@@ -100,4 +100,14 @@ public class DesignServiceImpl implements DesignService {
 		return designVo;
 	}
 
+	@Override
+	public DesignVo updateStatus(boolean statsus, Long Id) {
+		DesignVo designVo = findById(Id);
+		if(designVo!=null) {
+			designRepository.updateStatus(statsus, Id);
+			designVo.setActive(statsus);
+		}
+		return designVo;
+	}
+
 }

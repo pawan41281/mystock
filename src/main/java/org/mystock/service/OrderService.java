@@ -33,4 +33,6 @@ public interface OrderService {
 
 	public List<OrderVo> findByOrderDateBetweenAndDesignAndColor(Long fromDate, Long toDate, String design,
 			String color);
+	
+	public OrderVo updateStatus(boolean status, Long id);
 }

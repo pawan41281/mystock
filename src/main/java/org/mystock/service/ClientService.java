@@ -21,5 +21,7 @@ public interface ClientService {
 	public List<ClientVo> findByStatus(boolean active);
 
 	public List<ClientVo> findByEmailOrMobileOrGstNoOrStatus(String email, String mobile, String gstNo, boolean active);
+	
+	public ClientVo updateStatus(boolean status, Long id);
 
 }

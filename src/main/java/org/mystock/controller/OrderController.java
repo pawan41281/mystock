@@ -10,6 +10,7 @@ import org.mystock.service.OrderService;
 import org.mystock.vo.OrderVo;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -123,5 +124,14 @@ public class OrderController {
 		Map<String, String> metadata = new HashMap<>();
 		metadata.put("recordcount", String.valueOf(list.size()));
 		return ResponseEntity.ok(ApiResponseVoWrapper.success(null, list, metadata));
+	}
+
+	@PatchMapping("{id}/{status}")
+	@Operation(summary = "Update Operation", description = "Update status by id")
+	public ResponseEntity<ApiResponseVo<OrderVo>> updateStatus(@PathVariable Long id, @PathVariable boolean status) {
+		OrderVo orderVo = orderService.updateStatus(status, id);
+		Map<String, String> metadata = new HashMap<>();
+		metadata.put("recordcount", String.valueOf(orderVo != null ? "1" : "0"));
+		return ResponseEntity.ok(ApiResponseVoWrapper.success(orderVo!=null?"Status updated successfully":"Record not found", orderVo, metadata));
 	}
 }

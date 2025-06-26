@@ -10,6 +10,7 @@ import org.mystock.service.ContractorService;
 import org.mystock.vo.ContractorVo;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -43,6 +44,15 @@ public class ContractorController {
 	public ResponseEntity<ApiResponseVo<ContractorVo>> save(@RequestBody ContractorVo contractorVo) {
 		contractorVo = contractorService.save(contractorVo);
 		return ResponseEntity.ok(ApiResponseVoWrapper.success(null, contractorVo, null));
+	}
+
+	@GetMapping("id/{id}")
+	@Operation(summary = "Find Operation", description = "Find contractors by id")
+	public ResponseEntity<ApiResponseVo<ContractorVo>> getClientsById(@PathVariable Long id) {
+		ContractorVo contractorVo = contractorService.findById(id);
+		Map<String, String> metadata = new HashMap<>();
+		metadata.put("recordcount", String.valueOf(contractorVo!=null?1:0));
+		return ResponseEntity.ok(ApiResponseVoWrapper.success(contractorVo!=null?"Record found":"Record not found", contractorVo, metadata));
 	}
 
 	@GetMapping("email")
@@ -92,5 +102,14 @@ public class ContractorController {
 		Map<String, String> metadata = new HashMap<>();
 		metadata.put("recordcount", String.valueOf(list.size()));
 		return ResponseEntity.ok(ApiResponseVoWrapper.success(null, list, metadata));
+	}
+
+	@PatchMapping("{id}/{status}")
+	@Operation(summary = "Update Operation", description = "Update status by id")
+	public ResponseEntity<ApiResponseVo<ContractorVo>> updateStatus(@PathVariable Long id, @PathVariable boolean status) {
+		ContractorVo contractorVo = contractorService.updateStatus(status, id);
+		Map<String, String> metadata = new HashMap<>();
+		metadata.put("recordcount", String.valueOf(contractorVo!=null?1:0));
+		return ResponseEntity.ok(ApiResponseVoWrapper.success(contractorVo!=null?"Status updated successfully":"Record not found", contractorVo, metadata));
 	}
 }

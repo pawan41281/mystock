@@ -45,6 +45,9 @@ public class OrderDto {
 	@Column(name = "remarks", length = 240)
 	private String Remarks;
 
+	@Column(name = "active", columnDefinition = "BOOLEAN DEFAULT TRUE", nullable = false)
+	private boolean active;
+
 	@Column(name = "createdon", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
 	private LocalDateTime createdOn;
 }

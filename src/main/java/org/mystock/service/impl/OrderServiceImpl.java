@@ -168,4 +168,14 @@ public class OrderServiceImpl implements OrderService {
 		return orderVo;
 	}
 
+	@Override
+	public OrderVo updateStatus(boolean status, Long id) {
+		OrderVo orderVo = findById(id);
+		if(orderVo!=null) {
+			orderRepository.updateStatus(status, id);
+			orderVo.setActive(status);
+		}
+		return null;
+	}
+
 }

@@ -124,4 +124,14 @@ public class ContractorServiceImpl implements ContractorService {
 		return contractorVo;
 	}
 
+	@Override
+	public ContractorVo updateStatus(boolean status, Long id) {
+		ContractorVo contractorVo = findById(id);
+		if(contractorVo!=null) {
+			contractorRepository.updateStatus(status, id);
+			contractorVo.setActive(status);
+		}
+		return contractorVo;
+	}
+
 }

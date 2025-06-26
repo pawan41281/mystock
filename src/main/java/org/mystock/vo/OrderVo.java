@@ -19,5 +19,6 @@ public class OrderVo {
 	private String color;
 	private Integer quantity;
 	private String Remarks;
+	private boolean active;
     private LocalDateTime createdOn;
 }

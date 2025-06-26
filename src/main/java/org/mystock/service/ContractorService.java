@@ -24,4 +24,6 @@ public interface ContractorService {
 			boolean active);
 
 	public ContractorVo findById(Long id);
+	
+	public ContractorVo updateStatus(boolean status, Long id);
 }

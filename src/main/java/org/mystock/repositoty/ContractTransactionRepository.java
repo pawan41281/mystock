@@ -22,4 +22,7 @@ public interface ContractTransactionRepository extends JpaRepository<ContractTra
 
 	public List<ContractTransactionDto> findByChalaanDateBetweenAndContractorAndDesignAndColor(Date fromChalaanDate,
 			Date toChalaanDate, Long contractor, String design, String color);
+
+	public void deleteByChalaanNumber(Integer chalaanNumber);
+
 }

@@ -10,6 +10,7 @@ import org.mystock.service.ClientService;
 import org.mystock.vo.ClientVo;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -43,6 +44,15 @@ public class ClientController {
 	public ResponseEntity<ApiResponseVo<ClientVo>> save(@RequestBody ClientVo clientVo) {
 		clientVo = clientService.save(clientVo);
 		return ResponseEntity.ok(ApiResponseVoWrapper.success(null, clientVo, null));
+	}
+	
+	@GetMapping("id/{id}")
+	@Operation(summary = "Find Operation", description = "Find clients by id")
+	public ResponseEntity<ApiResponseVo<ClientVo>> getClientsById(@PathVariable Long id) {
+		ClientVo clientVo = clientService.findById(id);
+		Map<String, String> metadata = new HashMap<>();
+		metadata.put("recordcount", String.valueOf(clientVo!=null?1:0));
+		return ResponseEntity.ok(ApiResponseVoWrapper.success(clientVo!=null?"Record found":"Record not found", clientVo, metadata));
 	}
 	
 	@GetMapping("email")
@@ -92,5 +102,14 @@ public class ClientController {
 		Map<String, String> metadata = new HashMap<>();
 		metadata.put("recordcount", String.valueOf(list.size()));
 		return ResponseEntity.ok(ApiResponseVoWrapper.success(null, list, metadata));
+	}
+	
+	@PatchMapping("{id}/{status}")
+	@Operation(summary = "Update Operation", description = "Update status by id")
+	public ResponseEntity<ApiResponseVo<ClientVo>> updateStatus(@PathVariable Long id, @PathVariable boolean status) {
+		ClientVo clientVo = clientService.updateStatus(status, id);
+		Map<String, String> metadata = new HashMap<>();
+		metadata.put("recordcount", String.valueOf(clientVo!=null?1:0));
+		return ResponseEntity.ok(ApiResponseVoWrapper.success(clientVo!=null?"Status updated successfully":"Record not found", clientVo, metadata));
 	}
 }

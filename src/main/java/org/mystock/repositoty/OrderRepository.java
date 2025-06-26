@@ -5,7 +5,11 @@ import java.util.List;
 
 import org.mystock.dto.OrderDto;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface OrderRepository extends JpaRepository<OrderDto, Long> {
@@ -31,4 +35,8 @@ public interface OrderRepository extends JpaRepository<OrderDto, Long> {
 	public List<OrderDto> findByOrderDateBetweenAndDesignAndColor(Date fromDate, Date toDate, String design,
 			String color);
 
+	@Modifying
+	@Transactional
+	@Query(value = "UPDATE ordermaster SET active = :status where id = :id", nativeQuery = true)
+	public void updateStatus(@Param("status") boolean status, @Param("id") Long id);
 }

@@ -111,5 +111,15 @@ public class ClientServiceImpl implements ClientService {
 		}
 		return voList;
 	}
+	
+	@Override
+	public ClientVo updateStatus(boolean status, Long id) {
+		ClientVo clientVo = findById(id);
+		if (clientVo!=null) {
+			clientRepository.updateStatus(status, id);
+			clientVo.setActive(status);
+		}
+		return clientVo;
+	}
 
 }

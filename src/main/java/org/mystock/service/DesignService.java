@@ -19,5 +19,7 @@ public interface DesignService {
 	public List<DesignVo> findByStatusIgnoreCase(boolean active);
 
 	public List<DesignVo> findByDesignIgnoreCaseOrColorIgnoreCaseOrStatus(String design, String color, boolean active);
+	
+	public DesignVo updateStatus(boolean statsus, Long Id);
 
 }

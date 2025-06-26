@@ -10,6 +10,7 @@ import org.mystock.service.DesignService;
 import org.mystock.vo.DesignVo;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -89,5 +90,16 @@ public class DesignController {
 	public ResponseEntity<ApiResponseVo<DesignVo>> save(@RequestBody DesignVo designVo) {
 		designVo = designService.save(designVo);
 		return ResponseEntity.ok(ApiResponseVoWrapper.success(null, designVo, null));
+	}
+	
+
+
+	@PatchMapping("{id}/{status}")
+	@Operation(summary = "Update Operation", description = "Update status based on id")
+	public ResponseEntity<ApiResponseVo<DesignVo>> updateStatus(@PathVariable Long id, @PathVariable boolean status) {
+		DesignVo designVo = designService.updateStatus(status, id);
+		Map<String, String> metadata = new HashMap<>();
+		metadata.put("recordcount", designVo==null?"0":"1");
+		return ResponseEntity.ok(ApiResponseVoWrapper.success(designVo==null?"Record not found":"Record updated successfully", designVo, metadata));
 	}
 }

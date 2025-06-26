@@ -9,6 +9,7 @@ import org.mystock.apiresponse.ApiResponseVoWrapper;
 import org.mystock.service.ContractTransactionService;
 import org.mystock.vo.ContractTransactionVo;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -116,4 +117,27 @@ public class ContractTransactionController {
 		return ResponseEntity.ok(
 				ApiResponseVoWrapper.success(list.size() > 0 ? "Record found" : "Record not found", list, metadata));
 	}
+	
+	@DeleteMapping("{id}")
+	@Operation(summary = "Delete Operation", description = "Delete contract transaction by Id")
+	public ResponseEntity<ApiResponseVo<ContractTransactionVo>> deleteById(@PathVariable Long id) {
+		ContractTransactionVo contractTransactionVo = contractTransactionService.delete(id);
+		Map<String, String> metadata = new HashMap<>();
+		metadata.put("recordcount", contractTransactionVo != null ? "1" : "0");
+		return ResponseEntity
+				.ok(ApiResponseVoWrapper.success(contractTransactionVo != null ? "Record deleted" : "Recoud not exists",
+						contractTransactionVo, metadata));
+	}
+
+	@DeleteMapping("/chalaannumber/{chalaanNumber}")
+	@Operation(summary = "Delete Operation", description = "Delete contract transaction by chalaan number")
+	public ResponseEntity<ApiResponseVo<List<ContractTransactionVo>>> deleteByChalaanNumber(
+			@PathVariable Integer chalaanNumber) {
+		List<ContractTransactionVo> list = contractTransactionService.deleteByChalaanNumber(chalaanNumber);
+		Map<String, String> metadata = new HashMap<>();
+		metadata.put("recordcount", String.valueOf(list.size()));
+		return ResponseEntity.ok(
+				ApiResponseVoWrapper.success(list.size() > 0 ? "Record deleted" : "Record not exists", list, metadata));
+	}
+	
 }

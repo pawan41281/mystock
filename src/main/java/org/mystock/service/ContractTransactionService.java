@@ -24,4 +24,8 @@ public interface ContractTransactionService {
 
 	public List<ContractTransactionVo> findByChalaanDateBetweenAndContractorAndDesignAndColor(Long fromChalaanDate,
 			Long toChalaanDate, Long contractor, String design, String color);
+	
+	public ContractTransactionVo delete(Long id);
+	
+	public List<ContractTransactionVo> deleteByChalaanNumber(Integer chalaanNumber);
 }
