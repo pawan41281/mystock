@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class ClientVo {
 	
 	private Long id;
-	private String clientname;
+	private String clientName;
 	private String address;
 	private String city;
 	private String state;
@@ -20,6 +20,6 @@ public class ClientVo {
 	private String email;
 	private String mobile;
 	private String gstNo;
-	private boolean active;
+	private boolean active = true;
     private LocalDateTime createdOn;
 }

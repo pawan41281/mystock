@@ -1,4 +1,4 @@
-package org.mystock.dto;
+package org.mystock.entity;
 
 import java.time.LocalDateTime;
 
@@ -13,18 +13,18 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "clientmaster", schema = "mystockdb")
+@Table(name = "contractorinfo")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ClientDto {
+public class ContractorEntity {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@Column(name = "clentname", length = 100, nullable = false)
-	private String clientName;
+	@Column(name = "contractorname", length = 100, nullable = false)
+	private String contractorName;
 
 	@Column(name = "address", length = 240)
 	private String address;

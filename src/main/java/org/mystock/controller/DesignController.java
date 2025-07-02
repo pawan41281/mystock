@@ -22,84 +22,64 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 
 @RestController
-@RequestMapping("/v1/designs/")
+@RequestMapping("/v2/designs/")
 @AllArgsConstructor
-@Tag(name = "Design Operations")
+@Tag(name = "Design Operations", description = "CRUD Operations for design record")
 public class DesignController {
 
 	private final DesignService designService;
 
+	@PostMapping
+	@Operation(summary = "Save operation", description = "Save design record")
+	public ResponseEntity<ApiResponseVo<DesignVo>> save(@RequestBody DesignVo designVo) {
+		designVo = designService.save(designVo);
+		Map<String, String> metadata = new HashMap<>();
+		metadata.put("recordcount", designVo != null && designVo.getId() != null ? "1" : "0");
+		return ResponseEntity.ok(ApiResponseVoWrapper.success(
+				designVo != null && designVo.getId() != null ? "Record saved" : "Record not saved", designVo,
+				metadata));
+	}
+
+	@GetMapping("/{id}")
+	@Operation(summary = "Get by ID", description = "Get a design by its ID")
+	public ResponseEntity<ApiResponseVo<DesignVo>> getById(@PathVariable Long id) {
+		DesignVo designVo = designService.getById(id);
+		Map<String, String> metadata = new HashMap<>();
+		metadata.put("recordcount", designVo != null ? "1" : "0");
+		if (designVo != null) {
+			return ResponseEntity.ok(ApiResponseVoWrapper.success("Record found", designVo, metadata));
+		} else {
+			return ResponseEntity.ok(ApiResponseVoWrapper.success("Record not found", null, metadata));
+		}
+	}
+
 	@GetMapping
-	@Operation(summary = "List Operation", description = "Fetch design list")
-	public ResponseEntity<ApiResponseVo<List<DesignVo>>> getDesigns() {
-		List<DesignVo> list = designService.list();
+	@Operation(summary = "Get All", description = "Get all designs")
+	public ResponseEntity<ApiResponseVo<List<DesignVo>>> getAll() {
+		List<DesignVo> list = designService.getAll();
 		Map<String, String> metadata = new HashMap<>();
 		metadata.put("recordcount", String.valueOf(list.size()));
-		return ResponseEntity.ok(ApiResponseVoWrapper.success(null, list, metadata));
-	}
-
-	@GetMapping("{id}")
-	@Operation(summary = "Find Operation", description = "Find based on id")
-	public ResponseEntity<ApiResponseVo<DesignVo>> getDesignsById(@PathVariable Long id) {
-		DesignVo designVo = designService.findById(id);
-		Map<String, String> metadata = new HashMap<>();
-		metadata.put("recordcount", designVo==null?"0":"1");
-		return ResponseEntity.ok(ApiResponseVoWrapper.success(designVo==null?"Record not found":"Record found", designVo, metadata));
-	}
-
-	@GetMapping("designnumber/{designnumber}")
-	@Operation(summary = "Find Operation", description = "Find based on design number")
-	public ResponseEntity<ApiResponseVo<List<DesignVo>>> getDesignsByDesignNumber(@PathVariable String designnumber) {
-		List<DesignVo> list = designService.findByDesignIgnoreCase(designnumber);
-		Map<String, String> metadata = new HashMap<>();
-		metadata.put("recordcount", String.valueOf(list.size()));
-		return ResponseEntity.ok(ApiResponseVoWrapper.success(null, list, metadata));
-	}
-
-	@GetMapping("color/{color}")
-	@Operation(summary = "Find Operation", description = "Find based on color")
-	public ResponseEntity<ApiResponseVo<List<DesignVo>>> getDesignsByColor(@PathVariable String color) {
-		List<DesignVo> list = designService.findByColorIgnoreCase(color);
-		Map<String, String> metadata = new HashMap<>();
-		metadata.put("recordcount", String.valueOf(list.size()));
-		return ResponseEntity.ok(ApiResponseVoWrapper.success(null, list, metadata));
+		return ResponseEntity.ok(ApiResponseVoWrapper.success("Records fetched", list, metadata));
 	}
 
 	@GetMapping("status/{status}")
-	@Operation(summary = "Find Operation", description = "Find based on status")
-	public ResponseEntity<ApiResponseVo<List<DesignVo>>> getDesignsByStatus(@PathVariable boolean status) {
-		List<DesignVo> list = designService.findByStatusIgnoreCase(status);
+	@Operation(summary = "Get All By Status", description = "Get all designs by status")
+	public ResponseEntity<ApiResponseVo<List<DesignVo>>> getByStatus(@PathVariable boolean status) {
+		List<DesignVo> list = designService.getByStatus(status);
 		Map<String, String> metadata = new HashMap<>();
 		metadata.put("recordcount", String.valueOf(list.size()));
-		return ResponseEntity.ok(ApiResponseVoWrapper.success(null, list, metadata));
+		return ResponseEntity.ok(ApiResponseVoWrapper.success("Records fetched", list, metadata));
 	}
 
-	@GetMapping("{designnumber}/{color}/{status}")
-	@Operation(summary = "Find Operation", description = "Find based on design number or color or status")
-	public ResponseEntity<ApiResponseVo<List<DesignVo>>> getDesignsByDesignNumberOrColorOrStatus(
-			@PathVariable String designnumber, @PathVariable String color, @PathVariable boolean status) {
-		List<DesignVo> list = designService.findByDesignIgnoreCaseOrColorIgnoreCaseOrStatus(designnumber, color,
-				status);
+	@PatchMapping("/{id}/{status}")
+	@Operation(summary = "Update status by ID", description = "Update design record status by ID")
+	public ResponseEntity<ApiResponseVo<DesignVo>> update(@PathVariable Long id, @PathVariable boolean status) {
+		DesignVo updatedVo = designService.update(id, status);
 		Map<String, String> metadata = new HashMap<>();
-		metadata.put("recordcount", String.valueOf(list.size()));
-		return ResponseEntity.ok(ApiResponseVoWrapper.success(null, list, metadata));
+		metadata.put("recordcount", (updatedVo != null && updatedVo.getId() != null) ? "1" : "0");
+		return ResponseEntity.ok(ApiResponseVoWrapper.success(
+				(updatedVo != null && updatedVo.getId() != null) ? "Status updated" : "Status not updated", updatedVo,
+				metadata));
 	}
 
-	@PostMapping
-	@Operation(summary = "Save Operation", description = "Save design record")
-	public ResponseEntity<ApiResponseVo<DesignVo>> save(@RequestBody DesignVo designVo) {
-		designVo = designService.save(designVo);
-		return ResponseEntity.ok(ApiResponseVoWrapper.success(null, designVo, null));
-	}
-	
-
-
-	@PatchMapping("{id}/{status}")
-	@Operation(summary = "Update Operation", description = "Update status based on id")
-	public ResponseEntity<ApiResponseVo<DesignVo>> updateStatus(@PathVariable Long id, @PathVariable boolean status) {
-		DesignVo designVo = designService.updateStatus(status, id);
-		Map<String, String> metadata = new HashMap<>();
-		metadata.put("recordcount", designVo==null?"0":"1");
-		return ResponseEntity.ok(ApiResponseVoWrapper.success(designVo==null?"Record not found":"Record updated successfully", designVo, metadata));
-	}
 }

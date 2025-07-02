@@ -1,24 +1,24 @@
 package org.mystock.mapper;
 
 import org.modelmapper.ModelMapper;
-import org.mystock.dto.DesignDto;
+import org.mystock.entity.DesignEntity;
 import org.mystock.vo.DesignVo;
 import org.springframework.stereotype.Component;
 
 import lombok.AllArgsConstructor;
 
-@AllArgsConstructor
 @Component
+@AllArgsConstructor
 public class DesignMapper {
 
 	private final ModelMapper modelMapper;
-	
-	public DesignVo convert(DesignDto designDto) {
-		return modelMapper.map(designDto, DesignVo.class);
+
+	public DesignVo convert(DesignEntity designEntity) {
+		return modelMapper.map(designEntity, DesignVo.class);
 	}
-	
-	public DesignDto convert(DesignVo designVo) {
-		return modelMapper.map(designVo, DesignDto.class);
+
+	public DesignEntity convert(DesignVo designVo) {
+		return modelMapper.map(designVo, DesignEntity.class);
 	}
-	
+
 }

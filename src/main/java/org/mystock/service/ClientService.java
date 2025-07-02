@@ -6,22 +6,28 @@ import org.mystock.vo.ClientVo;
 
 public interface ClientService {
 
-	public List<ClientVo> list();
-
 	public ClientVo save(ClientVo clientVo);
 
-	public ClientVo findById(Long id);
+	public List<ClientVo> getAll();
 
-	public List<ClientVo> findByEmailIgnoreCase(String email);
+	public ClientVo getById(Long id);
 
-	public List<ClientVo> findByMobile(String mobile);
-
-	public List<ClientVo> findByGstNoIgnoreCase(String gstNo);
-
-	public List<ClientVo> findByStatus(boolean active);
-
-	public List<ClientVo> findByEmailOrMobileOrGstNoOrStatus(String email, String mobile, String gstNo, boolean active);
+	public ClientVo updateStatus(Long id, boolean status);
 	
-	public ClientVo updateStatus(boolean status, Long id);
+	List<ClientVo> findByClientNameIgnoreCase(String clientName);
+
+    List<ClientVo> findByCityIgnoreCase(String city);
+
+    List<ClientVo> findByStateIgnoreCase(String state);
+
+    List<ClientVo> findByCountryIgnoreCase(String country);
+
+    List<ClientVo> findByEmailIgnoreCase(String email);
+
+    List<ClientVo> findByMobile(String mobile);
+
+    List<ClientVo> findByGstNoIgnoreCase(String gstNo);
+
+    List<ClientVo> findByActive(boolean active);
 
 }

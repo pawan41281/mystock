@@ -6,24 +6,28 @@ import org.mystock.vo.ContractorVo;
 
 public interface ContractorService {
 
-	public List<ContractorVo> list();
-
 	public ContractorVo save(ContractorVo contractorVo);
 
-	public List<ContractorVo> findByContractorNameIgnoreCase(String name);
+	public List<ContractorVo> getAll();
 
-	public List<ContractorVo> findByEmailIgnoreCase(String email);
+	public ContractorVo getById(Long id);
 
-	public List<ContractorVo> findByMobile(String mobile);
+	public ContractorVo updateStatus(Long id, boolean status);
 
-	public List<ContractorVo> findByGstNoIgnoreCase(String gstNo);
+	List<ContractorVo> findByContractorNameIgnoreCase(String contractorName);
 
-	public List<ContractorVo> findByStatus(boolean active);
+	List<ContractorVo> findByCityIgnoreCase(String city);
 
-	public List<ContractorVo> findByEmailOrMobileOrGstNoOrStatus(String email, String mobile, String gstNo,
-			boolean active);
+	List<ContractorVo> findByStateIgnoreCase(String state);
 
-	public ContractorVo findById(Long id);
-	
-	public ContractorVo updateStatus(boolean status, Long id);
+	List<ContractorVo> findByCountryIgnoreCase(String country);
+
+	List<ContractorVo> findByEmailIgnoreCase(String email);
+
+	List<ContractorVo> findByMobile(String mobile);
+
+	List<ContractorVo> findByGstNoIgnoreCase(String gstNo);
+
+	List<ContractorVo> findByActive(boolean active);
+
 }

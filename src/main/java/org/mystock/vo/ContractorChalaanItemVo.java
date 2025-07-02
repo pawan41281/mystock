@@ -2,6 +2,8 @@ package org.mystock.vo;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,11 +11,13 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class DesignVo {
+public class ContractorChalaanItemVo {
 
 	private Long id;
-	private String designName;
-	private String description;
-	private boolean active=true;
+	@JsonIgnore
+	private ContractorChalaanVo contractorChalaan;
+	private DesignVo design;
+	private String color;
+	private Integer quantity;
 	private LocalDateTime createdOn;
 }

@@ -23,93 +23,126 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 
 @RestController
-@RequestMapping("/v1/contractors/")
+@RequestMapping("/v2/contractors/")
 @AllArgsConstructor
-@Tag(name = "Contractor Operations")
+@Tag(name = "Contractor Operations", description = "CRUD Operations for contractor record")
 public class ContractorController {
 
 	private final ContractorService contractorService;
 
-	@GetMapping
-	@Operation(summary = "List Operation", description = "Fetch contractor list")
-	public ResponseEntity<ApiResponseVo<List<ContractorVo>>> getContractors() {
-		List<ContractorVo> list = contractorService.list();
-		Map<String, String> metadata = new HashMap<>();
-		metadata.put("recordcount", String.valueOf(list.size()));
-		return ResponseEntity.ok(ApiResponseVoWrapper.success(null, list, metadata));
-	}
-
 	@PostMapping
-	@Operation(summary = "Save Operation", description = "Save contractor record")
+	@Operation(summary = "Create or update contractor")
 	public ResponseEntity<ApiResponseVo<ContractorVo>> save(@RequestBody ContractorVo contractorVo) {
-		contractorVo = contractorService.save(contractorVo);
-		return ResponseEntity.ok(ApiResponseVoWrapper.success(null, contractorVo, null));
+		ContractorVo saved = contractorService.save(contractorVo);
+		Map<String, String> metadata = new HashMap<>();
+		metadata.put("recordcount", saved != null && saved.getId() != null ? "1" : "0");
+		return ResponseEntity.ok(ApiResponseVoWrapper.success(
+				saved != null && saved.getId() != null ? "Record saved" : "Record not saved", saved, metadata));
 	}
 
-	@GetMapping("id/{id}")
-	@Operation(summary = "Find Operation", description = "Find contractors by id")
-	public ResponseEntity<ApiResponseVo<ContractorVo>> getClientsById(@PathVariable Long id) {
-		ContractorVo contractorVo = contractorService.findById(id);
+	@GetMapping
+	@Operation(summary = "Get all contractors")
+	public ResponseEntity<ApiResponseVo<List<ContractorVo>>> getAll() {
+		List<ContractorVo> contractors = contractorService.getAll();
 		Map<String, String> metadata = new HashMap<>();
-		metadata.put("recordcount", String.valueOf(contractorVo!=null?1:0));
-		return ResponseEntity.ok(ApiResponseVoWrapper.success(contractorVo!=null?"Record found":"Record not found", contractorVo, metadata));
+		metadata.put("recordcount", String.valueOf(contractors.size()));
+		return ResponseEntity.ok(ApiResponseVoWrapper.success("Records fetched", contractors, metadata));
+	}
+
+	@GetMapping("/{id}")
+	@Operation(summary = "Get contractor by ID")
+	public ResponseEntity<ApiResponseVo<ContractorVo>> getById(@PathVariable Long id) {
+		ContractorVo contractor = contractorService.getById(id);
+		Map<String, String> metadata = new HashMap<>();
+		metadata.put("recordcount", contractor != null ? "1" : "0");
+		if (contractor != null) {
+			return ResponseEntity.ok(ApiResponseVoWrapper.success("Record found", contractor, metadata));
+		} else {
+			return ResponseEntity.ok(ApiResponseVoWrapper.success("Record not found", null, metadata));
+		}
+	}
+
+//	@PatchMapping("/{id}/{status}")
+//	@Operation(summary = "Update status by ID", description = "Update contractor status by ID")
+//	public ResponseEntity<ApiResponseVo<ContractorVo>> update(@PathVariable Long id, @PathVariable boolean status) {
+//		ContractorVo updatedVo = contractorService.updateStatus(id, status);
+//		Map<String, String> metadata = new HashMap<>();
+//		metadata.put("recordcount", (updatedVo != null && updatedVo.getId() != null) ? "1" : "0");
+//		return ResponseEntity.ok(ApiResponseVoWrapper.success(
+//				(updatedVo != null && updatedVo.getId() != null) ? "Status updated" : "Status not updated", updatedVo,
+//				metadata));
+//	}
+
+	@GetMapping("name")
+	@Operation(summary = "Get contractor by Name")
+	public ResponseEntity<ApiResponseVo<List<ContractorVo>>> getByName(@RequestParam String name) {
+		List<ContractorVo> contractors = contractorService.findByContractorNameIgnoreCase(name);
+		Map<String, String> metadata = new HashMap<>();
+		metadata.put("recordcount", String.valueOf(contractors.size()));
+		return ResponseEntity.ok(ApiResponseVoWrapper.success("Records fetched", contractors, metadata));
+	}
+
+	@GetMapping("city")
+	@Operation(summary = "Get contractor by City")
+	public ResponseEntity<ApiResponseVo<List<ContractorVo>>> getByCity(@RequestParam String city) {
+		List<ContractorVo> contractors = contractorService.findByCityIgnoreCase(city);
+		Map<String, String> metadata = new HashMap<>();
+		metadata.put("recordcount", String.valueOf(contractors.size()));
+		return ResponseEntity.ok(ApiResponseVoWrapper.success("Records fetched", contractors, metadata));
+	}
+
+	@GetMapping("state")
+	@Operation(summary = "Get contractor by State")
+	public ResponseEntity<ApiResponseVo<List<ContractorVo>>> getByState(@RequestParam String state) {
+		List<ContractorVo> contractors = contractorService.findByStateIgnoreCase(state);
+		Map<String, String> metadata = new HashMap<>();
+		metadata.put("recordcount", String.valueOf(contractors.size()));
+		return ResponseEntity.ok(ApiResponseVoWrapper.success("Records fetched", contractors, metadata));
+	}
+
+	@GetMapping("country")
+	@Operation(summary = "Get contractor by Country")
+	public ResponseEntity<ApiResponseVo<List<ContractorVo>>> getByCountry(@RequestParam String country) {
+		List<ContractorVo> contractors = contractorService.findByCountryIgnoreCase(country);
+		Map<String, String> metadata = new HashMap<>();
+		metadata.put("recordcount", String.valueOf(contractors.size()));
+		return ResponseEntity.ok(ApiResponseVoWrapper.success("Records fetched", contractors, metadata));
 	}
 
 	@GetMapping("email")
-	@Operation(summary = "Find Operation", description = "Find contractors by email")
-	public ResponseEntity<ApiResponseVo<List<ContractorVo>>> getClientsByEmail(@RequestParam String email) {
-		List<ContractorVo> list = contractorService.findByEmailIgnoreCase(email);
+	@Operation(summary = "Get contractor by Email")
+	public ResponseEntity<ApiResponseVo<List<ContractorVo>>> getByEmail(@RequestParam String email) {
+		List<ContractorVo> contractors = contractorService.findByEmailIgnoreCase(email);
 		Map<String, String> metadata = new HashMap<>();
-		metadata.put("recordcount", String.valueOf(list.size()));
-		return ResponseEntity.ok(ApiResponseVoWrapper.success(null, list, metadata));
+		metadata.put("recordcount", String.valueOf(contractors.size()));
+		return ResponseEntity.ok(ApiResponseVoWrapper.success("Records fetched", contractors, metadata));
 	}
 
-	@GetMapping("mobile/{mobile}")
-	@Operation(summary = "Find Operation", description = "Find contractors by mobile")
-	public ResponseEntity<ApiResponseVo<List<ContractorVo>>> getClientsByMobile(@PathVariable String mobile) {
-		List<ContractorVo> list = contractorService.findByMobile(mobile);
+	@GetMapping("mobile")
+	@Operation(summary = "Get contractor by Mobile")
+	public ResponseEntity<ApiResponseVo<List<ContractorVo>>> getByMobile(@RequestParam String mobile) {
+		List<ContractorVo> contractors = contractorService.findByMobile(mobile);
 		Map<String, String> metadata = new HashMap<>();
-		metadata.put("recordcount", String.valueOf(list.size()));
-		return ResponseEntity.ok(ApiResponseVoWrapper.success(null, list, metadata));
+		metadata.put("recordcount", String.valueOf(contractors.size()));
+		return ResponseEntity.ok(ApiResponseVoWrapper.success("Records fetched", contractors, metadata));
 	}
 
-	@GetMapping("gstno/{gstNo}")
-	@Operation(summary = "Find Operation", description = "Find contractors by GST Number")
-	public ResponseEntity<ApiResponseVo<List<ContractorVo>>> getClientsByGstNo(@PathVariable String gstNo) {
-		List<ContractorVo> list = contractorService.findByGstNoIgnoreCase(gstNo);
+	@GetMapping("gstno")
+	@Operation(summary = "Get contractor by GST Number")
+	public ResponseEntity<ApiResponseVo<List<ContractorVo>>> getByGst(@RequestParam String gst) {
+		List<ContractorVo> contractors = contractorService.findByGstNoIgnoreCase(gst);
 		Map<String, String> metadata = new HashMap<>();
-		metadata.put("recordcount", String.valueOf(list.size()));
-		return ResponseEntity.ok(ApiResponseVoWrapper.success(null, list, metadata));
+		metadata.put("recordcount", String.valueOf(contractors.size()));
+		return ResponseEntity.ok(ApiResponseVoWrapper.success("Records fetched", contractors, metadata));
 	}
 
-	@GetMapping("status/{status}")
-	@Operation(summary = "Find Operation", description = "Find contractors by status")
-	public ResponseEntity<ApiResponseVo<List<ContractorVo>>> getClientsByStatus(@PathVariable boolean status) {
-		List<ContractorVo> list = contractorService.findByStatus(status);
+	@GetMapping("status")
+	@Operation(summary = "Get contractor by Status")
+	public ResponseEntity<ApiResponseVo<List<ContractorVo>>> getByActive(@RequestParam boolean active) {
+		List<ContractorVo> contractors = contractorService.findByActive(active);
 		Map<String, String> metadata = new HashMap<>();
-		metadata.put("recordcount", String.valueOf(list.size()));
-		return ResponseEntity.ok(ApiResponseVoWrapper.success(null, list, metadata));
+		metadata.put("recordcount", String.valueOf(contractors.size()));
+		return ResponseEntity.ok(ApiResponseVoWrapper.success("Records fetched", contractors, metadata));
 	}
 
-	@GetMapping("email/mobile/gstno/status")
-	@Operation(summary = "Find Operation", description = "Find contractors by email or mobile or gstno or status")
-	public ResponseEntity<ApiResponseVo<List<ContractorVo>>> findByEmailOrMobileOrGstNoOrStatus(
-			@RequestParam(required = false) String email, 
-			@RequestParam(required = false) String mobile, 
-			@RequestParam(required = false) String gstNo,
-			@RequestParam(required = false) boolean status) {
-		List<ContractorVo> list = contractorService.findByEmailOrMobileOrGstNoOrStatus(email, mobile, gstNo, status);
-		Map<String, String> metadata = new HashMap<>();
-		metadata.put("recordcount", String.valueOf(list.size()));
-		return ResponseEntity.ok(ApiResponseVoWrapper.success(null, list, metadata));
-	}
-
-	@PatchMapping("{id}/{status}")
-	@Operation(summary = "Update Operation", description = "Update status by id")
-	public ResponseEntity<ApiResponseVo<ContractorVo>> updateStatus(@PathVariable Long id, @PathVariable boolean status) {
-		ContractorVo contractorVo = contractorService.updateStatus(status, id);
-		Map<String, String> metadata = new HashMap<>();
-		metadata.put("recordcount", String.valueOf(contractorVo!=null?1:0));
-		return ResponseEntity.ok(ApiResponseVoWrapper.success(contractorVo!=null?"Status updated successfully":"Record not found", contractorVo, metadata));
-	}
 }

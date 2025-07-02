@@ -20,6 +20,6 @@ public class ContractorVo {
 	private String email;
 	private String mobile;
 	private String gstNo;
-	private boolean active;
+	private boolean active=true;
     private LocalDateTime createdOn;
 }
