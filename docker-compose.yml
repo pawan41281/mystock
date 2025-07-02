@@ -1,11 +1,8 @@
 version: '3.7'
 
-volumes:
-  mysql-data:
-
 networks:
   mynetwork:
-	
+
 services:
   app:
     build:
@@ -22,7 +19,7 @@ services:
       - SPRING_DATASOURCE_PASSWORD=root
     networks:
       - mynetwork
-	  
+
   mysqldb:
     image: mysql:8.0.33
     ports:
@@ -31,7 +28,7 @@ services:
       - MYSQL_DATABASE=mydb
       - MYSQL_ROOT_PASSWORD=root
     volumes:
-      - mysql-data:/var/lib/mysql
+      - /c/msdata:/var/lib/mysql  # 👈 Bind mount to host's C:\msdata
     networks:
       - mynetwork
     healthcheck:
