@@ -3,6 +3,7 @@ package org.mystock.controller;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.mystock.apiresponse.ApiResponseVo;
 import org.mystock.apiresponse.ApiResponseVoWrapper;
@@ -38,6 +39,16 @@ public class DesignController {
 		return ResponseEntity.ok(ApiResponseVoWrapper.success(
 				designVo != null && designVo.getId() != null ? "Record saved" : "Record not saved", designVo,
 				metadata));
+	}
+
+	@PostMapping("bulk")
+	@Operation(summary = "Bulk Save operation", description = "Save design record")
+	public ResponseEntity<ApiResponseVo<Set<DesignVo>>> save(@RequestBody Set<DesignVo> designVos) {
+		Set<DesignVo> saved = designService.saveAll(designVos);
+		Map<String, String> metadata = new HashMap<>();
+		metadata.put("recordcount", String.valueOf(saved != null ? saved.size() : 0));
+		return ResponseEntity
+				.ok(ApiResponseVoWrapper.success(saved != null ? "Record saved" : "Record not saved", saved, metadata));
 	}
 
 	@GetMapping("/{id}")

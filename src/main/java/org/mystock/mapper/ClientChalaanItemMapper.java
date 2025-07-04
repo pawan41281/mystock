@@ -13,11 +13,11 @@ public class ClientChalaanItemMapper {
 
 	private final ModelMapper modelMapper;
 
-	public ClientChalaanItemVo convert(ClientChalaanItemEntity orderChalaanItemEntity) {
+	public ClientChalaanItemVo toVo(ClientChalaanItemEntity orderChalaanItemEntity) {
 		return modelMapper.map(orderChalaanItemEntity, ClientChalaanItemVo.class);
 	}
 
-	public ClientChalaanItemEntity convert(ClientChalaanItemVo orderChalaanItemVo) {
+	public ClientChalaanItemEntity toEntity(ClientChalaanItemVo orderChalaanItemVo) {
 		return modelMapper.map(orderChalaanItemVo, ClientChalaanItemEntity.class);
 	}
 

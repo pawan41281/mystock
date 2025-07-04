@@ -1,23 +1,45 @@
 package org.mystock.vo;
 
-import java.sql.Date;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Set;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class ContractorChalaanVo {
 
 	private Long id;
+	
+	@NotNull
+	@Min(0)
 	private Integer chalaanNumber;
-	private Date chalaanDate;
+	
+	@NotNull
+	private LocalDate chalaanDate;
+	
+	@NotNull
 	private ContractorVo contractor;
+	
+	@NotBlank
+	@Pattern(regexp = "I|R")
 	private String chalaanType;//I - Issue  R - Received
+	
 	private LocalDateTime createdOn;
-	private List<ContractorChalaanItemVo> chalaanItems;
+	
+	@ToString.Exclude
+	@EqualsAndHashCode.Exclude
+	private Set<ContractorChalaanItemVo> chalaanItems;
 }

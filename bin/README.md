@@ -1,0 +1,2 @@
+# mystock
+Stock Management Application

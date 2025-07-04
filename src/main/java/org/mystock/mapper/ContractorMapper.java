@@ -13,11 +13,11 @@ public class ContractorMapper {
 
 	private final ModelMapper modelMapper;
 
-	public ContractorVo convert(ContractorEntity contractorEntity) {
+	public ContractorVo toVo(ContractorEntity contractorEntity) {
 		return modelMapper.map(contractorEntity, ContractorVo.class);
 	}
 
-	public ContractorEntity convert(ContractorVo contractorVo) {
+	public ContractorEntity toEntity(ContractorVo contractorVo) {
 		return modelMapper.map(contractorVo, ContractorEntity.class);
 	}
 

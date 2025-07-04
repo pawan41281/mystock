@@ -15,13 +15,13 @@ public class ClientChalaanMapper {
 	private final ModelMapper modelMapper;
 	private final ClientMapper clientMapper;
 
-	public ClientChalaanVo convert(ClientChalaanEntity clientChalaanEntity) {
+	public ClientChalaanVo toVo(ClientChalaanEntity clientChalaanEntity) {
 		ClientChalaanVo clientChalaanVo = modelMapper.map(clientChalaanEntity, ClientChalaanVo.class);
-		clientChalaanVo.setClient(clientMapper.convert(clientChalaanEntity.getClient()));
+		clientChalaanVo.setClient(clientMapper.toVo(clientChalaanEntity.getClient()));
 		return clientChalaanVo;
 	}
 
-	public ClientChalaanEntity convert(ClientChalaanVo clientChalaanVo) {
+	public ClientChalaanEntity toEntity(ClientChalaanVo clientChalaanVo) {
 		ClientChalaanEntity entity = modelMapper.map(clientChalaanVo, ClientChalaanEntity.class);
 
 		if (entity.getChalaanItems() != null) {

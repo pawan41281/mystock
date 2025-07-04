@@ -2,12 +2,15 @@ package org.mystock.service;
 
 import java.sql.Date;
 import java.util.List;
+import java.util.Set;
 
 import org.mystock.vo.ContractorChalaanVo;
 
 public interface ContractorChalaanService {
 
 	public ContractorChalaanVo save(ContractorChalaanVo vo);
+	
+	public Set<ContractorChalaanVo> saveAll(Set<ContractorChalaanVo> vos);
 
 	public List<ContractorChalaanVo> findAll();
 

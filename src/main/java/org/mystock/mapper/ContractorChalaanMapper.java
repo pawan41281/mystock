@@ -15,13 +15,13 @@ public class ContractorChalaanMapper {
 	private final ModelMapper modelMapper;
 	private ContractorMapper contractorMapper;
 
-	public ContractorChalaanVo convert(ContractorChalaanEntity contractorChalaanEntity) {
+	public ContractorChalaanVo toVo(ContractorChalaanEntity contractorChalaanEntity) {
 		ContractorChalaanVo contractorChalaanVo = modelMapper.map(contractorChalaanEntity, ContractorChalaanVo.class);
-		contractorChalaanVo.setContractor(contractorMapper.convert(contractorChalaanEntity.getContractor()));
+		contractorChalaanVo.setContractor(contractorMapper.toVo(contractorChalaanEntity.getContractor()));
 		return contractorChalaanVo;
 	}
 
-	public ContractorChalaanEntity convert(ContractorChalaanVo contractorChalaanVo) {
+	public ContractorChalaanEntity toEntity(ContractorChalaanVo contractorChalaanVo) {
 		ContractorChalaanEntity entity = modelMapper.map(contractorChalaanVo, ContractorChalaanEntity.class);
 
 	    if (entity.getChalaanItems() != null) {

@@ -36,4 +36,11 @@ public class GlobalExceptionHandler {
 		ApiResponseVo<Object> ApiResponseVo = new ApiResponseVo<Object>("error", ex.getMessage(), null, null);
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponseVo);
 	}
+
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity<ApiResponseVo<?>> handleGenericException(
+			Exception ex) {
+		ApiResponseVo<Object> ApiResponseVo = new ApiResponseVo<Object>("error", ex.getMessage(), null, null);
+		return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(ApiResponseVo);
+	}
 }

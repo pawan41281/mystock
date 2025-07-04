@@ -13,11 +13,11 @@ public class ClientMapper {
 
 	private final ModelMapper modelMapper;
 
-	public ClientVo convert(ClientEntity clientEntity) {
+	public ClientVo toVo(ClientEntity clientEntity) {
 		return modelMapper.map(clientEntity, ClientVo.class);
 	}
 
-	public ClientEntity convert(ClientVo clientVo) {
+	public ClientEntity toEntity(ClientVo clientVo) {
 		return modelMapper.map(clientVo, ClientEntity.class);
 	}
 

@@ -13,11 +13,11 @@ public class DesignMapper {
 
 	private final ModelMapper modelMapper;
 
-	public DesignVo convert(DesignEntity designEntity) {
+	public DesignVo toVo(DesignEntity designEntity) {
 		return modelMapper.map(designEntity, DesignVo.class);
 	}
 
-	public DesignEntity convert(DesignVo designVo) {
+	public DesignEntity toEntity(DesignVo designVo) {
 		return modelMapper.map(designVo, DesignEntity.class);
 	}
 

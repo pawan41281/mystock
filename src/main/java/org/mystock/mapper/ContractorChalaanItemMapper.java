@@ -13,11 +13,11 @@ public class ContractorChalaanItemMapper {
 
 	private final ModelMapper modelMapper;
 
-	public ContractorChalaanItemVo convert(ContractorChalaanItemEntity contractorChalaanItemEntity) {
+	public ContractorChalaanItemVo toVo(ContractorChalaanItemEntity contractorChalaanItemEntity) {
 		return modelMapper.map(contractorChalaanItemEntity, ContractorChalaanItemVo.class);
 	}
 
-	public ContractorChalaanItemEntity convert(ContractorChalaanItemVo contractorChalaanItemVo) {
+	public ContractorChalaanItemEntity toEntity(ContractorChalaanItemVo contractorChalaanItemVo) {
 		return modelMapper.map(contractorChalaanItemVo, ContractorChalaanItemEntity.class);
 	}
 

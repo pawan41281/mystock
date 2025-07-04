@@ -1,8 +1,8 @@
 package org.mystock.entity;
 
-import java.sql.Date;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -17,12 +17,14 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "clientchalaaninfo")
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class ClientChalaanEntity {
@@ -35,13 +37,13 @@ public class ClientChalaanEntity {
 	private Integer chalaanNumber;
 
 	@Column(name = "chalaandate", nullable = false)
-	private Date chalaanDate;
+	private LocalDate chalaanDate;
 
 	@ManyToOne
 	@JoinColumn(name = "client_id", nullable = false)
 	private ClientEntity client;
 
-	@Column(name = "chalaantype", nullable = false) // R - Received S - Sent
+	@Column(name = "chalaantype", nullable = false) // I - Issue, R - Received
 	private String chalaanType;
 
 	@Column(name = "createdon", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
@@ -49,5 +51,5 @@ public class ClientChalaanEntity {
 
 	@OneToMany(mappedBy = "chalaan", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
-	private List<ClientChalaanItemEntity> chalaanItems;
+	private Set<ClientChalaanItemEntity> chalaanItems;
 }
