@@ -23,7 +23,7 @@ public class ContractorChalaanMapper {
 
 	public ContractorChalaanEntity toEntity(ContractorChalaanVo contractorChalaanVo) {
 		ContractorChalaanEntity entity = modelMapper.map(contractorChalaanVo, ContractorChalaanEntity.class);
-
+		entity.setContractor(contractorMapper.toEntity(contractorChalaanVo.getContractor()));
 	    if (entity.getChalaanItems() != null) {
 	        for (ContractorChalaanItemEntity item : entity.getChalaanItems()) {
 	            // Set parent reference for bi-directional relationship

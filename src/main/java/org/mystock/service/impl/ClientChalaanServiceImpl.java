@@ -1,6 +1,6 @@
 package org.mystock.service.impl;
 
-import java.sql.Date;
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -41,11 +41,6 @@ public class ClientChalaanServiceImpl implements ClientChalaanService {
 	}
 
 	@Override
-	public List<ClientChalaanVo> findAll() {
-		return repository.findAll().stream().map(mapper::toVo).collect(Collectors.toList());
-	}
-
-	@Override
 	public ClientChalaanVo findById(Long id) {
 		ClientChalaanVo clientChalaanVo = null;
 		Optional<ClientChalaanEntity> optional = repository.findById(id);
@@ -54,17 +49,6 @@ public class ClientChalaanServiceImpl implements ClientChalaanService {
 		}
 		return clientChalaanVo;
 	}
-
-//	@Override
-//	public ClientChalaanVo deleteById(Long id) {
-//		ClientChalaanVo clientChalaanVo = null;
-//		Optional<ClientChalaanEntity> optional = repository.findById(id);
-//		if (optional.isPresent()) {
-//			repository.deleteById(id);
-//			clientChalaanVo = mapper.toVo(optional.get());
-//		}
-//		return clientChalaanVo;
-//	}
 
 	@Transactional
 	public ClientChalaanVo deleteById(Long id) {
@@ -75,52 +59,10 @@ public class ClientChalaanServiceImpl implements ClientChalaanService {
 	}
 
 	@Override
-	public List<ClientChalaanVo> findByChalaanNumber(Integer chalaanNumber) {
-		return repository.findByChalaanNumber(chalaanNumber).stream().map(mapper::toVo).collect(Collectors.toList());
-	}
+	public List<ClientChalaanVo> findAll(Integer chalaanNumber, Long clientId, LocalDate fromChalaanDate,
+			LocalDate toChalaanDate, String chalaanType) {
 
-	public List<ClientChalaanVo> findByChalaanDate(Date chalaanDate) {
-		return repository.findByChalaanDate(chalaanDate).stream().map(mapper::toVo).collect(Collectors.toList());
-	}
-
-	@Override
-	public List<ClientChalaanVo> findByChalaanDateBetween(Date startDate, Date endDate) {
-		return repository.findByChalaanDateBetween(startDate, endDate).stream().map(mapper::toVo)
-				.collect(Collectors.toList());
-	}
-
-	@Override
-	public List<ClientChalaanVo> findByClient_Id(Long clientId) {
-		return repository.findByClient_Id(clientId).stream().map(mapper::toVo).collect(Collectors.toList());
-	}
-
-	@Override
-	public List<ClientChalaanVo> findByChalaanType(String chalaanType) {
-		return repository.findByChalaanType(chalaanType).stream().map(mapper::toVo).collect(Collectors.toList());
-	}
-
-	@Override
-	public List<ClientChalaanVo> findByChalaanDateBetweenAndClient_Id(Date start, Date end, Long clientId) {
-		return repository.findByChalaanDateBetweenAndClient_Id(start, end, clientId).stream().map(mapper::toVo)
-				.collect(Collectors.toList());
-	}
-
-	@Override
-	public List<ClientChalaanVo> findByChalaanTypeAndClient_Id(String type, Long clientId) {
-		return repository.findByChalaanTypeAndClient_Id(type, clientId).stream().map(mapper::toVo)
-				.collect(Collectors.toList());
-	}
-
-	@Override
-	public List<ClientChalaanVo> findByChalaanDateBetweenAndChalaanType(Date start, Date end, String chalaanType) {
-		return repository.findByChalaanDateBetweenAndChalaanType(start, end, chalaanType).stream().map(mapper::toVo)
-				.collect(Collectors.toList());
-	}
-
-	@Override
-	public List<ClientChalaanVo> findByChalaanDateBetweenAndChalaanTypeAndClient_Id(Date start, Date end,
-			String chalaanType, Long clientId) {
-		return repository.findByChalaanDateBetweenAndChalaanTypeAndClient_Id(start, end, chalaanType, clientId).stream()
+		return repository.findAll(chalaanNumber, clientId, fromChalaanDate, toChalaanDate, chalaanType).stream()
 				.map(mapper::toVo).collect(Collectors.toList());
 	}
 

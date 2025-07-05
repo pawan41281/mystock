@@ -1,6 +1,8 @@
 package org.mystock.controller;
 
-import java.sql.Date;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -81,79 +83,22 @@ public class ContractorChalaanController {
 	}
 
 	@GetMapping
-	@Operation(summary = "Get all chalaans")
-	public ResponseEntity<ApiResponseVo<List<ContractorChalaanVo>>> getAll() {
-		List<ContractorChalaanVo> found = service.findAll();
+	@Operation(summary = "Get all chalaans by chalaan number and chalaan date range and chalaan type and contractor Id", description = "Chalaan Type :: I - Issue, R - Received")
+	public ResponseEntity<ApiResponseVo<List<ContractorChalaanVo>>> find(
+			@RequestParam(value = "chalaannumber", required = false) Integer chalaanNumber,
+			@RequestParam(value = "contractorid", required = false) Long contractorId,
+			@RequestParam(value = "fromchalaandate", required = false) Long fromChalaanDate,
+			@RequestParam(value = "tochalaandate", required = false) Long toChalaanDate,
+			@RequestParam(value = "chalaantype", required = false) String chalaanType) {
+		List<ContractorChalaanVo> found = service.findAll(chalaanNumber, contractorId, ToLocalDate(fromChalaanDate),
+				ToLocalDate(toChalaanDate), chalaanType);
 		return ResponseEntity.ok(ApiResponseVoWrapper.success("Record fetched", found, getMetadata(found)));
 	}
 
-	@GetMapping("chalaannumber/{chalaannumber}")
-	@Operation(summary = "Get all chalaans by chalaan number")
-	public ResponseEntity<ApiResponseVo<List<ContractorChalaanVo>>> getAllByChalaanNumber(
-			@PathVariable Integer chalaannumber) {
-		List<ContractorChalaanVo> found = service.findByChalaanNumber(chalaannumber);
-		return ResponseEntity.ok(ApiResponseVoWrapper.success("Record fetched", found, getMetadata(found)));
-	}
-
-	@GetMapping("chalaandate/{chalaandate}")
-	@Operation(summary = "Get all chalaans by chalaan date")
-	public ResponseEntity<ApiResponseVo<List<ContractorChalaanVo>>> getAllByChalaanDate(
-			@PathVariable Long chalaandate) {
-		List<ContractorChalaanVo> found = service.findByChalaanDate(new Date(chalaandate));
-		return ResponseEntity.ok(ApiResponseVoWrapper.success("Record fetched", found, getMetadata(found)));
-	}
-
-	@GetMapping("chalaandate/{fromchalaandate}/{tochalaandate}")
-	@Operation(summary = "Get all chalaans by chalaan dates")
-	public ResponseEntity<ApiResponseVo<List<ContractorChalaanVo>>> findByChalaanDateBetween(
-			@PathVariable Long fromchalaandate, @PathVariable Long tochalaandate) {
-		List<ContractorChalaanVo> found = service.findByChalaanDateBetween(new Date(fromchalaandate),
-				new Date(tochalaandate));
-		return ResponseEntity.ok(ApiResponseVoWrapper.success("Record fetched", found, getMetadata(found)));
-	}
-
-	@GetMapping("contractorid/{id}")
-	@Operation(summary = "Get all chalaans by contractor Id")
-	public ResponseEntity<ApiResponseVo<List<ContractorChalaanVo>>> findByContractorId(@PathVariable Long id) {
-		List<ContractorChalaanVo> found = service.findByContractor_Id(id);
-		return ResponseEntity.ok(ApiResponseVoWrapper.success("Record fetched", found, getMetadata(found)));
-	}
-
-	@GetMapping("chalaantype/{chalaantype}")
-	@Operation(summary = "Get all chalaans by chalaan type", description = "I - Issue, R - Received")
-	public ResponseEntity<ApiResponseVo<List<ContractorChalaanVo>>> findByChalaanType(
-			@PathVariable(name = "chalaantype") String chalaanType) {
-		List<ContractorChalaanVo> found = service.findByChalaanType(chalaanType);
-		return ResponseEntity.ok(ApiResponseVoWrapper.success("Record fetched", found, getMetadata(found)));
-	}
-
-	@GetMapping("chalaandate/contractorid")
-	@Operation(summary = "Get all chalaans by chalaan date and contractor Id")
-	public ResponseEntity<ApiResponseVo<List<ContractorChalaanVo>>> findByChalaanDateBetweenAndContractor_Id(
-			@RequestParam(value = "fromchalaandate") Long fromChalaanDate,
-			@RequestParam(value = "tochalaandate") Long toChalaanDate, @RequestParam Long id) {
-		List<ContractorChalaanVo> found = service.findByChalaanDateBetweenAndContractor_Id(new Date(fromChalaanDate),
-				new Date(toChalaanDate), id);
-		return ResponseEntity.ok(ApiResponseVoWrapper.success("Record fetched", found, getMetadata(found)));
-	}
-
-	@GetMapping("chalaantype/contractorid")
-	@Operation(summary = "Get all chalaans by chalaan type and contractor Id")
-	public ResponseEntity<ApiResponseVo<List<ContractorChalaanVo>>> findByChalaanTypeAndContractor_Id(
-			@RequestParam(value = "chalaantype") String chalaanType, @RequestParam Long id) {
-		List<ContractorChalaanVo> found = service.findByChalaanTypeAndContractor_Id(chalaanType, id);
-		return ResponseEntity.ok(ApiResponseVoWrapper.success("Record fetched", found, getMetadata(found)));
-	}
-
-	@GetMapping("chalaandate/chalaantype/contractorid")
-	@Operation(summary = "Get all chalaans by chalaan date range and chalaan type and contractor Id")
-	public ResponseEntity<ApiResponseVo<List<ContractorChalaanVo>>> findByChalaanDateBetweenAndChalaanTypeAndContractor_Id(
-			@RequestParam(value = "fromchalaandate") Long fromChalaanDate,
-			@RequestParam(value = "tochalaandate") Long toChalaanDate,
-			@RequestParam(value = "chalaantype") String chalaanType, @RequestParam Long id) {
-		List<ContractorChalaanVo> found = service.findByChalaanDateBetweenAndChalaanTypeAndContractor_Id(
-				new Date(fromChalaanDate), new Date(toChalaanDate), chalaanType, id);
-		return ResponseEntity.ok(ApiResponseVoWrapper.success("Record fetched", found, getMetadata(found)));
+	private LocalDate ToLocalDate(Long epochMillis) {
+		if (epochMillis == null)
+			return null;
+		return Instant.ofEpochMilli(epochMillis).atZone(ZoneId.systemDefault()).toLocalDate();
 	}
 
 	private Map<String, String> getMetadata(ContractorChalaanVo vo) {
