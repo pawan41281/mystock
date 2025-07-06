@@ -1,6 +1,5 @@
 package org.mystock.controller;
 
-import org.mystock.service.ClientChalaanItemService;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -13,5 +12,5 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class ClientChalaanItemController{
 
-	private final ClientChalaanItemService clientChalaanItemService;
+//	private final ClientChalaanItemService clientChalaanItemService;
 }

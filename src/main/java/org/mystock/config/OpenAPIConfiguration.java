@@ -25,7 +25,7 @@ public class OpenAPIConfiguration {
 		myContact.setName("Pawan Kumar");
 		myContact.setEmail("pawan.kumar@gmail.com");
 
-		Info information = new Info().title("My Stock API").version("1.0")
+		Info information = new Info().title("My Stock API").version("2.0")
 				.description("Exposes endpoints for mystock api.").contact(myContact)
 				.license(new License().name("Apache 2.0").url("http://springdoc.org"));
 

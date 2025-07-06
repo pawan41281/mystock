@@ -38,8 +38,9 @@ public class ClientChalaanItemEntity {
 	@JoinColumn(name = "design_id", nullable = false)
 	private DesignEntity design;
 
-	@Column(name = "color", length = 20, nullable = false)
-	private String color;
+	@ManyToOne
+	@JoinColumn(name = "color_id", nullable = false)
+	private ColorEntity color;
 
 	@Column(name = "quantity", nullable = false)
 	private Integer quantity;

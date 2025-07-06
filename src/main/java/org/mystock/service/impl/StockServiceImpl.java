@@ -1,0 +1,98 @@
+package org.mystock.service.impl;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.mystock.entity.StockEntity;
+import org.mystock.mapper.ColorMapper;
+import org.mystock.mapper.DesignMapper;
+import org.mystock.mapper.StockMapper;
+import org.mystock.repository.StockRepository;
+import org.mystock.service.StockService;
+import org.mystock.vo.StockVo;
+import org.springframework.stereotype.Service;
+
+import lombok.AllArgsConstructor;
+
+@Service
+@AllArgsConstructor
+public class StockServiceImpl implements StockService {
+
+	private final StockRepository stockRepository;
+	private final StockMapper stockMapper;
+	private final DesignMapper designMapper;
+	private final ColorMapper colorMapper;
+
+	@Override
+	public StockVo save(StockVo stockVo) {
+		StockEntity entity = stockRepository.save(stockMapper.toEntity(stockVo));
+		return stockMapper.toVo(entity);
+	}
+
+	@Override
+	public StockVo getById(Long id) {
+		Optional<StockEntity> optionalEntity = stockRepository.findById(id);
+		return optionalEntity.isPresent() ? stockMapper.toVo(optionalEntity.get()) : null;
+	}
+
+	@Override
+	public List<StockVo> getAll() {
+		return stockRepository.findAll().stream().map(stockMapper::toVo).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<StockVo> getAll(Long designId) {
+		return stockRepository.findByDesign_Id(designId).stream().map(stockMapper::toVo).collect(Collectors.toList());
+	}
+
+	@Override
+	public StockVo get(Long designId, Long colorId) {
+		StockEntity stockEntity = stockRepository.findByDesign_IdAndColor_Id(designId, colorId);
+		if (stockEntity != null)
+			return stockMapper.toVo(stockEntity);
+
+		return null;
+	}
+
+	@Override
+	public int increaseBalance(Long designId, Long colorId, Integer quantity) {
+		return stockRepository.increaseBalance(designId, colorId, quantity);
+	}
+
+	@Override
+	public int reduceBalance(Long designId, Long colorId, Integer quantity) {
+		return stockRepository.reduceBalance(designId, colorId, quantity);
+	}
+
+	@Override
+	public StockVo addOpenningBalance(Long designId, Long colorId, Integer quantity) {
+		StockVo existingStockVo = get(designId, colorId);
+		if (existingStockVo != null) {
+			existingStockVo.setBalance(existingStockVo.getBalance() + quantity);
+			existingStockVo.setUpdatedOn(LocalDateTime.now());
+		}
+		return save(existingStockVo);
+	}
+
+	@Override
+	public List<StockVo> addOpenningBalance(Set<StockVo> vos) {
+		List<StockEntity> entities = new ArrayList<>();
+		vos.stream().forEach(vo -> {
+			StockEntity entity = stockRepository.findByDesign_IdAndColor_Id(vo.getDesign().getId(), vo.getColor().getId());
+			if(entity==null) {
+				entity = new StockEntity();
+			}
+			entity.setDesign(designMapper.toEntity(vo.getDesign()));
+			entity.setColor(colorMapper.toEntity(vo.getColor()));
+			entity.setBalance(entity.getBalance()+vo.getBalance());
+			entity.setUpdatedOn(LocalDateTime.now());
+			entities.add(entity);
+		});
+		return stockRepository.saveAll(entities).stream().map(stockMapper::toVo).collect(Collectors.toList());
+	}
+
+}

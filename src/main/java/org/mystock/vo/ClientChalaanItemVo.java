@@ -30,7 +30,7 @@ public class ClientChalaanItemVo {
 	private DesignVo design;
 	
 	@NotNull
-	private String color;
+	private ColorVo color;
 	
 	@NotNull
 	@Min(0)

@@ -2,8 +2,6 @@ package org.mystock.entity;
 
 import java.time.LocalDateTime;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -18,21 +16,16 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "contractorchalaaniteminfo")
+@Table(name = "stockinfo")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ContractorChalaanItemEntity {
+public class StockEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-
-	@ManyToOne
-	@JoinColumn(name = "chalaan_id", nullable = false)
-	@JsonIgnore
-	private ContractorChalaanEntity chalaan;
 
 	@ManyToOne
 	@JoinColumn(name = "design_id", nullable = false)
@@ -42,9 +35,12 @@ public class ContractorChalaanItemEntity {
 	@JoinColumn(name = "color_id", nullable = false)
 	private ColorEntity color;
 
-	@Column(name = "quantity", nullable = false)
-	private Integer quantity;
-
+	@Column(name = "balance", nullable = false)
+	private Integer balance = 0;
+	
+	@Column(name = "updatedon")
+	private LocalDateTime updatedOn = LocalDateTime.now();
+	
 	@Column(name = "createdon", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
 	private LocalDateTime createdOn;
 }

@@ -1,6 +1,9 @@
 package org.mystock.service.impl;
 
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -8,10 +11,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.mystock.entity.ContractorChalaanEntity;
+import org.mystock.mapper.ColorMapper;
 import org.mystock.mapper.ContractorChalaanMapper;
+import org.mystock.mapper.DesignMapper;
 import org.mystock.repository.ContractorChalaanRepository;
 import org.mystock.service.ContractorChalaanService;
+import org.mystock.service.StockService;
 import org.mystock.vo.ContractorChalaanVo;
+import org.mystock.vo.StockVo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,20 +30,117 @@ public class ContractorChalaanServiceImpl implements ContractorChalaanService {
 
 	private final ContractorChalaanRepository repository;
 	private final ContractorChalaanMapper mapper;
+	private final StockService stockService;
+	private final DesignMapper designMapper;
+	private final ColorMapper colorMapper;
 
+	@Transactional
 	@Override
 	public ContractorChalaanVo save(ContractorChalaanVo vo) {
+
 		ContractorChalaanEntity entity = mapper.toEntity(vo);
-		entity = repository.save(entity);
-		return mapper.toVo(entity);
+		final ContractorChalaanEntity savedEntity = repository.save(entity);
+
+		if (entity.getId() != null) {
+			savedEntity.getChalaanItems().stream().forEach(item -> {
+
+				final boolean isReceive = "R".equalsIgnoreCase(savedEntity.getChalaanType());
+				final boolean isIssue = "I".equalsIgnoreCase(savedEntity.getChalaanType());
+
+				if (isReceive) {
+					//received finished products from contractor
+					//update the available stock balance :: increase the available stock
+					//update the contractor stock balance :: reduce the pending balance of contractor
+					StockVo stockVo = stockService.get(item.getDesign().getId(),
+							item.getColor().getId());
+					if (stockVo != null) {
+						stockService.increaseBalance(item.getDesign().getId(), item.getColor().getId(),
+								item.getQuantity());
+					} else {
+						stockVo = new StockVo();
+						stockVo.setDesign(designMapper.toVo(item.getDesign()));
+						stockVo.setColor(colorMapper.toVo(item.getColor()));
+						stockVo.setBalance(item.getQuantity());
+						stockVo.setUpdatedOn(toLocalDateTime(System.currentTimeMillis()));
+						stockService.save(stockVo);
+					}
+				}
+				if (isIssue) {
+					//issuing raw material to contractor
+					//update the available stock balance :: no impact on available stock
+					//update the contractor stock balance :: increase the pending balance of contractor
+					StockVo stockVo = stockService.get(item.getDesign().getId(),
+							item.getColor().getId());
+					if (stockVo != null) {
+						stockService.reduceBalance(item.getDesign().getId(), item.getColor().getId(),
+								item.getQuantity());
+					} else {
+						stockVo = new StockVo();
+						stockVo.setDesign(designMapper.toVo(item.getDesign()));
+						stockVo.setColor(colorMapper.toVo(item.getColor()));
+						stockVo.setBalance(0 - item.getQuantity());
+						stockVo.setUpdatedOn(toLocalDateTime(System.currentTimeMillis()));
+						stockService.save(stockVo);
+					}
+
+				}
+			});
+		}
+
+		return mapper.toVo(savedEntity);
 	}
 
+	@Transactional
 	@Override
 	public Set<ContractorChalaanVo> saveAll(Set<ContractorChalaanVo> vos) {
 		if (vos == null || vos.isEmpty())
 			return Collections.emptySet();
 		List<ContractorChalaanEntity> entities = vos.stream().map(mapper::toEntity).collect(Collectors.toList());
 		entities = repository.saveAll(entities);
+		entities.stream().forEach(savedEntity -> {
+
+			if (savedEntity.getId() != null) {
+				savedEntity.getChalaanItems().stream().forEach(item -> {
+
+					final boolean isReceive = "R".equalsIgnoreCase(savedEntity.getChalaanType());
+					final boolean isIssue = "I".equalsIgnoreCase(savedEntity.getChalaanType());
+
+					if (isReceive) {
+
+						StockVo stockVo = stockService.get(item.getDesign().getId(),
+								item.getColor().getId());
+						if (stockVo != null) {
+							stockService.increaseBalance(item.getDesign().getId(), item.getColor().getId(),
+									item.getQuantity());
+						} else {
+							stockVo = new StockVo();
+							stockVo.setDesign(designMapper.toVo(item.getDesign()));
+							stockVo.setColor(colorMapper.toVo(item.getColor()));
+							stockVo.setBalance(item.getQuantity());
+							stockVo.setUpdatedOn(toLocalDateTime(System.currentTimeMillis()));
+							stockService.save(stockVo);
+						}
+					}
+					if (isIssue) {
+						StockVo stockVo = stockService.get(item.getDesign().getId(),
+								item.getColor().getId());
+						if (stockVo != null) {
+							stockService.reduceBalance(item.getDesign().getId(), item.getColor().getId(),
+									item.getQuantity());
+						} else {
+							stockVo = new StockVo();
+							stockVo.setDesign(designMapper.toVo(item.getDesign()));
+							stockVo.setColor(colorMapper.toVo(item.getColor()));
+							stockVo.setBalance(0 - item.getQuantity());
+							stockVo.setUpdatedOn(toLocalDateTime(System.currentTimeMillis()));
+							stockService.save(stockVo);
+						}
+
+					}
+				});
+			}
+
+		});
 		return entities.stream().map(mapper::toVo).collect(Collectors.toSet());
 	}
 
@@ -52,10 +156,55 @@ public class ContractorChalaanServiceImpl implements ContractorChalaanService {
 
 	@Transactional
 	public ContractorChalaanVo deleteById(Long id) {
-		return repository.findById(id).map(entity -> {
+
+		ContractorChalaanVo chalaanVo = findById(id);
+		if (chalaanVo != null) {
+			final ContractorChalaanEntity entity = mapper.toEntity(chalaanVo);
 			repository.deleteById(id);
-			return mapper.toVo(entity);
-		}).orElse(null);
+
+			if (entity.getId() != null) {
+				entity.getChalaanItems().stream().forEach(item -> {
+
+					final boolean isReceive = "R".equalsIgnoreCase(entity.getChalaanType());
+					final boolean isIssue = "I".equalsIgnoreCase(entity.getChalaanType());
+
+					if (isReceive) {
+
+						StockVo stockVo = stockService.get(item.getDesign().getId(),
+								item.getColor().getId());
+						if (stockVo != null) {
+							//reverse entry
+							stockService.reduceBalance(item.getDesign().getId(), item.getColor().getId(),
+									item.getQuantity());
+						} else {
+							stockVo = new StockVo();
+							stockVo.setDesign(designMapper.toVo(item.getDesign()));
+							stockVo.setColor(colorMapper.toVo(item.getColor()));
+							stockVo.setBalance(item.getQuantity());
+							stockVo.setUpdatedOn(toLocalDateTime(System.currentTimeMillis()));
+							stockService.save(stockVo);
+						}
+					}
+					if (isIssue) {
+						StockVo stockVo = stockService.get(item.getDesign().getId(),
+								item.getColor().getId());
+						if (stockVo != null) {//reverse entry
+							stockService.increaseBalance(item.getDesign().getId(), item.getColor().getId(),
+									item.getQuantity());
+						} else {
+							stockVo = new StockVo();
+							stockVo.setDesign(designMapper.toVo(item.getDesign()));
+							stockVo.setColor(colorMapper.toVo(item.getColor()));
+							stockVo.setBalance(item.getQuantity());
+							stockVo.setUpdatedOn(toLocalDateTime(System.currentTimeMillis()));
+							stockService.save(stockVo);
+						}
+
+					}
+				});
+			}
+		}
+		return chalaanVo;
 	}
 
 	@Override
@@ -64,6 +213,12 @@ public class ContractorChalaanServiceImpl implements ContractorChalaanService {
 
 		return repository.findAll(chalaanNumber, contractorId, fromChalaanDate, toChalaanDate, chalaanType).stream()
 				.map(mapper::toVo).collect(Collectors.toList());
+	}
+
+	private LocalDateTime toLocalDateTime(Long epochMillis) {
+		if (epochMillis == null)
+			return null;
+		return Instant.ofEpochMilli(epochMillis).atZone(ZoneId.systemDefault()).toLocalDateTime();
 	}
 
 }

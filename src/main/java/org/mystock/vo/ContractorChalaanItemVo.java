@@ -20,21 +20,21 @@ import lombok.ToString;
 public class ContractorChalaanItemVo {
 
 	private Long id;
-	
+
 	@JsonIgnore
 	@ToString.Exclude
 	@EqualsAndHashCode.Exclude
 	private ContractorChalaanVo contractorChalaan;
-	
+
 	@NotNull
 	private DesignVo design;
-	
+
 	@NotNull
-	private String color;
-	
+	private ColorVo color;
+
 	@NotNull
 	@Min(0)
 	private Integer quantity;
-	
+
 	private LocalDateTime createdOn;
 }

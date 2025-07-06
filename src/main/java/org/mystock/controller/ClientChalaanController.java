@@ -90,12 +90,12 @@ public class ClientChalaanController {
 			@RequestParam(value = "fromchalaandate", required = false) Long fromChalaanDate,
 			@RequestParam(value = "tochalaandate", required = false) Long toChalaanDate,
 			@RequestParam(value = "chalaantype", required = false) String chalaanType) {
-		List<ClientChalaanVo> found = service.findAll(chalaanNumber, clientId, ToLocalDate(fromChalaanDate),
-				ToLocalDate(toChalaanDate), chalaanType);
+		List<ClientChalaanVo> found = service.findAll(chalaanNumber, clientId, toLocalDate(fromChalaanDate),
+				toLocalDate(toChalaanDate), chalaanType);
 		return ResponseEntity.ok(ApiResponseVoWrapper.success("Record fetched", found, getMetadata(found)));
 	}
 
-	private LocalDate ToLocalDate(Long epochMillis) {
+	private LocalDate toLocalDate(Long epochMillis) {
 		if (epochMillis == null)
 			return null;
 		return Instant.ofEpochMilli(epochMillis).atZone(ZoneId.systemDefault()).toLocalDate();

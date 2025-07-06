@@ -1,6 +1,5 @@
 package org.mystock.controller;
 
-import org.mystock.service.ContractorChalaanItemService;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -13,7 +12,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class ContractorChalaanItemController {
 
-	private final ContractorChalaanItemService contractorChalaanItemService;
+//	private final ContractorChalaanItemService contractorChalaanItemService;
 
 //	@GetMapping("/{id}")
 //	public ResponseEntity<ApiResponseVo<ContractorChalaanItemVo>> getContractorChalaanItem(@PathVariable Long id) {
