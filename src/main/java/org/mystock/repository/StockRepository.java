@@ -4,10 +4,12 @@ import java.util.List;
 
 import org.mystock.entity.StockEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import jakarta.persistence.LockModeType;
 import jakarta.transaction.Transactional;
 
 @Repository
@@ -15,6 +17,7 @@ public interface StockRepository extends JpaRepository<StockEntity, Long> {
 
 	public List<StockEntity> findByDesign_Id(Long designId);
 
+	@Lock(LockModeType.PESSIMISTIC_WRITE)
 	public StockEntity findByDesign_IdAndColor_Id(Long designId, Long colorId);
 
 	@Modifying

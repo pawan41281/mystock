@@ -49,6 +49,9 @@ public class ClientChalaanServiceImpl implements ClientChalaanService {
 
 				if (isReceive) {
 
+					//received finished products from client because of rejection or any other reason
+					
+					//update the available stock balance :: increase the available stock :: plus entry in StockInfo
 					StockVo stockVo = stockService.get(item.getDesign().getId(),
 							item.getColor().getId());
 					if (stockVo != null) {
@@ -61,8 +64,14 @@ public class ClientChalaanServiceImpl implements ClientChalaanService {
 						stockVo.setBalance(item.getQuantity());
 						stockService.save(stockVo);
 					}
+					
+					//update the contractor stock balance :: reduce the pending balance of contractor :: minus entry in ContractorStockInfo
+					
 				}
 				if (isIssue) {
+					//issuing finished products to client
+					
+					//update the available stock balance :: reduce the available stock :: minus entry in StockInfo
 					StockVo stockVo = stockService.get(item.getDesign().getId(),
 							item.getColor().getId());
 					if (stockVo != null) {
@@ -100,6 +109,11 @@ public class ClientChalaanServiceImpl implements ClientChalaanService {
 
 					if (isReceive) {
 
+						//received finished products from client because of rejection or any other reason
+						
+						//update the available stock balance :: increase the available stock :: plus entry in StockInfo
+						
+
 						StockVo stockVo = stockService.get(item.getDesign().getId(),
 								item.getColor().getId());
 						if (stockVo != null) {
@@ -115,6 +129,10 @@ public class ClientChalaanServiceImpl implements ClientChalaanService {
 						}
 					}
 					if (isIssue) {
+						//issuing finished products to client
+						
+						//update the available stock balance :: reduce the available stock :: minus entry in StockInfo
+						
 						StockVo stockVo = stockService.get(item.getDesign().getId(),
 								item.getColor().getId());
 						if (stockVo != null) {

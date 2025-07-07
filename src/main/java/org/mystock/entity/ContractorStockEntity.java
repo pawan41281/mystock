@@ -17,16 +17,20 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "stockinfo", uniqueConstraints = @UniqueConstraint(columnNames = {"design_id", "color_id"}))
+@Table(name = "contractorstockinfo", uniqueConstraints = @UniqueConstraint(columnNames = {"contractor_id", "design_id", "color_id"}))
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class StockEntity {
+public class ContractorStockEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+
+	@ManyToOne
+	@JoinColumn(name = "contractor_id", nullable = false)
+	private ContractorEntity contractor;
 
 	@ManyToOne
 	@JoinColumn(name = "design_id", nullable = false)

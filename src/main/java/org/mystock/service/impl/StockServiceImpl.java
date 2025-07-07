@@ -12,6 +12,8 @@ import org.mystock.mapper.ColorMapper;
 import org.mystock.mapper.DesignMapper;
 import org.mystock.mapper.StockMapper;
 import org.mystock.repository.StockRepository;
+import org.mystock.service.ColorService;
+import org.mystock.service.DesignService;
 import org.mystock.service.StockService;
 import org.mystock.vo.StockVo;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,8 @@ import lombok.AllArgsConstructor;
 public class StockServiceImpl implements StockService {
 
 	private final StockRepository stockRepository;
+	private final DesignService designService;
+	private final ColorService colorService;
 	private final StockMapper stockMapper;
 	private final DesignMapper designMapper;
 	private final ColorMapper colorMapper;
@@ -74,6 +78,12 @@ public class StockServiceImpl implements StockService {
 		if (existingStockVo != null) {
 			existingStockVo.setBalance(existingStockVo.getBalance() + quantity);
 			existingStockVo.setUpdatedOn(LocalDateTime.now());
+		} else {
+			StockVo stockVo = new StockVo();
+			stockVo.setBalance(0);
+			stockVo.setColor(colorService.getById(colorId));
+			stockVo.setDesign(designService.getById(designId));
+			return save(stockVo);
 		}
 		return save(existingStockVo);
 	}
@@ -82,13 +92,14 @@ public class StockServiceImpl implements StockService {
 	public List<StockVo> addOpenningBalance(Set<StockVo> vos) {
 		List<StockEntity> entities = new ArrayList<>();
 		vos.stream().forEach(vo -> {
-			StockEntity entity = stockRepository.findByDesign_IdAndColor_Id(vo.getDesign().getId(), vo.getColor().getId());
-			if(entity==null) {
+			StockEntity entity = stockRepository.findByDesign_IdAndColor_Id(vo.getDesign().getId(),
+					vo.getColor().getId());
+			if (entity == null) {
 				entity = new StockEntity();
 			}
 			entity.setDesign(designMapper.toEntity(vo.getDesign()));
 			entity.setColor(colorMapper.toEntity(vo.getColor()));
-			entity.setBalance(entity.getBalance()+vo.getBalance());
+			entity.setBalance(entity.getBalance() + vo.getBalance());
 			entity.setUpdatedOn(LocalDateTime.now());
 			entities.add(entity);
 		});

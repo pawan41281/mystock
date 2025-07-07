@@ -1,13 +1,11 @@
 package org.mystock.controller;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 import org.mystock.apiresponse.ApiResponseVo;
 import org.mystock.apiresponse.ApiResponseVoWrapper;
 import org.mystock.service.ColorService;
+import org.mystock.util.MetadataGenerator;
 import org.mystock.vo.ColorVo;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,13 +26,15 @@ import lombok.AllArgsConstructor;
 public class ColorController {
 
 	private final ColorService colorService;
+	private final MetadataGenerator metadataGenerator;
 
 	@PostMapping
 	@Operation(summary = "Create or update color")
 	public ResponseEntity<ApiResponseVo<ColorVo>> save(@RequestBody ColorVo colorVo) {
 		ColorVo vo = colorService.save(colorVo);
-		return ResponseEntity.ok(ApiResponseVoWrapper
-				.success(vo != null && vo.getId() != null ? "Record saved" : "Record not saved", vo, getMetadata(vo)));
+		return ResponseEntity
+				.ok(ApiResponseVoWrapper.success(vo != null && vo.getId() != null ? "Record saved" : "Record not saved",
+						vo, metadataGenerator.getMetadata(vo)));
 	}
 
 	@PostMapping("bulk")
@@ -42,7 +42,7 @@ public class ColorController {
 	public ResponseEntity<ApiResponseVo<Set<ColorVo>>> saveAll(@RequestBody Set<ColorVo> colorVos) {
 		Set<ColorVo> vos = colorService.saveAll(colorVos);
 		return ResponseEntity.ok(ApiResponseVoWrapper.success(vos != null ? "Record saved" : "Record not saved",
-				colorVos, getMetadata(vos)));
+				colorVos, metadataGenerator.getMetadata(vos)));
 	}
 
 	@GetMapping("{id}")
@@ -50,23 +50,12 @@ public class ColorController {
 	public ResponseEntity<ApiResponseVo<ColorVo>> getById(@PathVariable Long id) {
 		ColorVo vo = colorService.getById(id);
 		if (vo != null) {
-			return ResponseEntity.ok(ApiResponseVoWrapper.success("Record found", vo, getMetadata(vo)));
+			return ResponseEntity
+					.ok(ApiResponseVoWrapper.success("Record found", vo, metadataGenerator.getMetadata(vo)));
 		} else {
-			return ResponseEntity.ok(ApiResponseVoWrapper.success("Record not found", null, getMetadata(vo)));
+			return ResponseEntity
+					.ok(ApiResponseVoWrapper.success("Record not found", null, metadataGenerator.getMetadata(vo)));
 		}
-	}
-
-	private Map<String, String> getMetadata(ColorVo vo) {
-		Map<String, String> metadata = new HashMap<>();
-		metadata.put("recordcount", String.valueOf(vo != null && vo.getId() != null ? 1 : 0));
-		return metadata;
-	}
-
-	private Map<String, String> getMetadata(Collection<ColorVo> collection) {
-		Map<String, String> metadata = new HashMap<>();
-		metadata.put("recordcount",
-				String.valueOf(collection != null && !collection.isEmpty() ? collection.size() : 0));
-		return metadata;
 	}
 
 }

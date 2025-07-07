@@ -13,11 +13,14 @@ import java.util.stream.Collectors;
 import org.mystock.entity.ContractorChalaanEntity;
 import org.mystock.mapper.ColorMapper;
 import org.mystock.mapper.ContractorChalaanMapper;
+import org.mystock.mapper.ContractorMapper;
 import org.mystock.mapper.DesignMapper;
 import org.mystock.repository.ContractorChalaanRepository;
 import org.mystock.service.ContractorChalaanService;
+import org.mystock.service.ContractorStockService;
 import org.mystock.service.StockService;
 import org.mystock.vo.ContractorChalaanVo;
+import org.mystock.vo.ContractorStockVo;
 import org.mystock.vo.StockVo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,9 +33,18 @@ public class ContractorChalaanServiceImpl implements ContractorChalaanService {
 
 	private final ContractorChalaanRepository repository;
 	private final ContractorChalaanMapper mapper;
+	
+	private final ContractorStockService contractorStockService;
 	private final StockService stockService;
+//	private final ColorService colorService;
+//	private final DesignService designService;
+//	private final ContractorService contractorService;
+	
 	private final DesignMapper designMapper;
+	private final ContractorMapper contractorMapper;
 	private final ColorMapper colorMapper;
+//	private final ContractorStockMapper contractorStockMapper;
+//	private final StockMapper stockMapper;
 
 	@Transactional
 	@Override
@@ -48,9 +60,10 @@ public class ContractorChalaanServiceImpl implements ContractorChalaanService {
 				final boolean isIssue = "I".equalsIgnoreCase(savedEntity.getChalaanType());
 
 				if (isReceive) {
+					
 					//received finished products from contractor
-					//update the available stock balance :: increase the available stock
-					//update the contractor stock balance :: reduce the pending balance of contractor
+					
+					//update the available stock balance :: increase the available stock :: plus entry in StockInfo
 					StockVo stockVo = stockService.get(item.getDesign().getId(),
 							item.getColor().getId());
 					if (stockVo != null) {
@@ -64,25 +77,60 @@ public class ContractorChalaanServiceImpl implements ContractorChalaanService {
 						stockVo.setUpdatedOn(toLocalDateTime(System.currentTimeMillis()));
 						stockService.save(stockVo);
 					}
-				}
-				if (isIssue) {
-					//issuing raw material to contractor
-					//update the available stock balance :: no impact on available stock
-					//update the contractor stock balance :: increase the pending balance of contractor
-					StockVo stockVo = stockService.get(item.getDesign().getId(),
+					
+
+					//update the contractor stock balance :: reduce the pending balance of contractor :: minus entry in ContractorStockInfo
+					ContractorStockVo contractorStockVo = contractorStockService.get(entity.getContractor().getId(), item.getDesign().getId(),
 							item.getColor().getId());
-					if (stockVo != null) {
-						stockService.reduceBalance(item.getDesign().getId(), item.getColor().getId(),
+					if (contractorStockVo != null) {
+						contractorStockService.reduceBalance(entity.getContractor().getId(), item.getDesign().getId(), item.getColor().getId(),
 								item.getQuantity());
 					} else {
-						stockVo = new StockVo();
-						stockVo.setDesign(designMapper.toVo(item.getDesign()));
-						stockVo.setColor(colorMapper.toVo(item.getColor()));
-						stockVo.setBalance(0 - item.getQuantity());
-						stockVo.setUpdatedOn(toLocalDateTime(System.currentTimeMillis()));
-						stockService.save(stockVo);
+						contractorStockVo = new ContractorStockVo();
+						contractorStockVo.setContractor(contractorMapper.toVo(entity.getContractor()));
+						contractorStockVo.setDesign(designMapper.toVo(item.getDesign()));
+						contractorStockVo.setColor(colorMapper.toVo(item.getColor()));
+						contractorStockVo.setBalance((0-item.getQuantity()));
+						contractorStockVo.setUpdatedOn(toLocalDateTime(System.currentTimeMillis()));
+						contractorStockService.save(contractorStockVo);
 					}
+				}
+				if (isIssue) {
+					
+					//issuing raw material to contractor
+					
+					//update the available stock balance :: no impact on available stock :: no entry in StockInfo
+//					StockVo stockVo = stockService.get(item.getDesign().getId(),
+//							item.getColor().getId());
+//					if (stockVo != null) {
+//						stockService.reduceBalance(item.getDesign().getId(), item.getColor().getId(),
+//								item.getQuantity());
+//					} else {
+//						stockVo = new StockVo();
+//						stockVo.setDesign(designMapper.toVo(item.getDesign()));
+//						stockVo.setColor(colorMapper.toVo(item.getColor()));
+//						stockVo.setBalance(0 - item.getQuantity());
+//						stockVo.setUpdatedOn(toLocalDateTime(System.currentTimeMillis()));
+//						stockService.save(stockVo);
+//					}
+					
+					
 
+					//update the contractor stock balance :: increase the pending balance of contractor :: plus entry in ContractorStockInfo
+					ContractorStockVo contractorStockVo = contractorStockService.get(entity.getContractor().getId(), item.getDesign().getId(),
+							item.getColor().getId());
+					if (contractorStockVo != null) {
+						contractorStockService.increaseBalance(entity.getContractor().getId(), item.getDesign().getId(), item.getColor().getId(),
+								item.getQuantity());
+					} else {
+						contractorStockVo = new ContractorStockVo();
+						contractorStockVo.setContractor(contractorMapper.toVo(entity.getContractor()));
+						contractorStockVo.setDesign(designMapper.toVo(item.getDesign()));
+						contractorStockVo.setColor(colorMapper.toVo(item.getColor()));
+						contractorStockVo.setBalance(item.getQuantity());
+						contractorStockVo.setUpdatedOn(toLocalDateTime(System.currentTimeMillis()));
+						contractorStockService.save(contractorStockVo);
+					}
 				}
 			});
 		}
@@ -106,9 +154,12 @@ public class ContractorChalaanServiceImpl implements ContractorChalaanService {
 					final boolean isIssue = "I".equalsIgnoreCase(savedEntity.getChalaanType());
 
 					if (isReceive) {
+						
+						//received finished products from contractor
+						
+						//update the available stock balance :: increase the available stock :: plus entry in StockInfo
 
-						StockVo stockVo = stockService.get(item.getDesign().getId(),
-								item.getColor().getId());
+						StockVo stockVo = stockService.get(item.getDesign().getId(), item.getColor().getId());
 						if (stockVo != null) {
 							stockService.increaseBalance(item.getDesign().getId(), item.getColor().getId(),
 									item.getQuantity());
@@ -120,20 +171,59 @@ public class ContractorChalaanServiceImpl implements ContractorChalaanService {
 							stockVo.setUpdatedOn(toLocalDateTime(System.currentTimeMillis()));
 							stockService.save(stockVo);
 						}
-					}
-					if (isIssue) {
-						StockVo stockVo = stockService.get(item.getDesign().getId(),
+						
+
+						//update the contractor stock balance :: reduce the pending balance of contractor :: minus entry in ContractorStockInfo
+						ContractorStockVo contractorStockVo = contractorStockService.get(savedEntity.getContractor().getId(), item.getDesign().getId(),
 								item.getColor().getId());
-						if (stockVo != null) {
-							stockService.reduceBalance(item.getDesign().getId(), item.getColor().getId(),
+						if (contractorStockVo != null) {
+							contractorStockService.reduceBalance(savedEntity.getContractor().getId(), item.getDesign().getId(), item.getColor().getId(),
 									item.getQuantity());
 						} else {
-							stockVo = new StockVo();
-							stockVo.setDesign(designMapper.toVo(item.getDesign()));
-							stockVo.setColor(colorMapper.toVo(item.getColor()));
-							stockVo.setBalance(0 - item.getQuantity());
-							stockVo.setUpdatedOn(toLocalDateTime(System.currentTimeMillis()));
-							stockService.save(stockVo);
+							contractorStockVo = new ContractorStockVo();
+							contractorStockVo.setContractor(contractorMapper.toVo(savedEntity.getContractor()));
+							contractorStockVo.setDesign(designMapper.toVo(item.getDesign()));
+							contractorStockVo.setColor(colorMapper.toVo(item.getColor()));
+							contractorStockVo.setBalance((0-item.getQuantity()));
+							contractorStockVo.setUpdatedOn(toLocalDateTime(System.currentTimeMillis()));
+							contractorStockService.save(contractorStockVo);
+						}
+					}
+					if (isIssue) {
+						
+						//issuing raw material to contractor
+						
+						//update the available stock balance :: no impact on available stock :: no entry in StockInfo
+						
+//						StockVo stockVo = stockService.get(item.getDesign().getId(), item.getColor().getId());
+//						if (stockVo != null) {
+//							stockService.reduceBalance(item.getDesign().getId(), item.getColor().getId(),
+//									item.getQuantity());
+//						} else {
+//							stockVo = new StockVo();
+//							stockVo.setDesign(designMapper.toVo(item.getDesign()));
+//							stockVo.setColor(colorMapper.toVo(item.getColor()));
+//							stockVo.setBalance(0 - item.getQuantity());
+//							stockVo.setUpdatedOn(toLocalDateTime(System.currentTimeMillis()));
+//							stockService.save(stockVo);
+//						}
+						
+						
+
+						//update the contractor stock balance :: increase the pending balance of contractor :: plus entry in ContractorStockInfo
+						ContractorStockVo contractorStockVo = contractorStockService.get(savedEntity.getContractor().getId(), item.getDesign().getId(),
+								item.getColor().getId());
+						if (contractorStockVo != null) {
+							contractorStockService.increaseBalance(savedEntity.getContractor().getId(), item.getDesign().getId(), item.getColor().getId(),
+									item.getQuantity());
+						} else {
+							contractorStockVo = new ContractorStockVo();
+							contractorStockVo.setContractor(contractorMapper.toVo(savedEntity.getContractor()));
+							contractorStockVo.setDesign(designMapper.toVo(item.getDesign()));
+							contractorStockVo.setColor(colorMapper.toVo(item.getColor()));
+							contractorStockVo.setBalance(item.getQuantity());
+							contractorStockVo.setUpdatedOn(toLocalDateTime(System.currentTimeMillis()));
+							contractorStockService.save(contractorStockVo);
 						}
 
 					}
@@ -170,10 +260,9 @@ public class ContractorChalaanServiceImpl implements ContractorChalaanService {
 
 					if (isReceive) {
 
-						StockVo stockVo = stockService.get(item.getDesign().getId(),
-								item.getColor().getId());
+						StockVo stockVo = stockService.get(item.getDesign().getId(), item.getColor().getId());
 						if (stockVo != null) {
-							//reverse entry
+							// reverse entry
 							stockService.reduceBalance(item.getDesign().getId(), item.getColor().getId(),
 									item.getQuantity());
 						} else {
@@ -186,9 +275,8 @@ public class ContractorChalaanServiceImpl implements ContractorChalaanService {
 						}
 					}
 					if (isIssue) {
-						StockVo stockVo = stockService.get(item.getDesign().getId(),
-								item.getColor().getId());
-						if (stockVo != null) {//reverse entry
+						StockVo stockVo = stockService.get(item.getDesign().getId(), item.getColor().getId());
+						if (stockVo != null) {// reverse entry
 							stockService.increaseBalance(item.getDesign().getId(), item.getColor().getId(),
 									item.getQuantity());
 						} else {

@@ -1,14 +1,12 @@
 package org.mystock.controller;
 
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.mystock.apiresponse.ApiResponseVo;
 import org.mystock.apiresponse.ApiResponseVoWrapper;
 import org.mystock.service.ClientService;
+import org.mystock.util.MetadataGenerator;
 import org.mystock.vo.ClientVo;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,13 +29,15 @@ import lombok.AllArgsConstructor;
 public class ClientController {
 
 	private final ClientService clientService;
+	private final MetadataGenerator metadataGenerator;
 
 	@PostMapping
 	@Operation(summary = "Create or update client")
 	public ResponseEntity<ApiResponseVo<ClientVo>> save(@RequestBody ClientVo clientVo) {
 		ClientVo vo = clientService.save(clientVo);
-		return ResponseEntity.ok(ApiResponseVoWrapper
-				.success(vo != null && vo.getId() != null ? "Record saved" : "Record not saved", vo, getMetadata(vo)));
+		return ResponseEntity
+				.ok(ApiResponseVoWrapper.success(vo != null && vo.getId() != null ? "Record saved" : "Record not saved",
+						vo, metadataGenerator.getMetadata(vo)));
 	}
 
 	@PostMapping("bulk")
@@ -45,7 +45,7 @@ public class ClientController {
 	public ResponseEntity<ApiResponseVo<Set<ClientVo>>> saveAll(@RequestBody Set<ClientVo> clientVos) {
 		Set<ClientVo> vos = clientService.saveAll(clientVos);
 		return ResponseEntity.ok(ApiResponseVoWrapper.success(vos != null ? "Record saved" : "Record not saved",
-				clientVos, getMetadata(vos)));
+				clientVos, metadataGenerator.getMetadata(vos)));
 	}
 
 	@GetMapping("{id}")
@@ -53,9 +53,11 @@ public class ClientController {
 	public ResponseEntity<ApiResponseVo<ClientVo>> getById(@PathVariable Long id) {
 		ClientVo vo = clientService.getById(id);
 		if (vo != null) {
-			return ResponseEntity.ok(ApiResponseVoWrapper.success("Record found", vo, getMetadata(vo)));
+			return ResponseEntity
+					.ok(ApiResponseVoWrapper.success("Record found", vo, metadataGenerator.getMetadata(vo)));
 		} else {
-			return ResponseEntity.ok(ApiResponseVoWrapper.success("Record not found", null, getMetadata(vo)));
+			return ResponseEntity
+					.ok(ApiResponseVoWrapper.success("Record not found", null, metadataGenerator.getMetadata(vo)));
 		}
 	}
 
@@ -64,7 +66,8 @@ public class ClientController {
 	public ResponseEntity<ApiResponseVo<ClientVo>> update(@PathVariable Long id, @PathVariable boolean status) {
 		ClientVo vo = clientService.updateStatus(id, status);
 		return ResponseEntity.ok(ApiResponseVoWrapper.success(
-				(vo != null && vo.getId() != null) ? "Status updated" : "Status not updated", vo, getMetadata(vo)));
+				(vo != null && vo.getId() != null) ? "Status updated" : "Status not updated", vo,
+				metadataGenerator.getMetadata(vo)));
 	}
 
 	@GetMapping
@@ -74,20 +77,8 @@ public class ClientController {
 			@RequestParam(required = false) String mobile, @RequestParam(required = false) String email,
 			@RequestParam(required = false) String gstNo, @RequestParam(required = false) Boolean active) {
 		List<ClientVo> vos = clientService.find(clientName, city, state, mobile, email, gstNo, active);
-		return ResponseEntity.ok(ApiResponseVoWrapper.success("Records fetched", vos, getMetadata(vos)));
-	}
-
-	private Map<String, String> getMetadata(ClientVo vo) {
-		Map<String, String> metadata = new HashMap<>();
-		metadata.put("recordcount", String.valueOf(vo != null && vo.getId() != null ? 1 : 0));
-		return metadata;
-	}
-
-	private Map<String, String> getMetadata(Collection<ClientVo> collection) {
-		Map<String, String> metadata = new HashMap<>();
-		metadata.put("recordcount",
-				String.valueOf(collection != null && !collection.isEmpty() ? collection.size() : 0));
-		return metadata;
+		return ResponseEntity
+				.ok(ApiResponseVoWrapper.success("Records fetched", vos, metadataGenerator.getMetadata(vos)));
 	}
 
 }

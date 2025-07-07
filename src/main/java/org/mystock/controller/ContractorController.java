@@ -1,14 +1,12 @@
 package org.mystock.controller;
 
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.mystock.apiresponse.ApiResponseVo;
 import org.mystock.apiresponse.ApiResponseVoWrapper;
 import org.mystock.service.ContractorService;
+import org.mystock.util.MetadataGenerator;
 import org.mystock.vo.ContractorVo;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,13 +29,15 @@ import lombok.AllArgsConstructor;
 public class ContractorController {
 
 	private final ContractorService contractorService;
+	private final MetadataGenerator metadataGenerator;
 
 	@PostMapping
 	@Operation(summary = "Create or update contractor")
 	public ResponseEntity<ApiResponseVo<ContractorVo>> save(@RequestBody ContractorVo contractorVo) {
 		ContractorVo vo = contractorService.save(contractorVo);
-		return ResponseEntity.ok(ApiResponseVoWrapper
-				.success(vo != null && vo.getId() != null ? "Record saved" : "Record not saved", vo, getMetadata(vo)));
+		return ResponseEntity
+				.ok(ApiResponseVoWrapper.success(vo != null && vo.getId() != null ? "Record saved" : "Record not saved",
+						vo, metadataGenerator.getMetadata(vo)));
 	}
 
 	@PostMapping("bulk")
@@ -45,7 +45,7 @@ public class ContractorController {
 	public ResponseEntity<ApiResponseVo<Set<ContractorVo>>> saveAll(@RequestBody Set<ContractorVo> contractorVos) {
 		Set<ContractorVo> vos = contractorService.saveAll(contractorVos);
 		return ResponseEntity.ok(ApiResponseVoWrapper.success(vos != null ? "Record saved" : "Record not saved",
-				contractorVos, getMetadata(vos)));
+				contractorVos, metadataGenerator.getMetadata(vos)));
 	}
 
 	@GetMapping("{id}")
@@ -53,9 +53,11 @@ public class ContractorController {
 	public ResponseEntity<ApiResponseVo<ContractorVo>> getById(@PathVariable Long id) {
 		ContractorVo vo = contractorService.getById(id);
 		if (vo != null) {
-			return ResponseEntity.ok(ApiResponseVoWrapper.success("Record found", vo, getMetadata(vo)));
+			return ResponseEntity
+					.ok(ApiResponseVoWrapper.success("Record found", vo, metadataGenerator.getMetadata(vo)));
 		} else {
-			return ResponseEntity.ok(ApiResponseVoWrapper.success("Record not found", null, getMetadata(vo)));
+			return ResponseEntity
+					.ok(ApiResponseVoWrapper.success("Record not found", null, metadataGenerator.getMetadata(vo)));
 		}
 	}
 
@@ -64,7 +66,8 @@ public class ContractorController {
 	public ResponseEntity<ApiResponseVo<ContractorVo>> update(@PathVariable Long id, @PathVariable boolean status) {
 		ContractorVo vo = contractorService.updateStatus(id, status);
 		return ResponseEntity.ok(ApiResponseVoWrapper.success(
-				(vo != null && vo.getId() != null) ? "Status updated" : "Status not updated", vo, getMetadata(vo)));
+				(vo != null && vo.getId() != null) ? "Status updated" : "Status not updated", vo,
+				metadataGenerator.getMetadata(vo)));
 	}
 
 	@GetMapping
@@ -74,20 +77,7 @@ public class ContractorController {
 			@RequestParam(required = false) String mobile, @RequestParam(required = false) String email,
 			@RequestParam(required = false) String gstNo, @RequestParam(required = false) Boolean active) {
 		List<ContractorVo> vos = contractorService.find(contractorName, city, state, mobile, email, gstNo, active);
-		return ResponseEntity.ok(ApiResponseVoWrapper.success("Records fetched", vos, getMetadata(vos)));
-	}
-
-	private Map<String, String> getMetadata(ContractorVo vo) {
-		Map<String, String> metadata = new HashMap<>();
-		metadata.put("recordcount", String.valueOf(vo != null && vo.getId() != null ? 1 : 0));
-		return metadata;
-	}
-
-	private Map<String, String> getMetadata(Collection<ContractorVo> collection) {
-		Map<String, String> metadata = new HashMap<>();
-		metadata.put("recordcount",
-				String.valueOf(collection != null && !collection.isEmpty() ? collection.size() : 0));
-		return metadata;
+		return ResponseEntity.ok(ApiResponseVoWrapper.success("Records fetched", vos, metadataGenerator.getMetadata(vos)));
 	}
 
 }
