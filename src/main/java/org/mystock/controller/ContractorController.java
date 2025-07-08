@@ -21,11 +21,13 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/v2/contractors/")
 @AllArgsConstructor
 @Tag(name = "Contractor Operations", description = "CRUD Operations for contractor record")
+@Slf4j
 public class ContractorController {
 
 	private final ContractorService contractorService;
@@ -33,41 +35,68 @@ public class ContractorController {
 
 	@PostMapping
 	@Operation(summary = "Create or update contractor")
-	public ResponseEntity<ApiResponseVo<ContractorVo>> save(@RequestBody ContractorVo contractorVo) {
-		ContractorVo vo = contractorService.save(contractorVo);
-		return ResponseEntity
-				.ok(ApiResponseVoWrapper.success(vo != null && vo.getId() != null ? "Record saved" : "Record not saved",
-						vo, metadataGenerator.getMetadata(vo)));
+	public ResponseEntity<ApiResponseVo<ContractorVo>> save(@RequestBody ContractorVo vo) {
+		log.info("Received request for save :: {}", vo);
+		ContractorVo saved = contractorService.save(vo);
+		if (saved != null && saved.getId() != null) {
+			log.info("Record saved :: {}", saved);
+			return ResponseEntity
+					.ok(ApiResponseVoWrapper.success("Record saved", saved, metadataGenerator.getMetadata(saved)));
+		} else {
+			log.error("Record not saved :: {}", vo);
+			return ResponseEntity
+					.ok(ApiResponseVoWrapper.success("Record not saved", vo, metadataGenerator.getMetadata(saved)));
+		}
 	}
 
 	@PostMapping("bulk")
 	@Operation(summary = "Create or update multiple contractors")
-	public ResponseEntity<ApiResponseVo<Set<ContractorVo>>> saveAll(@RequestBody Set<ContractorVo> contractorVos) {
-		Set<ContractorVo> vos = contractorService.saveAll(contractorVos);
-		return ResponseEntity.ok(ApiResponseVoWrapper.success(vos != null ? "Record saved" : "Record not saved",
-				contractorVos, metadataGenerator.getMetadata(vos)));
+	public ResponseEntity<ApiResponseVo<Set<ContractorVo>>> saveAll(@RequestBody Set<ContractorVo> vos) {
+		log.info("Received request for bulk save :: {}", vos);
+		Set<ContractorVo> saved = contractorService.saveAll(vos);
+		if (saved != null && !saved.isEmpty()) {
+			log.info("Record saved :: {}", saved);
+			return ResponseEntity
+					.ok(ApiResponseVoWrapper.success("Record saved", saved, metadataGenerator.getMetadata(saved)));
+		} else {
+			log.error("Record not saved :: {}", vos);
+			return ResponseEntity
+					.ok(ApiResponseVoWrapper.success("Record not saved", vos, metadataGenerator.getMetadata(saved)));
+		}
 	}
 
 	@GetMapping("{id}")
 	@Operation(summary = "Get contractor by ID")
 	public ResponseEntity<ApiResponseVo<ContractorVo>> getById(@PathVariable Long id) {
-		ContractorVo vo = contractorService.getById(id);
-		if (vo != null) {
+		log.info("Received request for find :: id - {}", id);
+		ContractorVo found = contractorService.getById(id);
+		if (found != null) {
+			log.info("Record found :: {}", found);
 			return ResponseEntity
-					.ok(ApiResponseVoWrapper.success("Record found", vo, metadataGenerator.getMetadata(vo)));
+					.ok(ApiResponseVoWrapper.success("Record found", found, metadataGenerator.getMetadata(found)));
 		} else {
+			log.info("Record not found :: {}", found);
 			return ResponseEntity
-					.ok(ApiResponseVoWrapper.success("Record not found", null, metadataGenerator.getMetadata(vo)));
+					.ok(ApiResponseVoWrapper.success("Record not found", found, metadataGenerator.getMetadata(found)));
 		}
 	}
 
 	@PatchMapping("{id}/{status}")
 	@Operation(summary = "Update status by ID", description = "Update contractor status by ID")
 	public ResponseEntity<ApiResponseVo<ContractorVo>> update(@PathVariable Long id, @PathVariable boolean status) {
-		ContractorVo vo = contractorService.updateStatus(id, status);
-		return ResponseEntity.ok(ApiResponseVoWrapper.success(
-				(vo != null && vo.getId() != null) ? "Status updated" : "Status not updated", vo,
-				metadataGenerator.getMetadata(vo)));
+
+		log.info("Received request for status update :: {} - {}", id, status);
+		ContractorVo saved = contractorService.updateStatus(id, status);
+		if (saved != null && saved.getId() != null) {
+			log.info("Record updated :: {}", saved);
+			return ResponseEntity
+					.ok(ApiResponseVoWrapper.success("Record updated", saved, metadataGenerator.getMetadata(saved)));
+		} else {
+			log.error("Record not saved :: {}", saved);
+			return ResponseEntity.ok(
+					ApiResponseVoWrapper.success("Record not updated", saved, metadataGenerator.getMetadata(saved)));
+		}
+
 	}
 
 	@GetMapping
@@ -76,8 +105,17 @@ public class ContractorController {
 			@RequestParam(required = false) String city, @RequestParam(required = false) String state,
 			@RequestParam(required = false) String mobile, @RequestParam(required = false) String email,
 			@RequestParam(required = false) String gstNo, @RequestParam(required = false) Boolean active) {
-		List<ContractorVo> vos = contractorService.find(contractorName, city, state, mobile, email, gstNo, active);
-		return ResponseEntity.ok(ApiResponseVoWrapper.success("Records fetched", vos, metadataGenerator.getMetadata(vos)));
+
+		log.info(
+				"Received request for find :: contractorName {}, city {}, state {}, mobile {}, email {}, gstNo {}, active {}",
+				contractorName, city, state, mobile, email, gstNo, active);
+
+		List<ContractorVo> found = contractorService.find(contractorName, city, state, mobile, email, gstNo, active);
+		log.info("Record {} :: {}", found != null && !found.isEmpty() ? "found" : "not found", found);
+
+		return ResponseEntity
+				.ok(ApiResponseVoWrapper.success("Record fetched", found, metadataGenerator.getMetadata(found)));
+
 	}
 
 }

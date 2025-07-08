@@ -1,6 +1,7 @@
 package org.mystock.service.impl;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -42,6 +43,18 @@ public class ColorServiceImpl implements ColorService {
 	@Override
 	public ColorVo getById(Long id) {
 		return colorRepository.findById(id).map(colorMapper::toVo).orElse(null);
+	}
+
+	@Override
+	public ColorVo updateStatus(Long id, boolean status) {
+		Optional<ColorEntity> optional = colorRepository.findById(id);
+		if (optional.isPresent()) {
+			ColorEntity existing = optional.get();
+			existing.setActive(status);
+			ColorEntity updated = colorRepository.save(existing);
+			return colorMapper.toVo(updated);
+		}
+		return null;
 	}
 
 }

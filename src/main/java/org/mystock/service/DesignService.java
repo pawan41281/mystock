@@ -17,7 +17,7 @@ public interface DesignService {
 
 	public List<DesignVo> getAll();
 
-	public DesignVo update(Long id, boolean status);
+	public DesignVo updateStatus(Long id, boolean status);
 
 
 }

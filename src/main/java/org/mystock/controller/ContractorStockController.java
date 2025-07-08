@@ -2,6 +2,7 @@ package org.mystock.controller;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.mystock.apiresponse.ApiResponseVo;
 import org.mystock.apiresponse.ApiResponseVoWrapper;
@@ -20,11 +21,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/v2/contractorstocks/")
 @AllArgsConstructor
 @Tag(name = "Contractor Stock Operations", description = "CRUD Operations for contractor stock record")
+@Slf4j
 public class ContractorStockController {
 
 	private final ContractorStockService contractorStockService;
@@ -33,13 +36,16 @@ public class ContractorStockController {
 	@GetMapping("/{id}")
 	@Operation(summary = "Get by ID", description = "Get a contractor stock item by ID")
 	public ResponseEntity<ApiResponseVo<ContractorStockVo>> getById(@PathVariable Long id) {
-		ContractorStockVo vo = contractorStockService.getById(id);
-		if (vo != null) {
+		log.info("Received request for find :: id - {}", id);
+		ContractorStockVo found = contractorStockService.getById(id);
+		if (found != null) {
+			log.info("Record found :: {}", found);
 			return ResponseEntity
-					.ok(ApiResponseVoWrapper.success("Record found", vo, metadataGenerator.getMetadata(vo)));
+					.ok(ApiResponseVoWrapper.success("Record found", found, metadataGenerator.getMetadata(found)));
 		} else {
+			log.info("Record not found :: {}", found);
 			return ResponseEntity
-					.ok(ApiResponseVoWrapper.success("Record not found", vo, metadataGenerator.getMetadata(vo)));
+					.ok(ApiResponseVoWrapper.success("Record not found", found, metadataGenerator.getMetadata(found)));
 		}
 	}
 
@@ -53,31 +59,35 @@ public class ContractorStockController {
 
 	@PostMapping
 	@Operation(summary = "Save Operation", description = "Set opening balance of contractor stock item")
-	public ResponseEntity<ApiResponseVo<ContractorStockVo>> save(
-			@Valid @RequestBody ContractorStockVo contractorStockVo) {
-		ContractorStockVo vo = contractorStockService.addOpenningBalance(contractorStockVo.getContractor().getId(),
-				contractorStockVo.getDesign().getId(), contractorStockVo.getColor().getId(),
-				contractorStockVo.getBalance());
-		if (vo != null) {
-			return ResponseEntity.ok(ApiResponseVoWrapper.success("Record updated successfully", contractorStockVo,
-					metadataGenerator.getMetadata(vo)));
+	public ResponseEntity<ApiResponseVo<ContractorStockVo>> save(@Valid @RequestBody ContractorStockVo vo) {
+		log.info("Received request for save :: {}", vo);
+		ContractorStockVo saved = contractorStockService.addOpenningBalance(vo.getContractor().getId(),
+				vo.getDesign().getId(), vo.getColor().getId(), vo.getBalance());
+		if (saved != null && saved.getId() != null) {
+			log.info("Record saved :: {}", saved);
+			return ResponseEntity
+					.ok(ApiResponseVoWrapper.success("Record saved", saved, metadataGenerator.getMetadata(saved)));
 		} else {
-			return ResponseEntity.ok(ApiResponseVoWrapper.success("Record not updated", contractorStockVo,
-					metadataGenerator.getMetadata(vo)));
+			log.error("Record not saved :: {}", vo);
+			return ResponseEntity
+					.ok(ApiResponseVoWrapper.success("Record not saved", vo, metadataGenerator.getMetadata(saved)));
 		}
 	}
 
 	@PostMapping("bulk")
 	@Operation(summary = "Save Operation", description = "Set opening balance of multiple contractor stock items")
 	public ResponseEntity<ApiResponseVo<List<ContractorStockVo>>> saveAll(
-			@Valid @RequestBody Set<ContractorStockVo> contractorStockVos) {
-		List<ContractorStockVo> vos = contractorStockService.addOpenningBalance(contractorStockVos);
-		if (vos != null) {
-			return ResponseEntity.ok(ApiResponseVoWrapper.success("Record updated successfully", vos,
-					metadataGenerator.getMetadata(vos)));
+			@Valid @RequestBody Set<ContractorStockVo> vos) {
+		log.info("Received request for bulk save :: {}", vos);
+		List<ContractorStockVo> saved = contractorStockService.addOpenningBalance(vos);
+		if (saved != null && !saved.isEmpty()) {
+			log.info("Record saved :: {}", saved);
+			return ResponseEntity.ok(ApiResponseVoWrapper.success("Record updated successfully", saved,
+					metadataGenerator.getMetadata(saved)));
 		} else {
-			return ResponseEntity
-					.ok(ApiResponseVoWrapper.success("Record not updated", vos, metadataGenerator.getMetadata(vos)));
+			log.error("Record not saved :: {}", vos);
+			return ResponseEntity.ok(ApiResponseVoWrapper.success("Record not updated",
+					vos.stream().collect(Collectors.toList()), metadataGenerator.getMetadata(saved)));
 		}
 	}
 

@@ -19,6 +19,7 @@ import lombok.ToString;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class ContractorChalaanVo {
 
 	private Long id;

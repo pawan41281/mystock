@@ -15,4 +15,6 @@ public interface ColorService {
 
 	public ColorVo getById(Long id);
 
+	public ColorVo updateStatus(Long id, boolean status);
+
 }

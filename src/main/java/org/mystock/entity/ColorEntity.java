@@ -27,6 +27,9 @@ public class ColorEntity {
 	
 	@Column(name = "colorname", length = 100, nullable = false)
 	private String colorName;
+
+	@Column(name = "active", columnDefinition = "BOOLEAN DEFAULT TRUE", nullable = false)
+	private boolean active;
 	
 	@Column(name = "createdon", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
     private LocalDateTime createdOn;

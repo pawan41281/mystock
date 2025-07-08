@@ -20,11 +20,13 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/v2/designs/")
 @AllArgsConstructor
 @Tag(name = "Design Operations", description = "CRUD Operations for design record")
+@Slf4j
 public class DesignController {
 
 	private final DesignService designService;
@@ -32,61 +34,84 @@ public class DesignController {
 
 	@PostMapping
 	@Operation(summary = "Save operation", description = "Save design record")
-	public ResponseEntity<ApiResponseVo<DesignVo>> save(@RequestBody DesignVo designVo) {
-		DesignVo vo = designService.save(designVo);
-		if (vo != null) {
+	public ResponseEntity<ApiResponseVo<DesignVo>> save(@RequestBody DesignVo vo) {
+		log.info("Received request for save :: {}", vo);
+		DesignVo saved = designService.save(vo);
+		if (saved != null && saved.getId() != null) {
+			log.info("Record saved :: {}", saved);
 			return ResponseEntity
-					.ok(ApiResponseVoWrapper.success("Record saved", vo, metadataGenerator.getMetadata(vo)));
+					.ok(ApiResponseVoWrapper.success("Record saved", saved, metadataGenerator.getMetadata(saved)));
 		} else {
+			log.error("Record not saved :: {}", vo);
 			return ResponseEntity
-					.ok(ApiResponseVoWrapper.success("Record saved", designVo, metadataGenerator.getMetadata(vo)));
+					.ok(ApiResponseVoWrapper.success("Record not saved", vo, metadataGenerator.getMetadata(saved)));
 		}
 	}
 
 	@PostMapping("bulk")
 	@Operation(summary = "Bulk Save operation", description = "Save design record")
-	public ResponseEntity<ApiResponseVo<Set<DesignVo>>> save(@RequestBody Set<DesignVo> designVos) {
-		Set<DesignVo> vos = designService.saveAll(designVos);
-		return ResponseEntity.ok(ApiResponseVoWrapper.success(vos != null ? "Record saved" : "Record not saved", vos,
-				metadataGenerator.getMetadata(vos)));
+	public ResponseEntity<ApiResponseVo<Set<DesignVo>>> save(@RequestBody Set<DesignVo> vos) {
+		log.info("Received request for bulk save :: {}", vos);
+		Set<DesignVo> saved = designService.saveAll(vos);
+		if (saved != null && !saved.isEmpty()) {
+			log.info("Record saved :: {}", saved);
+			return ResponseEntity
+					.ok(ApiResponseVoWrapper.success("Record saved", saved, metadataGenerator.getMetadata(saved)));
+		} else {
+			log.error("Record not saved :: {}", vos);
+			return ResponseEntity
+					.ok(ApiResponseVoWrapper.success("Record not saved", vos, metadataGenerator.getMetadata(saved)));
+		}
 	}
 
 	@GetMapping("/{id}")
 	@Operation(summary = "Get by ID", description = "Get a design by its ID")
 	public ResponseEntity<ApiResponseVo<DesignVo>> getById(@PathVariable Long id) {
-		DesignVo vo = designService.getById(id);
-		if (vo != null) {
+		log.info("Received request for find :: id - {}", id);
+		DesignVo found = designService.getById(id);
+		if (found != null) {
+			log.info("Record found :: {}", found);
 			return ResponseEntity
-					.ok(ApiResponseVoWrapper.success("Record found", vo, metadataGenerator.getMetadata(vo)));
+					.ok(ApiResponseVoWrapper.success("Record found", found, metadataGenerator.getMetadata(found)));
 		} else {
+			log.info("Record not found :: {}", found);
 			return ResponseEntity
-					.ok(ApiResponseVoWrapper.success("Record not found", vo, metadataGenerator.getMetadata(vo)));
+					.ok(ApiResponseVoWrapper.success("Record not found", found, metadataGenerator.getMetadata(found)));
 		}
+
 	}
 
 	@GetMapping
 	@Operation(summary = "Get All", description = "Get all designs")
 	public ResponseEntity<ApiResponseVo<List<DesignVo>>> getAll() {
-		List<DesignVo> vos = designService.getAll();
-		return ResponseEntity
-				.ok(ApiResponseVoWrapper.success("Records fetched", vos, metadataGenerator.getMetadata(vos)));
-	}
-
-	@GetMapping("status/{status}")
-	@Operation(summary = "Get All By Status", description = "Get all designs by status")
-	public ResponseEntity<ApiResponseVo<List<DesignVo>>> getByStatus(@PathVariable boolean status) {
-		List<DesignVo> vos = designService.getByStatus(status);
-		return ResponseEntity
-				.ok(ApiResponseVoWrapper.success("Records fetched", vos, metadataGenerator.getMetadata(vos)));
+		log.info("Received request for find all");
+		List<DesignVo> found = designService.getAll();
+		if (found != null && !found.isEmpty()) {
+			log.info("Record found :: {}", found);
+			return ResponseEntity
+					.ok(ApiResponseVoWrapper.success("Record saved", found, metadataGenerator.getMetadata(found)));
+		} else {
+			log.error("Record not found :: {}", found);
+			return ResponseEntity
+					.ok(ApiResponseVoWrapper.success("Record not saved", found, metadataGenerator.getMetadata(found)));
+		}
 	}
 
 	@PatchMapping("/{id}/{status}")
 	@Operation(summary = "Update status by ID", description = "Update design record status by ID")
 	public ResponseEntity<ApiResponseVo<DesignVo>> update(@PathVariable Long id, @PathVariable boolean status) {
-		DesignVo vo = designService.update(id, status);
-		return ResponseEntity.ok(ApiResponseVoWrapper.success(
-				(vo != null && vo.getId() != null) ? "Status updated" : "Status not updated", vo,
-				metadataGenerator.getMetadata(vo)));
+		log.info("Received request for status update :: {} - {}", id, status);
+		DesignVo saved = designService.updateStatus(id, status);
+		if (saved != null && saved.getId() != null) {
+			log.info("Record updated :: {}", saved);
+			return ResponseEntity
+					.ok(ApiResponseVoWrapper.success("Record updated", saved, metadataGenerator.getMetadata(saved)));
+		} else {
+			log.error("Record not saved :: {}", saved);
+			return ResponseEntity.ok(
+					ApiResponseVoWrapper.success("Record not updated", saved, metadataGenerator.getMetadata(saved)));
+		}
+
 	}
 
 }

@@ -23,11 +23,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/v2/contractorchalaans/")
 @AllArgsConstructor
 @Tag(name = "Contractor Chalaan Operations", description = "CRUD Operations for contractor chalaan record")
+@Slf4j
 public class ContractorChalaanController {
 
 	private final ContractorChalaanService service;
@@ -37,11 +39,14 @@ public class ContractorChalaanController {
 	@PostMapping
 	@Operation(summary = "Create contractor chalaan", description = "Chalaan Type :: I - Issue, R - Received")
 	public ResponseEntity<ApiResponseVo<ContractorChalaanVo>> save(@Valid @RequestBody ContractorChalaanVo vo) {
+		log.info("Received request for save :: {}", vo);
 		ContractorChalaanVo saved = service.save(vo);
 		if (saved != null && saved.getId() != null) {
+			log.info("Record saved :: {}", saved);
 			return ResponseEntity.status(201)
 					.body(ApiResponseVoWrapper.success("Record saved", saved, metadataGenerator.getMetadata(saved)));
 		} else {
+			log.error("Record not saved :: {}", vo);
 			return ResponseEntity.status(500).body(
 					ApiResponseVoWrapper.success("Record not saved", saved, metadataGenerator.getMetadata(saved)));
 		}
@@ -50,11 +55,14 @@ public class ContractorChalaanController {
 	@PostMapping("bulk")
 	@Operation(summary = "Create multiple contractor chalaan", description = "Chalaan Type :: I - Issue, R - Received")
 	public ResponseEntity<ApiResponseVo<Set<ContractorChalaanVo>>> saveAll(@RequestBody Set<ContractorChalaanVo> vos) {
+		log.info("Received request for bulk save :: {}", vos);
 		Set<ContractorChalaanVo> saved = service.saveAll(vos);
-		if (saved != null) {
+		if (saved != null && !saved.isEmpty()) {
+			log.info("Record saved :: {}", saved);
 			return ResponseEntity.status(201)
 					.body(ApiResponseVoWrapper.success("Record saved", saved, metadataGenerator.getMetadata(saved)));
 		} else {
+			log.error("Record not saved :: {}", vos);
 			return ResponseEntity.status(500).body(
 					ApiResponseVoWrapper.success("Record not saved", saved, metadataGenerator.getMetadata(saved)));
 		}
@@ -63,11 +71,14 @@ public class ContractorChalaanController {
 	@DeleteMapping("{id}")
 	@Operation(summary = "Delete contractor chalaan")
 	public ResponseEntity<ApiResponseVo<ContractorChalaanVo>> delete(@PathVariable Long id) {
+		log.info("Received request for delete :: chalaanId {}", id);
 		ContractorChalaanVo deleted = service.deleteById(id);
 		if (deleted != null) {
+			log.info("Record deleted :: {}", deleted);
 			return ResponseEntity.status(201).body(
 					ApiResponseVoWrapper.success("Record deleted", deleted, metadataGenerator.getMetadata(deleted)));
 		} else {
+			log.error("Record not deleted :: chalaanId {}", id);
 			return ResponseEntity.status(500).body(ApiResponseVoWrapper.success("Record not deleted", deleted,
 					metadataGenerator.getMetadata(deleted)));
 		}
@@ -76,9 +87,17 @@ public class ContractorChalaanController {
 	@GetMapping("{id}")
 	@Operation(summary = "Get all chalaans by Id")
 	public ResponseEntity<ApiResponseVo<ContractorChalaanVo>> findById(@PathVariable Long id) {
+		log.info("Received request for find :: id - {}", id);
 		ContractorChalaanVo found = service.findById(id);
-		return ResponseEntity
-				.ok(ApiResponseVoWrapper.success("Record fetched", found, metadataGenerator.getMetadata(found)));
+		if (found != null) {
+			log.info("Record found :: {}", found);
+			return ResponseEntity
+					.ok(ApiResponseVoWrapper.success("Record found", found, metadataGenerator.getMetadata(found)));
+		} else {
+			log.info("Record not found :: {}", found);
+			return ResponseEntity
+					.ok(ApiResponseVoWrapper.success("Record not found", found, metadataGenerator.getMetadata(found)));
+		}
 	}
 
 	@GetMapping
@@ -89,8 +108,14 @@ public class ContractorChalaanController {
 			@RequestParam(value = "fromchalaandate", required = false) Long fromChalaanDate,
 			@RequestParam(value = "tochalaandate", required = false) Long toChalaanDate,
 			@RequestParam(value = "chalaantype", required = false) String chalaanType) {
+		log.info(
+				"Received request for find :: chalaanNumber {}, contractorId {}, fromChalaanDate {}, toChalaanDate {}, chalaanType {}",
+				chalaanNumber, contractorId, fromChalaanDate, toChalaanDate, chalaanType);
+
 		List<ContractorChalaanVo> found = service.findAll(chalaanNumber, contractorId,
 				dateTimeUtil.toLocalDate(fromChalaanDate), dateTimeUtil.toLocalDate(toChalaanDate), chalaanType);
+		log.info("Record {} :: {}", found != null && !found.isEmpty() ? "found" : "not found", found);
+
 		return ResponseEntity
 				.ok(ApiResponseVoWrapper.success("Record fetched", found, metadataGenerator.getMetadata(found)));
 	}

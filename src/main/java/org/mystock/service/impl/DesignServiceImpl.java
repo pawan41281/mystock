@@ -54,7 +54,7 @@ public class DesignServiceImpl implements DesignService {
 	}
 
 	@Override
-	public DesignVo update(Long id, boolean status) {
+	public DesignVo updateStatus(Long id, boolean status) {
 		Optional<DesignEntity> optional = designRepository.findById(id);
 		if (optional.isPresent()) {
 			DesignEntity existing = optional.get();
