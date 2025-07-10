@@ -1,4 +1,4 @@
-package org.mystock.security;
+package org.mystock.entity;
 
 import java.util.Set;
 

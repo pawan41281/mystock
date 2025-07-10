@@ -1,9 +1,14 @@
-package org.mystock.security;
+package org.mystock.mapper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
+import org.mystock.entity.RoleEntity;
+import org.mystock.entity.UserEntity;
+import org.mystock.vo.SignupRequestVo;
+import org.mystock.vo.UserVo;
 import org.springframework.stereotype.Component;
 
 import lombok.AllArgsConstructor;
@@ -17,6 +22,18 @@ public class UserMapper {
 	public UserVo convert(UserEntity user) {
 		UserVo userVo = modelMapper.map(user, UserVo.class);
 		return userVo;
+	}
+
+	public SignupRequestVo toSignupRequestVo(UserEntity user) {
+		SignupRequestVo signupRequestVo = new SignupRequestVo();
+		signupRequestVo.setEmail(user.getEmail());
+		signupRequestVo.setLocked(user.isLocked());
+		signupRequestVo.setMobile(user.getMobile());
+		signupRequestVo.setName(user.getName());
+		signupRequestVo.setPassword(null);
+		signupRequestVo.setUsername(user.getUserName());
+		signupRequestVo.setRoles(user.getRoles().stream().map(RoleEntity::getName).collect(Collectors.toSet()));
+		return signupRequestVo;
 	}
 
 	public UserEntity convert(UserVo userVo) {

@@ -9,11 +9,18 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
+import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
+@Slf4j
 public class JwtTokenProvider {
 
 	@Value("${app.jwt-secret}")
@@ -22,35 +29,43 @@ public class JwtTokenProvider {
 	@Value("${app.jwt-expiration-milliseconds}")
 	private long jwtExpirationDate;
 
+	private Key key;
+
+	@PostConstruct
+	public void init() {
+		this.key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
+	}
+
+	private Key getSigningKey() {
+		return this.key;
+	}
+
 	// generate JWT token
 	public String generateToken(Authentication authentication) {
 
-		String username = authentication.getName();
+		Date now = new Date();
+		Date expiry = new Date(now.getTime() + jwtExpirationDate);
 
-		Date currentDate = new Date();
+		return Jwts.builder().subject(authentication.getName()).claim("roles", authentication.getAuthorities())
+				.issuedAt(now).expiration(expiry).signWith(getSigningKey()).compact();
 
-		Date expireDate = new Date(currentDate.getTime() + jwtExpirationDate);
-
-		String token = Jwts.builder().subject(username).issuedAt(new Date()).expiration(expireDate).signWith(key())
-				.compact();
-
-		return token;
-	}
-
-	private Key key() {
-		return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
 	}
 
 	// get username from JWT token
 	public String getUsername(String token) {
 
-		return Jwts.parser().verifyWith((SecretKey) key()).build().parseSignedClaims(token).getPayload().getSubject();
+		return Jwts.parser().verifyWith((SecretKey) getSigningKey()).build().parseSignedClaims(token).getPayload()
+				.getSubject();
 	}
 
-	// validate JWT token
 	public boolean validateToken(String token) {
-		Jwts.parser().verifyWith((SecretKey) key()).build().parse(token);
-		return true;
-
+		try {
+			Jwts.parser().verifyWith((SecretKey) key).build().parseSignedClaims(token);
+			return true;
+		} catch (ExpiredJwtException | MalformedJwtException | UnsupportedJwtException | SignatureException
+				| IllegalArgumentException ex) {
+			log.warn("JWT validation failed: {}", ex.getMessage());
+			return false;
+		}
 	}
 }

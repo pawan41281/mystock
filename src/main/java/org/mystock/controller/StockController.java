@@ -26,7 +26,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/v2/stocks/")
+@RequestMapping("/v1/stocks/")
 @AllArgsConstructor
 @Tag(name = "Stock Operations", description = "CRUD Operations for stock record")
 @Slf4j

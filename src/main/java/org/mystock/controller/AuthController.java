@@ -5,10 +5,10 @@ import org.mystock.apiresponse.ApiResponseVoWrapper;
 import org.mystock.exception.ResourceAlreadyExistsException;
 import org.mystock.exception.ResourceNotFoundException;
 import org.mystock.exception.UnableToProcessException;
-import org.mystock.security.AuthService;
 import org.mystock.security.JwtAuthResponse;
-import org.mystock.security.LoginVo;
-import org.mystock.security.SignupRequestVo;
+import org.mystock.service.AuthService;
+import org.mystock.vo.LoginVo;
+import org.mystock.vo.SignupRequestVo;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/v2/auth")
+@RequestMapping("/v1/auth")
 @Tag(name = "Auth Management", description = "Authority operations")
 @Slf4j
 public class AuthController {

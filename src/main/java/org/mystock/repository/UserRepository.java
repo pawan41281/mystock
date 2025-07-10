@@ -1,7 +1,8 @@
-package org.mystock.security;
+package org.mystock.repository;
 
 import java.util.List;
 
+import org.mystock.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

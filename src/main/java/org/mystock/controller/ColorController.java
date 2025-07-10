@@ -25,7 +25,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/v2/colors/")
+@RequestMapping("/v1/colors/")
 @AllArgsConstructor
 @Tag(name = "Color Operations", description = "CRUD Operations for color record")
 @Slf4j

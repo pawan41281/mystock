@@ -28,7 +28,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/v2/clientchalaans/")
+@RequestMapping("/v1/clientchalaans/")
 @AllArgsConstructor
 @Tag(name = "Client Chalaan Operations", description = "CRUD Operations for client chalaan record")
 @Slf4j

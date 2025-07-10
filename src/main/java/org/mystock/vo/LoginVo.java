@@ -1,4 +1,4 @@
-package org.mystock.security;
+package org.mystock.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

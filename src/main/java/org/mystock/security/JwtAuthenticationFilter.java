@@ -43,10 +43,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 		// Validate Token
 		if (StringUtils.hasText(token) && jwtTokenProvider.validateToken(token)) {
-			// get username from token
-			String username = jwtTokenProvider.getUsername(token);
+			
+			// get userName from token
+			String userName = jwtTokenProvider.getUsername(token);
 
-			UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+			UserDetails userDetails = userDetailsService.loadUserByUsername(userName);
 
 			UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
 					userDetails, null, userDetails.getAuthorities());
@@ -60,38 +61,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	}
 	
 	
-//	@Override
-//    protected void doFilterInternal(HttpServletRequest request,
-//                                    HttpServletResponse response,
-//                                    FilterChain filterChain) throws ServletException, IOException {
-//        String authHeader = request.getHeader("Authorization");
-//        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-//            HttpHeaders headers = new HttpHeaders();
-//            headers.set("Authorization", authHeader);
-//            HttpEntity<String> entity = new HttpEntity<>(headers);
-//
-//            try {
-//                ResponseEntity<String> res = restTemplate.exchange(
-//                        "http://localhost:9999/api/auth/validate",
-//                        HttpMethod.POST,
-//                        entity,
-//                        String.class
-//                );
-//
-//                if (res.getStatusCode() == HttpStatus.OK) {
-//                    filterChain.doFilter(request, response);
-//                    return;
-//                }
-//            } catch (Exception ex) {
-//                response.setStatus(HttpStatus.UNAUTHORIZED.value());
-//                return;
-//            }
-//        }
-//
-//        //response.setStatus(HttpStatus.UNAUTHORIZED.value());
-//        filterChain.doFilter(request, response);
-//    }
-
 	private String getTokenFromRequest(HttpServletRequest request) {
 		
 		String authHeader = request.getHeader("Authorization");

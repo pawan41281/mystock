@@ -1,4 +1,4 @@
-package org.mystock.security;
+package org.mystock.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

@@ -9,8 +9,8 @@ import org.mystock.apiresponse.ApiResponseVoWrapper;
 import org.mystock.exception.ResourceAlreadyExistsException;
 import org.mystock.exception.ResourceNotFoundException;
 import org.mystock.exception.UnableToProcessException;
-import org.mystock.security.UserService;
-import org.mystock.security.UserVo;
+import org.mystock.service.UserService;
+import org.mystock.vo.UserVo;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,7 +29,7 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/v2/users")
+@RequestMapping("/v1/users")
 @Tag(name = "User Operations", description = "User operations")
 @SecurityRequirement(name = "Bearer Authentication")
 public class UserController {
