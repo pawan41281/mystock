@@ -9,6 +9,7 @@ import org.mystock.service.DesignService;
 import org.mystock.util.MetadataGenerator;
 import org.mystock.vo.DesignVo;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 @AllArgsConstructor
 @Tag(name = "Design Operations", description = "CRUD Operations for design record")
 @Slf4j
+@SecurityRequirement(name = "Bearer Authentication")
 public class DesignController {
 
 	private final DesignService designService;
@@ -34,6 +37,7 @@ public class DesignController {
 
 	@PostMapping
 	@Operation(summary = "Save operation", description = "Save design record")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<DesignVo>> save(@RequestBody DesignVo vo) {
 		log.info("Received request for save :: {}", vo);
 		DesignVo saved = designService.save(vo);
@@ -50,6 +54,7 @@ public class DesignController {
 
 	@PostMapping("bulk")
 	@Operation(summary = "Bulk Save operation", description = "Save design record")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<Set<DesignVo>>> save(@RequestBody Set<DesignVo> vos) {
 		log.info("Received request for bulk save :: {}", vos);
 		Set<DesignVo> saved = designService.saveAll(vos);
@@ -66,6 +71,7 @@ public class DesignController {
 
 	@GetMapping("/{id}")
 	@Operation(summary = "Get by ID", description = "Get a design by its ID")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<DesignVo>> getById(@PathVariable Long id) {
 		log.info("Received request for find :: id - {}", id);
 		DesignVo found = designService.getById(id);
@@ -83,6 +89,7 @@ public class DesignController {
 
 	@GetMapping
 	@Operation(summary = "Get All", description = "Get all designs")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<List<DesignVo>>> getAll() {
 		log.info("Received request for find all");
 		List<DesignVo> found = designService.getAll();
@@ -99,6 +106,7 @@ public class DesignController {
 
 	@PatchMapping("/{id}/{status}")
 	@Operation(summary = "Update status by ID", description = "Update design record status by ID")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<DesignVo>> update(@PathVariable Long id, @PathVariable boolean status) {
 		log.info("Received request for status update :: {} - {}", id, status);
 		DesignVo saved = designService.updateStatus(id, status);

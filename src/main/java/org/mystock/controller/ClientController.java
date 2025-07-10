@@ -9,6 +9,7 @@ import org.mystock.service.ClientService;
 import org.mystock.util.MetadataGenerator;
 import org.mystock.vo.ClientVo;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 @AllArgsConstructor
 @Tag(name = "Client Operations", description = "CRUD Operations for client record")
 @Slf4j
+@SecurityRequirement(name = "Bearer Authentication")
 public class ClientController {
 
 	private final ClientService clientService;
@@ -35,6 +38,7 @@ public class ClientController {
 
 	@PostMapping
 	@Operation(summary = "Create or update client")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<ClientVo>> save(@RequestBody ClientVo vo) {
 		log.info("Received request for save :: {}", vo);
 		ClientVo saved = clientService.save(vo);
@@ -51,6 +55,7 @@ public class ClientController {
 
 	@PostMapping("bulk")
 	@Operation(summary = "Create or update multiple clients")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<Set<ClientVo>>> saveAll(@RequestBody Set<ClientVo> vos) {
 		log.info("Received request for bulk save :: {}", vos);
 		Set<ClientVo> saved = clientService.saveAll(vos);
@@ -67,6 +72,7 @@ public class ClientController {
 
 	@GetMapping("{id}")
 	@Operation(summary = "Get client by ID")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<ClientVo>> getById(@PathVariable Long id) {
 		log.info("Received request for find :: id - {}", id);
 		ClientVo found = clientService.getById(id);
@@ -83,6 +89,7 @@ public class ClientController {
 
 	@PatchMapping("{id}/{status}")
 	@Operation(summary = "Update status by ID", description = "Update client status by ID")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<ClientVo>> update(@PathVariable Long id, @PathVariable boolean status) {
 
 		log.info("Received request for status update :: {} - {}", id, status);
@@ -101,6 +108,7 @@ public class ClientController {
 
 	@GetMapping
 	@Operation(summary = "Get client by Name and City and State and Email and Mobile and GST Number and Status")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<List<ClientVo>>> find(@RequestParam(required = false) String clientName,
 			@RequestParam(required = false) String city, @RequestParam(required = false) String state,
 			@RequestParam(required = false) String mobile, @RequestParam(required = false) String email,

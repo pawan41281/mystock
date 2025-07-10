@@ -10,6 +10,7 @@ import org.mystock.util.DateTimeUtil;
 import org.mystock.util.MetadataGenerator;
 import org.mystock.vo.ContractorChalaanVo;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -30,6 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 @AllArgsConstructor
 @Tag(name = "Contractor Chalaan Operations", description = "CRUD Operations for contractor chalaan record")
 @Slf4j
+@SecurityRequirement(name = "Bearer Authentication")
 public class ContractorChalaanController {
 
 	private final ContractorChalaanService service;
@@ -38,6 +41,7 @@ public class ContractorChalaanController {
 
 	@PostMapping
 	@Operation(summary = "Create contractor chalaan", description = "Chalaan Type :: I - Issue, R - Received")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<ContractorChalaanVo>> save(@Valid @RequestBody ContractorChalaanVo vo) {
 		log.info("Received request for save :: {}", vo);
 		ContractorChalaanVo saved = service.save(vo);
@@ -54,6 +58,7 @@ public class ContractorChalaanController {
 
 	@PostMapping("bulk")
 	@Operation(summary = "Create multiple contractor chalaan", description = "Chalaan Type :: I - Issue, R - Received")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<Set<ContractorChalaanVo>>> saveAll(@RequestBody Set<ContractorChalaanVo> vos) {
 		log.info("Received request for bulk save :: {}", vos);
 		Set<ContractorChalaanVo> saved = service.saveAll(vos);
@@ -70,6 +75,7 @@ public class ContractorChalaanController {
 
 	@DeleteMapping("{id}")
 	@Operation(summary = "Delete contractor chalaan")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<ContractorChalaanVo>> delete(@PathVariable Long id) {
 		log.info("Received request for delete :: chalaanId {}", id);
 		ContractorChalaanVo deleted = service.deleteById(id);
@@ -102,6 +108,7 @@ public class ContractorChalaanController {
 
 	@GetMapping
 	@Operation(summary = "Get all chalaans by chalaan number and chalaan date range and chalaan type and contractor Id", description = "Chalaan Type :: I - Issue, R - Received")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<List<ContractorChalaanVo>>> find(
 			@RequestParam(value = "chalaannumber", required = false) Integer chalaanNumber,
 			@RequestParam(value = "contractorid", required = false) Long contractorId,

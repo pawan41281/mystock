@@ -10,6 +10,7 @@ import org.mystock.service.StockService;
 import org.mystock.util.MetadataGenerator;
 import org.mystock.vo.StockVo;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -28,6 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 @AllArgsConstructor
 @Tag(name = "Stock Operations", description = "CRUD Operations for stock record")
 @Slf4j
+@SecurityRequirement(name = "Bearer Authentication")
 public class StockController {
 
 	private final StockService stockService;
@@ -35,6 +38,7 @@ public class StockController {
 
 	@GetMapping("/{id}")
 	@Operation(summary = "Get by ID", description = "Get a stock item by ID")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<StockVo>> getById(@PathVariable Long id) {
 		log.info("Received request for find :: id - {}", id);
 		StockVo found = stockService.getById(id);
@@ -51,6 +55,7 @@ public class StockController {
 
 	@GetMapping
 	@Operation(summary = "Get All", description = "Get all stock item balance")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<List<StockVo>>> getAll() {
 		List<StockVo> vos = stockService.getAll();
 		return ResponseEntity
@@ -59,6 +64,7 @@ public class StockController {
 
 	@PostMapping
 	@Operation(summary = "Save Operation", description = "Set opening balance of stock item")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<StockVo>> save(@Valid @RequestBody StockVo vo) {
 		log.info("Received request for save :: {}", vo);
 		StockVo saved = stockService.addOpenningBalance(vo.getDesign().getId(), vo.getColor().getId(), vo.getBalance());
@@ -75,6 +81,7 @@ public class StockController {
 
 	@PostMapping("bulk")
 	@Operation(summary = "Save Operation", description = "Set opening balance of multiple stock items")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<List<StockVo>>> saveAll(@Valid @RequestBody Set<StockVo> vos) {
 		log.info("Received request for bulk save :: {}", vos);
 		List<StockVo> saved = stockService.addOpenningBalance(vos);

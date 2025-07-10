@@ -9,6 +9,7 @@ import org.mystock.service.ColorService;
 import org.mystock.util.MetadataGenerator;
 import org.mystock.vo.ColorVo;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 @AllArgsConstructor
 @Tag(name = "Color Operations", description = "CRUD Operations for color record")
 @Slf4j
+@SecurityRequirement(name = "Bearer Authentication")
 public class ColorController {
 
 	private final ColorService colorService;
@@ -34,6 +37,7 @@ public class ColorController {
 
 	@PostMapping
 	@Operation(summary = "Create or update color")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<ColorVo>> save(@RequestBody ColorVo vo) {
 		log.info("Received request for save :: {}", vo);
 		ColorVo saved = colorService.save(vo);
@@ -50,6 +54,7 @@ public class ColorController {
 
 	@PostMapping("bulk")
 	@Operation(summary = "Create or update multiple colors")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<Set<ColorVo>>> saveAll(@RequestBody Set<ColorVo> vos) {
 		log.info("Received request for bulk save :: {}", vos);
 		Set<ColorVo> saved = colorService.saveAll(vos);
@@ -82,6 +87,7 @@ public class ColorController {
 
 	@GetMapping
 	@Operation(summary = "Get All", description = "Get all colors")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<List<ColorVo>>> getAll() {
 		log.info("Received request for find all");
 		List<ColorVo> found = colorService.getAll();
@@ -98,6 +104,7 @@ public class ColorController {
 
 	@PatchMapping("/{id}/{status}")
 	@Operation(summary = "Update status by ID", description = "Update design record status by ID")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<ColorVo>> update(@PathVariable Long id, @PathVariable boolean status) {
 		log.info("Received request for status update :: {} - {}", id, status);
 		ColorVo saved = colorService.updateStatus(id, status);
