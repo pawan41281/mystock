@@ -25,7 +25,7 @@ public class ColorEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@Column(name = "colorname", length = 100, nullable = false)
+	@Column(name = "colorname", length = 30, nullable = false)
 	private String colorName;
 
 	@Column(name = "active", columnDefinition = "BOOLEAN DEFAULT TRUE", nullable = false)
