@@ -25,7 +25,7 @@ public class DesignEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "design", length = 8, nullable = false)
+	@Column(name = "design", length = 20, nullable = false)
 	private String designName;
 
 	@Column(name = "description", length = 100)

@@ -46,7 +46,7 @@ public class ClientEntity {
 	@Column(name = "mobile", length = 10)
 	private String mobile;
 
-	@Column(name = "gstno", length = 10)
+	@Column(name = "gstno", length = 15)
 	private String gstNo;
 
 	@Column(name = "active", columnDefinition = "BOOLEAN DEFAULT TRUE", nullable = false)
