@@ -4,12 +4,16 @@ import org.mystock.exception.InvalidCredentialsException;
 import org.mystock.exception.ResourceAlreadyExistsException;
 import org.mystock.exception.ResourceNotFoundException;
 import org.mystock.exception.UnableToProcessException;
+import org.mystock.security.JwtAuthResponse;
 import org.mystock.vo.LoginVo;
 import org.mystock.vo.SignupRequestVo;
+import org.springframework.security.core.Authentication;
 
 public interface AuthService {
 
 	public String login(LoginVo loginVo) throws InvalidCredentialsException;
+
+	public JwtAuthResponse refreshToken(String refreshToken);
 
 	public boolean validateToken(String token);
 
@@ -19,4 +23,6 @@ public interface AuthService {
 
 	public SignupRequestVo save(SignupRequestVo signUpRequestVo)
 			throws UnableToProcessException, ResourceAlreadyExistsException;
+
+	public Authentication authenticate(LoginVo loginVo) throws InvalidCredentialsException;
 }

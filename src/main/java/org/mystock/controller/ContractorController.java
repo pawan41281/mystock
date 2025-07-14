@@ -44,12 +44,12 @@ public class ContractorController {
 		ContractorVo saved = contractorService.save(vo);
 		if (saved != null && saved.getId() != null) {
 			log.info("Record saved :: {}", saved);
-			return ResponseEntity
-					.ok(ApiResponseVoWrapper.success("Record saved", saved, metadataGenerator.getMetadata(saved)));
+			return ResponseEntity.status(201)
+					.body(ApiResponseVoWrapper.success("Record saved", saved, metadataGenerator.getMetadata(saved)));
 		} else {
 			log.error("Record not saved :: {}", vo);
-			return ResponseEntity
-					.ok(ApiResponseVoWrapper.success("Record not saved", vo, metadataGenerator.getMetadata(saved)));
+			return ResponseEntity.status(500)
+					.body(ApiResponseVoWrapper.success("Record not saved", vo, metadataGenerator.getMetadata(saved)));
 		}
 	}
 
@@ -61,12 +61,12 @@ public class ContractorController {
 		Set<ContractorVo> saved = contractorService.saveAll(vos);
 		if (saved != null && !saved.isEmpty()) {
 			log.info("Record saved :: {}", saved);
-			return ResponseEntity
-					.ok(ApiResponseVoWrapper.success("Record saved", saved, metadataGenerator.getMetadata(saved)));
+			return ResponseEntity.status(201)
+					.body(ApiResponseVoWrapper.success("Record saved", saved, metadataGenerator.getMetadata(saved)));
 		} else {
 			log.error("Record not saved :: {}", vos);
-			return ResponseEntity
-					.ok(ApiResponseVoWrapper.success("Record not saved", vos, metadataGenerator.getMetadata(saved)));
+			return ResponseEntity.status(500)
+					.body(ApiResponseVoWrapper.success("Record not saved", vos, metadataGenerator.getMetadata(saved)));
 		}
 	}
 
@@ -78,12 +78,12 @@ public class ContractorController {
 		ContractorVo found = contractorService.getById(id);
 		if (found != null) {
 			log.info("Record found :: {}", found);
-			return ResponseEntity
-					.ok(ApiResponseVoWrapper.success("Record found", found, metadataGenerator.getMetadata(found)));
+			return ResponseEntity.status(201)
+					.body(ApiResponseVoWrapper.success("Record found", found, metadataGenerator.getMetadata(found)));
 		} else {
 			log.info("Record not found :: {}", found);
-			return ResponseEntity
-					.ok(ApiResponseVoWrapper.success("Record not found", found, metadataGenerator.getMetadata(found)));
+			return ResponseEntity.status(201).body(
+					ApiResponseVoWrapper.success("Record not found", found, metadataGenerator.getMetadata(found)));
 		}
 	}
 
@@ -96,11 +96,11 @@ public class ContractorController {
 		ContractorVo saved = contractorService.updateStatus(id, status);
 		if (saved != null && saved.getId() != null) {
 			log.info("Record updated :: {}", saved);
-			return ResponseEntity
-					.ok(ApiResponseVoWrapper.success("Record updated", saved, metadataGenerator.getMetadata(saved)));
+			return ResponseEntity.status(201)
+					.body(ApiResponseVoWrapper.success("Record updated", saved, metadataGenerator.getMetadata(saved)));
 		} else {
 			log.error("Record not saved :: {}", saved);
-			return ResponseEntity.ok(
+			return ResponseEntity.status(201).body(
 					ApiResponseVoWrapper.success("Record not updated", saved, metadataGenerator.getMetadata(saved)));
 		}
 
@@ -121,8 +121,8 @@ public class ContractorController {
 		List<ContractorVo> found = contractorService.find(contractorName, city, state, mobile, email, gstNo, active);
 		log.info("Record {} :: {}", found != null && !found.isEmpty() ? "found" : "not found", found);
 
-		return ResponseEntity
-				.ok(ApiResponseVoWrapper.success("Record fetched", found, metadataGenerator.getMetadata(found)));
+		return ResponseEntity.status(201)
+				.body(ApiResponseVoWrapper.success("Record fetched", found, metadataGenerator.getMetadata(found)));
 
 	}
 

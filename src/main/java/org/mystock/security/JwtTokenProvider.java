@@ -29,6 +29,9 @@ public class JwtTokenProvider {
 	@Value("${app.jwt-expiration-milliseconds}")
 	private long jwtExpirationDate;
 
+	@Value("${app.jwt-refresh-expiration-milliseconds}")
+	private long jwtRefreshExpirationDate;
+
 	private Key key;
 
 	@PostConstruct
@@ -51,8 +54,34 @@ public class JwtTokenProvider {
 
 	}
 
+	// Generate Access Token
+	public String generateAccessToken(Authentication authentication) {
+		return generateToken(authentication.getName(), authentication.getAuthorities().toString(), jwtExpirationDate,
+				"access");
+	}
+
+	// Generate Refresh Token
+	public String generateRefreshToken(Authentication authentication) {
+		return generateToken(authentication.getName(), null, jwtRefreshExpirationDate, "refresh");
+	}
+
+	// Internal method to generate token
+	private String generateToken(String username, String roles, long expiration, String tokenType) {
+		Date now = new Date();
+		Date expiry = new Date(now.getTime() + expiration);
+
+		var builder = Jwts.builder().subject(username).issuedAt(now).expiration(expiry).claim("type", tokenType);
+		// distinguish between access/refresh
+
+		if (roles != null) {
+			builder.claim("roles", roles);
+		}
+
+		return builder.signWith(getSigningKey()).compact();
+	}
+
 	// get username from JWT token
-	public String getUsername(String token) {
+	public String getUsernameFromToken(String token) {
 
 		return Jwts.parser().verifyWith((SecretKey) getSigningKey()).build().parseSignedClaims(token).getPayload()
 				.getSubject();
@@ -67,5 +96,10 @@ public class JwtTokenProvider {
 			log.warn("JWT validation failed: {}", ex.getMessage());
 			return false;
 		}
+	}
+
+	public String getTokenType(String token) {
+		return Jwts.parser().verifyWith((SecretKey) key).build().parseSignedClaims(token).getPayload().get("type",
+				String.class);
 	}
 }

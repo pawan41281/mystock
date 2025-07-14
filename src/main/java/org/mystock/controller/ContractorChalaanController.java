@@ -56,6 +56,23 @@ public class ContractorChalaanController {
 		}
 	}
 
+//	@PostMapping
+//	@Operation(summary = "Create contractor chalaan", description = "Chalaan Type :: I - Issue, R - Received")
+//	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+//	public ResponseEntity<ApiResponseVo<ContractorChalaanVo>> save(@Valid @RequestBody ContractorChalaanRequestVo vo) {
+//		log.info("Received request for save :: {}", vo);
+//		ContractorChalaanVo saved = service.save(vo);
+//		if (saved != null && saved.getId() != null) {
+//			log.info("Record saved :: {}", saved);
+//			return ResponseEntity.status(201)
+//					.body(ApiResponseVoWrapper.success("Record saved", saved, metadataGenerator.getMetadata(saved)));
+//		} else {
+//			log.error("Record not saved :: {}", vo);
+//			return ResponseEntity.status(500).body(
+//					ApiResponseVoWrapper.success("Record not saved", saved, metadataGenerator.getMetadata(saved)));
+//		}
+//	}
+
 	@PostMapping("bulk")
 	@Operation(summary = "Create multiple contractor chalaan", description = "Chalaan Type :: I - Issue, R - Received")
 	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
@@ -97,12 +114,12 @@ public class ContractorChalaanController {
 		ContractorChalaanVo found = service.findById(id);
 		if (found != null) {
 			log.info("Record found :: {}", found);
-			return ResponseEntity
-					.ok(ApiResponseVoWrapper.success("Record found", found, metadataGenerator.getMetadata(found)));
+			return ResponseEntity.status(201)
+					.body(ApiResponseVoWrapper.success("Record found", found, metadataGenerator.getMetadata(found)));
 		} else {
 			log.info("Record not found :: {}", found);
-			return ResponseEntity
-					.ok(ApiResponseVoWrapper.success("Record not found", found, metadataGenerator.getMetadata(found)));
+			return ResponseEntity.status(201).body(
+					ApiResponseVoWrapper.success("Record not found", found, metadataGenerator.getMetadata(found)));
 		}
 	}
 
@@ -123,8 +140,8 @@ public class ContractorChalaanController {
 				dateTimeUtil.toLocalDate(fromChalaanDate), dateTimeUtil.toLocalDate(toChalaanDate), chalaanType);
 		log.info("Record {} :: {}", found != null && !found.isEmpty() ? "found" : "not found", found);
 
-		return ResponseEntity
-				.ok(ApiResponseVoWrapper.success("Record fetched", found, metadataGenerator.getMetadata(found)));
+		return ResponseEntity.status(201)
+				.body(ApiResponseVoWrapper.success("Record fetched", found, metadataGenerator.getMetadata(found)));
 	}
 
 }

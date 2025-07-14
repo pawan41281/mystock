@@ -44,12 +44,12 @@ public class ContractorStockController {
 		ContractorStockVo found = contractorStockService.getById(id);
 		if (found != null) {
 			log.info("Record found :: {}", found);
-			return ResponseEntity
-					.ok(ApiResponseVoWrapper.success("Record found", found, metadataGenerator.getMetadata(found)));
+			return ResponseEntity.status(201)
+					.body(ApiResponseVoWrapper.success("Record found", found, metadataGenerator.getMetadata(found)));
 		} else {
 			log.info("Record not found :: {}", found);
-			return ResponseEntity
-					.ok(ApiResponseVoWrapper.success("Record not found", found, metadataGenerator.getMetadata(found)));
+			return ResponseEntity.status(201).body(
+					ApiResponseVoWrapper.success("Record not found", found, metadataGenerator.getMetadata(found)));
 		}
 	}
 
@@ -58,8 +58,8 @@ public class ContractorStockController {
 	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<List<ContractorStockVo>>> getAll() {
 		List<ContractorStockVo> vos = contractorStockService.getAll();
-		return ResponseEntity
-				.ok(ApiResponseVoWrapper.success("Records fetched", vos, metadataGenerator.getMetadata(vos)));
+		return ResponseEntity.status(201)
+				.body(ApiResponseVoWrapper.success("Records fetched", vos, metadataGenerator.getMetadata(vos)));
 	}
 
 	@PostMapping
@@ -71,12 +71,12 @@ public class ContractorStockController {
 				vo.getDesign().getId(), vo.getColor().getId(), vo.getBalance());
 		if (saved != null && saved.getId() != null) {
 			log.info("Record saved :: {}", saved);
-			return ResponseEntity
-					.ok(ApiResponseVoWrapper.success("Record saved", saved, metadataGenerator.getMetadata(saved)));
+			return ResponseEntity.status(201)
+					.body(ApiResponseVoWrapper.success("Record saved", saved, metadataGenerator.getMetadata(saved)));
 		} else {
 			log.error("Record not saved :: {}", vo);
-			return ResponseEntity
-					.ok(ApiResponseVoWrapper.success("Record not saved", vo, metadataGenerator.getMetadata(saved)));
+			return ResponseEntity.status(500)
+					.body(ApiResponseVoWrapper.success("Record not saved", vo, metadataGenerator.getMetadata(saved)));
 		}
 	}
 
@@ -89,11 +89,11 @@ public class ContractorStockController {
 		List<ContractorStockVo> saved = contractorStockService.addOpenningBalance(vos);
 		if (saved != null && !saved.isEmpty()) {
 			log.info("Record saved :: {}", saved);
-			return ResponseEntity.ok(ApiResponseVoWrapper.success("Record updated successfully", saved,
+			return ResponseEntity.status(201).body(ApiResponseVoWrapper.success("Record updated successfully", saved,
 					metadataGenerator.getMetadata(saved)));
 		} else {
 			log.error("Record not saved :: {}", vos);
-			return ResponseEntity.ok(ApiResponseVoWrapper.success("Record not updated",
+			return ResponseEntity.status(500).body(ApiResponseVoWrapper.success("Record not updated",
 					vos.stream().collect(Collectors.toList()), metadataGenerator.getMetadata(saved)));
 		}
 	}

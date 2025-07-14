@@ -45,9 +45,10 @@ public class UserController {
 
 		try {
 			userVo = userService.save(userVo);
-			return ResponseEntity.ok(ApiResponseVoWrapper.success("User created successfully", userVo, null));
+			return ResponseEntity.status(201)
+					.body(ApiResponseVoWrapper.success("User created successfully", userVo, null));
 		} catch (Exception e) {
-			return ResponseEntity.ok(ApiResponseVoWrapper.failure(e.getMessage(), userVo, null));
+			return ResponseEntity.status(500).body(ApiResponseVoWrapper.failure(e.getMessage(), userVo, null));
 		}
 	}
 
@@ -60,9 +61,10 @@ public class UserController {
 
 		try {
 			userVo = userService.update(userVo);
-			return ResponseEntity.ok(ApiResponseVoWrapper.success("User updated successfully", userVo, null));
+			return ResponseEntity.status(201)
+					.body(ApiResponseVoWrapper.success("User updated successfully", userVo, null));
 		} catch (Exception e) {
-			return ResponseEntity.ok(ApiResponseVoWrapper.failure(e.getMessage(), userVo, null));
+			return ResponseEntity.status(500).body(ApiResponseVoWrapper.failure(e.getMessage(), userVo, null));
 		}
 
 	}
@@ -77,9 +79,9 @@ public class UserController {
 		try {
 			UserVo userVo = userService.findByUserName(username);
 			String message = userVo != null ? "User exist" : "User not exists";
-			return ResponseEntity.ok(ApiResponseVoWrapper.success(message, userVo, null));
+			return ResponseEntity.status(201).body(ApiResponseVoWrapper.success(message, userVo, null));
 		} catch (Exception e) {
-			return ResponseEntity.ok(ApiResponseVoWrapper.failure(e.getMessage(), null, null));
+			return ResponseEntity.status(201).body(ApiResponseVoWrapper.failure(e.getMessage(), null, null));
 		}
 
 	}
@@ -94,9 +96,9 @@ public class UserController {
 		try {
 			UserVo userVo = userService.findByEmail(email);
 			String message = userVo != null ? "User exist" : "User not exists";
-			return ResponseEntity.ok(ApiResponseVoWrapper.success(message, userVo, null));
+			return ResponseEntity.status(201).body(ApiResponseVoWrapper.success(message, userVo, null));
 		} catch (Exception e) {
-			return ResponseEntity.ok(ApiResponseVoWrapper.failure(e.getMessage(), null, null));
+			return ResponseEntity.status(201).body(ApiResponseVoWrapper.failure(e.getMessage(), null, null));
 		}
 
 	}
@@ -112,12 +114,12 @@ public class UserController {
 		List<UserVo> list = null;
 		try {
 			list = userService.findByUserNameOrEmailOrMobile(userName, email, mobile);
-			String message = list != null && list.size() > 0 ? "Users exist" : "Users not exists";
+			String message = list != null && !list.isEmpty() ? "Users exist" : "Users not exists";
 			Map<String, String> metadata = new HashMap<>();
 			metadata.put("recordcount", String.valueOf(list.size()));
-			return ResponseEntity.ok(ApiResponseVoWrapper.success(message, list, metadata));
+			return ResponseEntity.status(201).body(ApiResponseVoWrapper.success(message, list, metadata));
 		} catch (Exception e) {
-			return ResponseEntity.ok(ApiResponseVoWrapper.failure(e.getMessage(), list, null));
+			return ResponseEntity.status(201).body(ApiResponseVoWrapper.failure(e.getMessage(), list, null));
 		}
 
 	}

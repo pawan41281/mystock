@@ -1,5 +1,6 @@
 package org.mystock.service.impl;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -12,6 +13,7 @@ import org.mystock.exception.UnableToProcessException;
 import org.mystock.mapper.UserMapper;
 import org.mystock.repository.RoleRepository;
 import org.mystock.repository.UserRepository;
+import org.mystock.security.JwtAuthResponse;
 import org.mystock.security.JwtTokenProvider;
 import org.mystock.service.AuthService;
 import org.mystock.vo.LoginVo;
@@ -39,7 +41,7 @@ public class AuthServiceImpl implements AuthService {
 	private final RoleRepository roleRepository;
 
 	private final PasswordEncoder encoder;
-	
+
 	private final UserMapper userMapper;
 
 	@Override
@@ -49,10 +51,31 @@ public class AuthServiceImpl implements AuthService {
 					loginVo.getUserName(), loginVo.getPassword());
 			Authentication authentication = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
 			SecurityContextHolder.getContext().setAuthentication(authentication);
-			return jwtTokenProvider.generateToken(authentication);
+//			return jwtTokenProvider.generateToken(authentication);
+			return jwtTokenProvider.generateAccessToken(authentication);
 		} catch (BadCredentialsException e) {
 			throw new InvalidCredentialsException("Invalid username or password.");
 		}
+	}
+
+	@Override
+	public JwtAuthResponse refreshToken(String refreshToken) {
+		if (!jwtTokenProvider.validateToken(refreshToken)) {
+			throw new InvalidCredentialsException("Invalid or expired refresh token");
+		}
+		String username = jwtTokenProvider.getUsernameFromToken(refreshToken);
+
+		// Rebuild authentication object manually (optional, based on your token
+		// content)
+		Authentication authentication = new UsernamePasswordAuthenticationToken(username, null, new ArrayList<>());
+
+		String newAccessToken = jwtTokenProvider.generateAccessToken(authentication);
+		String newRefreshToken = jwtTokenProvider.generateRefreshToken(authentication);
+
+		JwtAuthResponse jwtAuthResponse = new JwtAuthResponse();
+		jwtAuthResponse.setAccessToken(newAccessToken);
+		jwtAuthResponse.setRefreshToken(newRefreshToken);
+		return jwtAuthResponse;
 	}
 
 	@Override
@@ -96,7 +119,7 @@ public class AuthServiceImpl implements AuthService {
 			Set<RoleEntity> roles = resolveRoles(strRoles);
 			user.setRoles(roles);
 			UserEntity saved = userRepository.save(user);
-			return saved.getId() != null?userMapper.toSignupRequestVo(saved):signUpRequestVo;
+			return saved.getId() != null ? userMapper.toSignupRequestVo(saved) : signUpRequestVo;
 		} catch (Exception e) {
 			throw new UnableToProcessException(e.getMessage());
 		}
@@ -117,7 +140,7 @@ public class AuthServiceImpl implements AuthService {
 				}
 				roles.add(userRole);
 			}
-		} 
+		}
 //		else {
 //			RoleEntity userRole = roleRepository.findByName("ROLE_USER");
 //			if (userRole == null) {
@@ -127,5 +150,17 @@ public class AuthServiceImpl implements AuthService {
 //		}
 		return roles;
 	}
+	
+	@Override
+	public Authentication authenticate(LoginVo loginVo) throws InvalidCredentialsException {
+	    try {
+	        UsernamePasswordAuthenticationToken authRequest =
+	                new UsernamePasswordAuthenticationToken(loginVo.getUserName(), loginVo.getPassword());
+	        return authenticationManager.authenticate(authRequest);
+	    } catch (BadCredentialsException e) {
+	        throw new InvalidCredentialsException("Invalid username or password.");
+	    }
+	}
+
 
 }

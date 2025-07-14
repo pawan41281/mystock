@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
 
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -25,7 +24,6 @@ public class ContractorChalaanVo {
 	private Long id;
 	
 	@NotNull
-	@Min(0)
 	private Integer chalaanNumber;
 	
 	@NotNull
