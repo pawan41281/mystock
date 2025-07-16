@@ -10,14 +10,14 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.mystock.entity.ClientChalaanEntity;
-import org.mystock.mapper.ClientChalaanMapper;
+import org.mystock.entity.ClientChallanEntity;
+import org.mystock.mapper.ClientChallanMapper;
 import org.mystock.mapper.ColorMapper;
 import org.mystock.mapper.DesignMapper;
-import org.mystock.repository.ClientChalaanRepository;
-import org.mystock.service.ClientChalaanService;
+import org.mystock.repository.ClientChallanRepository;
+import org.mystock.service.ClientChallanService;
 import org.mystock.service.StockService;
-import org.mystock.vo.ClientChalaanVo;
+import org.mystock.vo.ClientChallanVo;
 import org.mystock.vo.StockVo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,26 +26,26 @@ import lombok.AllArgsConstructor;
 
 @Service
 @AllArgsConstructor
-public class ClientChalaanServiceImpl implements ClientChalaanService {
+public class ClientChallanServiceImpl implements ClientChallanService {
 
-	private final ClientChalaanRepository repository;
-	private final ClientChalaanMapper mapper;
+	private final ClientChallanRepository repository;
+	private final ClientChallanMapper mapper;
 	private final StockService stockService;
 	private final DesignMapper designMapper;
 	private final ColorMapper colorMapper;
 
 	@Transactional
 	@Override
-	public ClientChalaanVo save(ClientChalaanVo vo) {
+	public ClientChallanVo save(ClientChallanVo vo) {
 
-		ClientChalaanEntity entity = mapper.toEntity(vo);
-		final ClientChalaanEntity savedEntity = repository.save(entity);
+		ClientChallanEntity entity = mapper.toEntity(vo);
+		final ClientChallanEntity savedEntity = repository.save(entity);
 
 		if (entity.getId() != null) {
-			savedEntity.getChalaanItems().stream().forEach(item -> {
+			savedEntity.getChallanItems().stream().forEach(item -> {
 
-				final boolean isReceive = "R".equalsIgnoreCase(savedEntity.getChalaanType());
-				final boolean isIssue = "I".equalsIgnoreCase(savedEntity.getChalaanType());
+				final boolean isReceive = "R".equalsIgnoreCase(savedEntity.getChallanType());
+				final boolean isIssue = "I".equalsIgnoreCase(savedEntity.getChallanType());
 
 				if (isReceive) {
 
@@ -94,18 +94,18 @@ public class ClientChalaanServiceImpl implements ClientChalaanService {
 
 	@Transactional
 	@Override
-	public Set<ClientChalaanVo> saveAll(Set<ClientChalaanVo> vos) {
+	public Set<ClientChallanVo> saveAll(Set<ClientChallanVo> vos) {
 		if (vos == null || vos.isEmpty())
 			return Collections.emptySet();
-		List<ClientChalaanEntity> entities = vos.stream().map(mapper::toEntity).collect(Collectors.toList());
+		List<ClientChallanEntity> entities = vos.stream().map(mapper::toEntity).collect(Collectors.toList());
 		entities = repository.saveAll(entities);
 		entities.parallelStream().forEach(savedEntity -> {
 
 			if (savedEntity.getId() != null) {
-				savedEntity.getChalaanItems().stream().forEach(item -> {
+				savedEntity.getChallanItems().stream().forEach(item -> {
 
-					final boolean isReceive = "R".equalsIgnoreCase(savedEntity.getChalaanType());
-					final boolean isIssue = "I".equalsIgnoreCase(savedEntity.getChalaanType());
+					final boolean isReceive = "R".equalsIgnoreCase(savedEntity.getChallanType());
+					final boolean isIssue = "I".equalsIgnoreCase(savedEntity.getChallanType());
 
 					if (isReceive) {
 
@@ -156,28 +156,28 @@ public class ClientChalaanServiceImpl implements ClientChalaanService {
 	}
 
 	@Override
-	public ClientChalaanVo findById(Long id) {
-		ClientChalaanVo clientChalaanVo = null;
-		Optional<ClientChalaanEntity> optional = repository.findById(id);
+	public ClientChallanVo findById(Long id) {
+		ClientChallanVo clientChallanVo = null;
+		Optional<ClientChallanEntity> optional = repository.findById(id);
 		if (optional.isPresent()) {
-			clientChalaanVo = mapper.toVo(optional.get());
+			clientChallanVo = mapper.toVo(optional.get());
 		}
-		return clientChalaanVo;
+		return clientChallanVo;
 	}
 
 	@Transactional
-	public ClientChalaanVo deleteById(Long id) {
+	public ClientChallanVo deleteById(Long id) {
 
-		ClientChalaanVo chalaanVo = findById(id);
-		if (chalaanVo != null) {
-			final ClientChalaanEntity entity = mapper.toEntity(chalaanVo);
+		ClientChallanVo challanVo = findById(id);
+		if (challanVo != null) {
+			final ClientChallanEntity entity = mapper.toEntity(challanVo);
 			repository.deleteById(id);
 
 			if (entity.getId() != null) {
-				entity.getChalaanItems().stream().forEach(item -> {
+				entity.getChallanItems().stream().forEach(item -> {
 
-					final boolean isReceive = "R".equalsIgnoreCase(entity.getChalaanType());
-					final boolean isIssue = "I".equalsIgnoreCase(entity.getChalaanType());
+					final boolean isReceive = "R".equalsIgnoreCase(entity.getChallanType());
+					final boolean isIssue = "I".equalsIgnoreCase(entity.getChallanType());
 
 					if (isReceive) {
 
@@ -215,14 +215,15 @@ public class ClientChalaanServiceImpl implements ClientChalaanService {
 				});
 			}
 		}
-		return chalaanVo;
+		return challanVo;
 	}
 
 	@Override
-	public List<ClientChalaanVo> findAll(Integer chalaanNumber, Long clientId, LocalDate fromChalaanDate,
-			LocalDate toChalaanDate, String chalaanType) {
+	public List<ClientChallanVo> findAll(Integer challanNumber, Long clientId, LocalDate fromChallanDate,
+			LocalDate toChallanDate, String challanType) {
 
-		return repository.findAll(chalaanNumber, clientId, fromChalaanDate, toChalaanDate, chalaanType).stream()
+		return repository.findAll(challanNumber, clientId, fromChallanDate, toChallanDate,
+				challanType).stream()
 				.map(mapper::toVo).collect(Collectors.toList());
 	}
 

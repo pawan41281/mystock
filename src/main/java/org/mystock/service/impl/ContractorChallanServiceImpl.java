@@ -10,16 +10,16 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.mystock.entity.ContractorChalaanEntity;
+import org.mystock.entity.ContractorChallanEntity;
 import org.mystock.mapper.ColorMapper;
-import org.mystock.mapper.ContractorChalaanMapper;
+import org.mystock.mapper.ContractorChallanMapper;
 import org.mystock.mapper.ContractorMapper;
 import org.mystock.mapper.DesignMapper;
-import org.mystock.repository.ContractorChalaanRepository;
-import org.mystock.service.ContractorChalaanService;
+import org.mystock.repository.ContractorChallanRepository;
+import org.mystock.service.ContractorChallanService;
 import org.mystock.service.ContractorStockService;
 import org.mystock.service.StockService;
-import org.mystock.vo.ContractorChalaanVo;
+import org.mystock.vo.ContractorChallanVo;
 import org.mystock.vo.ContractorStockVo;
 import org.mystock.vo.StockVo;
 import org.springframework.stereotype.Service;
@@ -29,17 +29,17 @@ import lombok.AllArgsConstructor;
 
 @Service
 @AllArgsConstructor
-public class ContractorChalaanServiceImpl implements ContractorChalaanService {
+public class ContractorChallanServiceImpl implements ContractorChallanService {
 
-	private final ContractorChalaanRepository repository;
-	private final ContractorChalaanMapper mapper;
-	
+	private final ContractorChallanRepository repository;
+	private final ContractorChallanMapper mapper;
+
 	private final ContractorStockService contractorStockService;
 	private final StockService stockService;
 //	private final ColorService colorService;
 //	private final DesignService designService;
 //	private final ContractorService contractorService;
-	
+
 	private final DesignMapper designMapper;
 	private final ContractorMapper contractorMapper;
 	private final ColorMapper colorMapper;
@@ -48,24 +48,24 @@ public class ContractorChalaanServiceImpl implements ContractorChalaanService {
 
 	@Transactional
 	@Override
-	public ContractorChalaanVo save(ContractorChalaanVo vo) {
+	public ContractorChallanVo save(ContractorChallanVo vo) {
 
-		ContractorChalaanEntity entity = mapper.toEntity(vo);
-		final ContractorChalaanEntity savedEntity = repository.save(entity);
+		ContractorChallanEntity entity = mapper.toEntity(vo);
+		final ContractorChallanEntity savedEntity = repository.save(entity);
 
 		if (entity.getId() != null) {
-			savedEntity.getChalaanItems().stream().forEach(item -> {
+			savedEntity.getChallanItems().stream().forEach(item -> {
 
-				final boolean isReceive = "R".equalsIgnoreCase(savedEntity.getChalaanType());
-				final boolean isIssue = "I".equalsIgnoreCase(savedEntity.getChalaanType());
+				final boolean isReceive = "R".equalsIgnoreCase(savedEntity.getChallanType());
+				final boolean isIssue = "I".equalsIgnoreCase(savedEntity.getChallanType());
 
 				if (isReceive) {
-					
-					//received finished products from contractor
-					
-					//update the available stock balance :: increase the available stock :: plus entry in StockInfo
-					StockVo stockVo = stockService.get(item.getDesign().getId(),
-							item.getColor().getId());
+
+					// received finished products from contractor
+
+					// update the available stock balance :: increase the available stock :: plus
+					// entry in StockInfo
+					StockVo stockVo = stockService.get(item.getDesign().getId(), item.getColor().getId());
 					if (stockVo != null) {
 						stockService.increaseBalance(item.getDesign().getId(), item.getColor().getId(),
 								item.getQuantity());
@@ -77,29 +77,30 @@ public class ContractorChalaanServiceImpl implements ContractorChalaanService {
 						stockVo.setUpdatedOn(toLocalDateTime(System.currentTimeMillis()));
 						stockService.save(stockVo);
 					}
-					
 
-					//update the contractor stock balance :: reduce the pending balance of contractor :: minus entry in ContractorStockInfo
-					ContractorStockVo contractorStockVo = contractorStockService.get(entity.getContractor().getId(), item.getDesign().getId(),
-							item.getColor().getId());
+					// update the contractor stock balance :: reduce the pending balance of
+					// contractor :: minus entry in ContractorStockInfo
+					ContractorStockVo contractorStockVo = contractorStockService.get(entity.getContractor().getId(),
+							item.getDesign().getId(), item.getColor().getId());
 					if (contractorStockVo != null) {
-						contractorStockService.reduceBalance(entity.getContractor().getId(), item.getDesign().getId(), item.getColor().getId(),
-								item.getQuantity());
+						contractorStockService.reduceBalance(entity.getContractor().getId(), item.getDesign().getId(),
+								item.getColor().getId(), item.getQuantity());
 					} else {
 						contractorStockVo = new ContractorStockVo();
 						contractorStockVo.setContractor(contractorMapper.toVo(entity.getContractor()));
 						contractorStockVo.setDesign(designMapper.toVo(item.getDesign()));
 						contractorStockVo.setColor(colorMapper.toVo(item.getColor()));
-						contractorStockVo.setBalance((0-item.getQuantity()));
+						contractorStockVo.setBalance((0 - item.getQuantity()));
 						contractorStockVo.setUpdatedOn(toLocalDateTime(System.currentTimeMillis()));
 						contractorStockService.save(contractorStockVo);
 					}
 				}
 				if (isIssue) {
-					
-					//issuing raw material to contractor
-					
-					//update the available stock balance :: no impact on available stock :: no entry in StockInfo
+
+					// issuing raw material to contractor
+
+					// update the available stock balance :: no impact on available stock :: no
+					// entry in StockInfo
 //					StockVo stockVo = stockService.get(item.getDesign().getId(),
 //							item.getColor().getId());
 //					if (stockVo != null) {
@@ -113,15 +114,14 @@ public class ContractorChalaanServiceImpl implements ContractorChalaanService {
 //						stockVo.setUpdatedOn(toLocalDateTime(System.currentTimeMillis()));
 //						stockService.save(stockVo);
 //					}
-					
-					
 
-					//update the contractor stock balance :: increase the pending balance of contractor :: plus entry in ContractorStockInfo
-					ContractorStockVo contractorStockVo = contractorStockService.get(entity.getContractor().getId(), item.getDesign().getId(),
-							item.getColor().getId());
+					// update the contractor stock balance :: increase the pending balance of
+					// contractor :: plus entry in ContractorStockInfo
+					ContractorStockVo contractorStockVo = contractorStockService.get(entity.getContractor().getId(),
+							item.getDesign().getId(), item.getColor().getId());
 					if (contractorStockVo != null) {
-						contractorStockService.increaseBalance(entity.getContractor().getId(), item.getDesign().getId(), item.getColor().getId(),
-								item.getQuantity());
+						contractorStockService.increaseBalance(entity.getContractor().getId(), item.getDesign().getId(),
+								item.getColor().getId(), item.getQuantity());
 					} else {
 						contractorStockVo = new ContractorStockVo();
 						contractorStockVo.setContractor(contractorMapper.toVo(entity.getContractor()));
@@ -140,24 +140,25 @@ public class ContractorChalaanServiceImpl implements ContractorChalaanService {
 
 	@Transactional
 	@Override
-	public Set<ContractorChalaanVo> saveAll(Set<ContractorChalaanVo> vos) {
+	public Set<ContractorChallanVo> saveAll(Set<ContractorChallanVo> vos) {
 		if (vos == null || vos.isEmpty())
 			return Collections.emptySet();
-		List<ContractorChalaanEntity> entities = vos.stream().map(mapper::toEntity).collect(Collectors.toList());
+		List<ContractorChallanEntity> entities = vos.stream().map(mapper::toEntity).collect(Collectors.toList());
 		entities = repository.saveAll(entities);
 		entities.stream().forEach(savedEntity -> {
 
 			if (savedEntity.getId() != null) {
-				savedEntity.getChalaanItems().stream().forEach(item -> {
+				savedEntity.getChallanItems().stream().forEach(item -> {
 
-					final boolean isReceive = "R".equalsIgnoreCase(savedEntity.getChalaanType());
-					final boolean isIssue = "I".equalsIgnoreCase(savedEntity.getChalaanType());
+					final boolean isReceive = "R".equalsIgnoreCase(savedEntity.getChallanType());
+					final boolean isIssue = "I".equalsIgnoreCase(savedEntity.getChallanType());
 
 					if (isReceive) {
-						
-						//received finished products from contractor
-						
-						//update the available stock balance :: increase the available stock :: plus entry in StockInfo
+
+						// received finished products from contractor
+
+						// update the available stock balance :: increase the available stock :: plus
+						// entry in StockInfo
 
 						StockVo stockVo = stockService.get(item.getDesign().getId(), item.getColor().getId());
 						if (stockVo != null) {
@@ -171,30 +172,31 @@ public class ContractorChalaanServiceImpl implements ContractorChalaanService {
 							stockVo.setUpdatedOn(toLocalDateTime(System.currentTimeMillis()));
 							stockService.save(stockVo);
 						}
-						
 
-						//update the contractor stock balance :: reduce the pending balance of contractor :: minus entry in ContractorStockInfo
-						ContractorStockVo contractorStockVo = contractorStockService.get(savedEntity.getContractor().getId(), item.getDesign().getId(),
-								item.getColor().getId());
+						// update the contractor stock balance :: reduce the pending balance of
+						// contractor :: minus entry in ContractorStockInfo
+						ContractorStockVo contractorStockVo = contractorStockService.get(
+								savedEntity.getContractor().getId(), item.getDesign().getId(), item.getColor().getId());
 						if (contractorStockVo != null) {
-							contractorStockService.reduceBalance(savedEntity.getContractor().getId(), item.getDesign().getId(), item.getColor().getId(),
-									item.getQuantity());
+							contractorStockService.reduceBalance(savedEntity.getContractor().getId(),
+									item.getDesign().getId(), item.getColor().getId(), item.getQuantity());
 						} else {
 							contractorStockVo = new ContractorStockVo();
 							contractorStockVo.setContractor(contractorMapper.toVo(savedEntity.getContractor()));
 							contractorStockVo.setDesign(designMapper.toVo(item.getDesign()));
 							contractorStockVo.setColor(colorMapper.toVo(item.getColor()));
-							contractorStockVo.setBalance((0-item.getQuantity()));
+							contractorStockVo.setBalance((0 - item.getQuantity()));
 							contractorStockVo.setUpdatedOn(toLocalDateTime(System.currentTimeMillis()));
 							contractorStockService.save(contractorStockVo);
 						}
 					}
 					if (isIssue) {
-						
-						//issuing raw material to contractor
-						
-						//update the available stock balance :: no impact on available stock :: no entry in StockInfo
-						
+
+						// issuing raw material to contractor
+
+						// update the available stock balance :: no impact on available stock :: no
+						// entry in StockInfo
+
 //						StockVo stockVo = stockService.get(item.getDesign().getId(), item.getColor().getId());
 //						if (stockVo != null) {
 //							stockService.reduceBalance(item.getDesign().getId(), item.getColor().getId(),
@@ -207,15 +209,14 @@ public class ContractorChalaanServiceImpl implements ContractorChalaanService {
 //							stockVo.setUpdatedOn(toLocalDateTime(System.currentTimeMillis()));
 //							stockService.save(stockVo);
 //						}
-						
-						
 
-						//update the contractor stock balance :: increase the pending balance of contractor :: plus entry in ContractorStockInfo
-						ContractorStockVo contractorStockVo = contractorStockService.get(savedEntity.getContractor().getId(), item.getDesign().getId(),
-								item.getColor().getId());
+						// update the contractor stock balance :: increase the pending balance of
+						// contractor :: plus entry in ContractorStockInfo
+						ContractorStockVo contractorStockVo = contractorStockService.get(
+								savedEntity.getContractor().getId(), item.getDesign().getId(), item.getColor().getId());
 						if (contractorStockVo != null) {
-							contractorStockService.increaseBalance(savedEntity.getContractor().getId(), item.getDesign().getId(), item.getColor().getId(),
-									item.getQuantity());
+							contractorStockService.increaseBalance(savedEntity.getContractor().getId(),
+									item.getDesign().getId(), item.getColor().getId(), item.getQuantity());
 						} else {
 							contractorStockVo = new ContractorStockVo();
 							contractorStockVo.setContractor(contractorMapper.toVo(savedEntity.getContractor()));
@@ -235,28 +236,28 @@ public class ContractorChalaanServiceImpl implements ContractorChalaanService {
 	}
 
 	@Override
-	public ContractorChalaanVo findById(Long id) {
-		ContractorChalaanVo contractorChalaanVo = null;
-		Optional<ContractorChalaanEntity> optional = repository.findById(id);
+	public ContractorChallanVo findById(Long id) {
+		ContractorChallanVo contractorChallanVo = null;
+		Optional<ContractorChallanEntity> optional = repository.findById(id);
 		if (optional.isPresent()) {
-			contractorChalaanVo = mapper.toVo(optional.get());
+			contractorChallanVo = mapper.toVo(optional.get());
 		}
-		return contractorChalaanVo;
+		return contractorChallanVo;
 	}
 
 	@Transactional
-	public ContractorChalaanVo deleteById(Long id) {
+	public ContractorChallanVo deleteById(Long id) {
 
-		ContractorChalaanVo chalaanVo = findById(id);
-		if (chalaanVo != null) {
-			final ContractorChalaanEntity entity = mapper.toEntity(chalaanVo);
+		ContractorChallanVo challanVo = findById(id);
+		if (challanVo != null) {
+			final ContractorChallanEntity entity = mapper.toEntity(challanVo);
 			repository.deleteById(id);
 
 			if (entity.getId() != null) {
-				entity.getChalaanItems().stream().forEach(item -> {
+				entity.getChallanItems().stream().forEach(item -> {
 
-					final boolean isReceive = "R".equalsIgnoreCase(entity.getChalaanType());
-					final boolean isIssue = "I".equalsIgnoreCase(entity.getChalaanType());
+					final boolean isReceive = "R".equalsIgnoreCase(entity.getChallanType());
+					final boolean isIssue = "I".equalsIgnoreCase(entity.getChallanType());
 
 					if (isReceive) {
 
@@ -292,14 +293,14 @@ public class ContractorChalaanServiceImpl implements ContractorChalaanService {
 				});
 			}
 		}
-		return chalaanVo;
+		return challanVo;
 	}
 
 	@Override
-	public List<ContractorChalaanVo> findAll(Integer chalaanNumber, Long contractorId, LocalDate fromChalaanDate,
-			LocalDate toChalaanDate, String chalaanType) {
+	public List<ContractorChallanVo> findAll(Integer challanNumber, Long contractorId, LocalDate fromChallanDate,
+			LocalDate toChallanDate, String challanType) {
 
-		return repository.findAll(chalaanNumber, contractorId, fromChalaanDate, toChalaanDate, chalaanType).stream()
+		return repository.findAll(challanNumber, contractorId, fromChallanDate, toChallanDate, challanType).stream()
 				.map(mapper::toVo).collect(Collectors.toList());
 	}
 

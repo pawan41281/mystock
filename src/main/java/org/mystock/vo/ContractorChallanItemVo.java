@@ -18,14 +18,14 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class ContractorChalaanItemVo {
+public class ContractorChallanItemVo {
 
 	private Long id;
 
 	@JsonIgnore
 	@ToString.Exclude
 	@EqualsAndHashCode.Exclude
-	private ContractorChalaanVo contractorChalaan;
+	private ContractorChallanVo contractorChallan;
 
 	@NotNull
 	private DesignVo design;

@@ -5,10 +5,10 @@ import java.util.Set;
 
 import org.mystock.apiresponse.ApiResponseVo;
 import org.mystock.apiresponse.ApiResponseVoWrapper;
-import org.mystock.service.ClientChalaanService;
+import org.mystock.service.ClientChallanService;
 import org.mystock.util.DateTimeUtil;
 import org.mystock.util.MetadataGenerator;
-import org.mystock.vo.ClientChalaanVo;
+import org.mystock.vo.ClientChallanVo;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,21 +26,21 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/v2/clientchalaans/")
+@RequestMapping("/v2/clientchallans/")
 @AllArgsConstructor
-@Tag(name = "Client Chalaan Operations", description = "CRUD Operations for client chalaan record")
+@Tag(name = "Client Challan Operations", description = "CRUD Operations for client challan record")
 @Slf4j
-public class ClientChalaanController {
+public class ClientChallanController {
 
-	private final ClientChalaanService service;
+	private final ClientChallanService service;
 	private final MetadataGenerator metadataGenerator;
 	private final DateTimeUtil dateTimeUtil;
 
 	@PostMapping
-	@Operation(summary = "Create client chalaan", description = "Chalaan Type :: I - Issue, R - Received")
-	public ResponseEntity<ApiResponseVo<ClientChalaanVo>> save(@Valid @RequestBody ClientChalaanVo vo) {
+	@Operation(summary = "Create client challan", description = "Challan Type :: I - Issue, R - Received")
+	public ResponseEntity<ApiResponseVo<ClientChallanVo>> save(@Valid @RequestBody ClientChallanVo vo) {
 		log.info("Received request for save :: {}", vo);
-		ClientChalaanVo saved = service.save(vo);
+		ClientChallanVo saved = service.save(vo);
 		if (saved != null && saved.getId() != null) {
 			log.info("Record saved :: {}", saved);
 			return ResponseEntity.status(201)
@@ -53,10 +53,10 @@ public class ClientChalaanController {
 	}
 
 	@PostMapping("bulk")
-	@Operation(summary = "Create multiple client chalaan", description = "Chalaan Type :: I - Issue, R - Received")
-	public ResponseEntity<ApiResponseVo<Set<ClientChalaanVo>>> saveAll(@RequestBody Set<ClientChalaanVo> vos) {
+	@Operation(summary = "Create multiple client challan", description = "Challan Type :: I - Issue, R - Received")
+	public ResponseEntity<ApiResponseVo<Set<ClientChallanVo>>> saveAll(@RequestBody Set<ClientChallanVo> vos) {
 		log.info("Received request for bulk save :: {}", vos);
-		Set<ClientChalaanVo> saved = service.saveAll(vos);
+		Set<ClientChallanVo> saved = service.saveAll(vos);
 		if (saved != null) {
 			log.info("Record saved :: {}", saved);
 			return ResponseEntity.status(201)
@@ -69,26 +69,26 @@ public class ClientChalaanController {
 	}
 
 	@DeleteMapping("{id}")
-	@Operation(summary = "Delete client chalaan")
-	public ResponseEntity<ApiResponseVo<ClientChalaanVo>> delete(@PathVariable Long id) {
-		log.info("Received request for delete :: chalaanId {}", id);
-		ClientChalaanVo deleted = service.deleteById(id);
+	@Operation(summary = "Delete client challan")
+	public ResponseEntity<ApiResponseVo<ClientChallanVo>> delete(@PathVariable Long id) {
+		log.info("Received request for delete :: challanId {}", id);
+		ClientChallanVo deleted = service.deleteById(id);
 		if (deleted != null) {
 			log.info("Record deleted :: {}", deleted);
 			return ResponseEntity.status(201).body(
 					ApiResponseVoWrapper.success("Record deleted", deleted, metadataGenerator.getMetadata(deleted)));
 		} else {
-			log.error("Record not deleted :: chalaanId {}", id);
+			log.error("Record not deleted :: challanId {}", id);
 			return ResponseEntity.status(500).body(ApiResponseVoWrapper.success("Record not deleted", deleted,
 					metadataGenerator.getMetadata(deleted)));
 		}
 	}
 
 	@GetMapping("{id}")
-	@Operation(summary = "Get all chalaans by Id")
-	public ResponseEntity<ApiResponseVo<ClientChalaanVo>> findById(@PathVariable Long id) {
+	@Operation(summary = "Get all challans by Id")
+	public ResponseEntity<ApiResponseVo<ClientChallanVo>> findById(@PathVariable Long id) {
 		log.info("Received request for find :: id - {}", id);
-		ClientChalaanVo found = service.findById(id);
+		ClientChallanVo found = service.findById(id);
 		if (found != null) {
 			log.info("Record found :: {}", found);
 			return ResponseEntity
@@ -101,20 +101,20 @@ public class ClientChalaanController {
 	}
 
 	@GetMapping
-	@Operation(summary = "Get all chalaans by chalaan number and chalaan date range and chalaan type and client Id", description = "Chalaan Type :: I - Issue, R - Received")
-	public ResponseEntity<ApiResponseVo<List<ClientChalaanVo>>> find(
-			@RequestParam(value = "chalaannumber", required = false) Integer chalaanNumber,
+	@Operation(summary = "Get all challans by challan number and challan date range and challan type and client Id", description = "Challan Type :: I - Issue, R - Received")
+	public ResponseEntity<ApiResponseVo<List<ClientChallanVo>>> find(
+			@RequestParam(value = "challannumber", required = false) Integer challanNumber,
 			@RequestParam(value = "clientid", required = false) Long clientId,
-			@RequestParam(value = "fromchalaandate", required = false) Long fromChalaanDate,
-			@RequestParam(value = "tochalaandate", required = false) Long toChalaanDate,
-			@RequestParam(value = "chalaantype", required = false) String chalaanType) {
+			@RequestParam(value = "fromchallandate", required = false) Long fromChallanDate,
+			@RequestParam(value = "tochallandate", required = false) Long toChallanDate,
+			@RequestParam(value = "challantype", required = false) String challanType) {
 
 		log.info(
-				"Received request for find :: chalaanNumber {}, clientId {}, fromChalaanDate {}, toChalaanDate {}, chalaanType {}",
-				chalaanNumber, clientId, fromChalaanDate, toChalaanDate, chalaanType);
+				"Received request for find :: challanNumber {}, clientId {}, fromChallanDate {}, toChallanDate {}, challanType {}",
+				challanNumber, clientId, fromChallanDate, toChallanDate, challanType);
 
-		List<ClientChalaanVo> found = service.findAll(chalaanNumber, clientId,
-				dateTimeUtil.toLocalDate(fromChalaanDate), dateTimeUtil.toLocalDate(toChalaanDate), chalaanType);
+		List<ClientChallanVo> found = service.findAll(challanNumber, clientId,
+				dateTimeUtil.toLocalDate(fromChallanDate), dateTimeUtil.toLocalDate(toChallanDate), challanType);
 		log.info("Record {} :: {}", found != null && !found.isEmpty() ? "found" : "not found", found);
 
 		return ResponseEntity
