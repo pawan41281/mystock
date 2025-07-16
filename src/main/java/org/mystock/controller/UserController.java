@@ -45,7 +45,8 @@ public class UserController {
 
 		try {
 			userVo = userService.save(userVo);
-			userVo.setPassword("********");
+			if (userVo != null)
+				userVo.setPassword("********");
 			return ResponseEntity.status(201)
 					.body(ApiResponseVoWrapper.success("User created successfully", userVo, null));
 		} catch (Exception e) {
@@ -62,6 +63,8 @@ public class UserController {
 
 		try {
 			userVo = userService.update(userVo);
+			if (userVo != null)
+				userVo.setPassword("********");
 			return ResponseEntity.status(201)
 					.body(ApiResponseVoWrapper.success("User updated successfully", userVo, null));
 		} catch (Exception e) {
@@ -79,6 +82,8 @@ public class UserController {
 
 		try {
 			UserVo userVo = userService.findByUserName(username);
+			if (userVo != null)
+				userVo.setPassword("********");
 			String message = userVo != null ? "User exist" : "User not exists";
 			return ResponseEntity.status(201).body(ApiResponseVoWrapper.success(message, userVo, null));
 		} catch (Exception e) {
@@ -96,6 +101,8 @@ public class UserController {
 
 		try {
 			UserVo userVo = userService.findByEmail(email);
+			if (userVo != null)
+				userVo.setPassword("********");
 			String message = userVo != null ? "User exist" : "User not exists";
 			return ResponseEntity.status(201).body(ApiResponseVoWrapper.success(message, userVo, null));
 		} catch (Exception e) {
@@ -115,7 +122,7 @@ public class UserController {
 		List<UserVo> list = null;
 		try {
 			list = userService.findByUserNameOrEmailOrMobile(userName, email, mobile);
-			String message = list != null && !list.isEmpty() ? "Users exist" : "Users not exists";
+			String message = !list.isEmpty() ? "Users exist" : "Users not exists";
 			Map<String, String> metadata = new HashMap<>();
 			metadata.put("recordcount", String.valueOf(list.size()));
 			return ResponseEntity.status(201).body(ApiResponseVoWrapper.success(message, list, metadata));

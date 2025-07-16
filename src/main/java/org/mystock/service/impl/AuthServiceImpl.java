@@ -16,8 +16,11 @@ import org.mystock.repository.UserRepository;
 import org.mystock.security.JwtAuthResponse;
 import org.mystock.security.JwtTokenProvider;
 import org.mystock.service.AuthService;
+import org.mystock.service.RoleService;
 import org.mystock.vo.LoginVo;
 import org.mystock.vo.SignupRequestVo;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -27,10 +30,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class AuthServiceImpl implements AuthService {
+	
+	final String ADMIN = "admin";
 
 	private final AuthenticationManager authenticationManager;
 
@@ -43,6 +50,8 @@ public class AuthServiceImpl implements AuthService {
 	private final PasswordEncoder encoder;
 
 	private final UserMapper userMapper;
+
+	private final RoleService roleService;
 
 	@Override
 	public String login(LoginVo loginVo) throws InvalidCredentialsException {
@@ -125,6 +134,31 @@ public class AuthServiceImpl implements AuthService {
 		}
 	}
 
+	@EventListener(ApplicationReadyEvent.class)
+	private void save() {
+		roleService.initRoles();
+		
+		if (Boolean.FALSE.equals(userRepository.existsByUserName(ADMIN))) {
+			SignupRequestVo signUpRequestVo = new SignupRequestVo();
+			signUpRequestVo.setEmail("admin@gmail.com");
+			signUpRequestVo.setMobile("1234567890");
+			signUpRequestVo.setName(ADMIN);
+			signUpRequestVo.setPassword(ADMIN);
+			signUpRequestVo.setUsername(ADMIN);
+
+			// Create new user's account
+			UserEntity user = new UserEntity(signUpRequestVo.getName(), signUpRequestVo.getUsername(),
+					signUpRequestVo.getEmail(), signUpRequestVo.getMobile(),
+					encoder.encode(signUpRequestVo.getPassword()), signUpRequestVo.isLocked());
+			Set<String> adminRole = new HashSet<>();
+			adminRole.add("ROLE_ADMIN");
+			Set<RoleEntity> roles = resolveRoles(adminRole);
+			user.setRoles(roles);
+			userRepository.save(user);
+			log.info("Default user has been created :: {}",signUpRequestVo);
+		}
+	}
+
 	@Override
 	public boolean validateToken(String token) {
 		return jwtTokenProvider.validateToken(token);
@@ -140,8 +174,7 @@ public class AuthServiceImpl implements AuthService {
 				}
 				roles.add(userRole);
 			}
-		}
-		else {//Assign default role
+		} else {// Assign default role
 			RoleEntity userRole = roleRepository.findByNameIgnoreCase("ROLE_USER");
 			if (userRole == null) {
 				throw new ResourceNotFoundException("Default role not found.");
@@ -150,17 +183,16 @@ public class AuthServiceImpl implements AuthService {
 		}
 		return roles;
 	}
-	
+
 	@Override
 	public Authentication authenticate(LoginVo loginVo) throws InvalidCredentialsException {
-	    try {
-	        UsernamePasswordAuthenticationToken authRequest =
-	                new UsernamePasswordAuthenticationToken(loginVo.getUserName(), loginVo.getPassword());
-	        return authenticationManager.authenticate(authRequest);
-	    } catch (BadCredentialsException e) {
-	        throw new InvalidCredentialsException("Invalid username or password.");
-	    }
+		try {
+			UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(
+					loginVo.getUserName(), loginVo.getPassword());
+			return authenticationManager.authenticate(authRequest);
+		} catch (BadCredentialsException e) {
+			throw new InvalidCredentialsException("Invalid username or password.");
+		}
 	}
-
 
 }

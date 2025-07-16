@@ -8,4 +8,6 @@ public interface RoleService {
 	
 	public List<RoleVo> getAll();
 
+	public void initRoles();
+	
 }
