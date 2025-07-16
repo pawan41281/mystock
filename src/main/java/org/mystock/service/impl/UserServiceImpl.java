@@ -3,6 +3,7 @@ package org.mystock.service.impl;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.mystock.entity.RoleEntity;
 import org.mystock.entity.UserEntity;
@@ -55,18 +56,19 @@ public class UserServiceImpl implements UserService {
 			if (voRoles != null && !voRoles.isEmpty()) {
 				voRoles.forEach(role -> {
 
-					RoleEntity roleEntity = roleRepository.findByName(role.getName());
+					RoleEntity roleEntity = roleRepository.findByNameIgnoreCase(role.getName());
 					if (roleEntity == null)
-						throw new RuntimeException("Error: Role '" + role.getName() + "' not found in database.");
+						throw new ResourceNotFoundException(
+								"Error: Role '" + role.getName() + "' not found in database.");
 
 					entityRoles.add(roleEntity);
 				});
 
 			} else {
 
-				RoleEntity roleEntity = roleRepository.findByName("ROLE_USER");
+				RoleEntity roleEntity = roleRepository.findByNameIgnoreCase("ROLE_USER");
 				if (roleEntity == null)
-					throw new RuntimeException("Error: default role not found in database.");
+					throw new ResourceNotFoundException("Error: default role not found in database.");
 
 				entityRoles.add(roleEntity);
 
@@ -78,8 +80,6 @@ public class UserServiceImpl implements UserService {
 
 			return userMapper.convert(user);
 
-		} catch (UnableToProcessException e) {
-			throw new UnableToProcessException(e.getMessage());
 		} catch (Exception e) {
 			throw new UnableToProcessException(e.getMessage());
 		}
@@ -92,7 +92,7 @@ public class UserServiceImpl implements UserService {
 		// Update existing user's account
 		UserEntity existingUser = null;
 		UserEntity user = userMapper.convert(userVo);
-		existingUser = userRepository.findByUserName(user.getUserName());
+		existingUser = userRepository.findByUserName(userVo.getUserName());
 
 		if (existingUser == null) {
 			throw new ResourceNotFoundException("UserName not exists");
@@ -117,7 +117,8 @@ public class UserServiceImpl implements UserService {
 		}
 
 		try {
-			existingUser = userRepository.save(existingUser);
+			UserEntity saved = userRepository.save(existingUser);
+			userVo = userMapper.convert(saved);
 			return userVo;
 		} catch (Exception e) {
 			throw new UnableToProcessException("User not updated");
@@ -139,21 +140,24 @@ public class UserServiceImpl implements UserService {
 		try {
 			return userRepository.existsByEmail(email);
 		} catch (Exception e) {
-			throw new ResourceNotFoundException("UserName not exists");
+			throw new ResourceNotFoundException("Email not exists");
 		}
 	}
 
 	@Override
 	public List<UserVo> findAll() throws UnableToProcessException {
 		List<UserEntity> list = userRepository.findAll();
-		List<UserVo> userVoList = userMapper.convertToUserVoList(list);
-		return userVoList;
+
+		if (!list.isEmpty())
+			return list.stream().map(userMapper::convert).collect(Collectors.toList());
+		else
+			throw new ResourceNotFoundException("Record not exists");
 	}
 
 	@Override
 	public UserVo findByUserName(String userName) throws ResourceNotFoundException {
 		UserEntity user = userRepository.findByUserName(userName);
-		if (user!=null)
+		if (user != null)
 			return userMapper.convert(user);
 		else
 			throw new ResourceNotFoundException("UserName not exists");
@@ -162,7 +166,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public UserVo findByEmail(String email) throws ResourceNotFoundException {
 		UserEntity user = userRepository.findByEmail(email);
-		if (user!=null)
+		if (user != null)
 			return userMapper.convert(user);
 		else
 			throw new ResourceNotFoundException("Email not exists");
@@ -172,8 +176,10 @@ public class UserServiceImpl implements UserService {
 	public List<UserVo> findByUserNameOrEmailOrMobile(String userName, String email, String mobile)
 			throws ResourceNotFoundException {
 		List<UserEntity> list = userRepository.findByUserNameOrEmailOrMobile(userName, email, mobile);
-		List<UserVo> userVoList = userMapper.convertToUserVoList(list);
-		return userVoList;
+		if (list != null && !list.isEmpty())
+			return list.stream().map(userMapper::convert).collect(Collectors.toList());
+		else
+			throw new ResourceNotFoundException("Record not exists");
 	}
 
 }

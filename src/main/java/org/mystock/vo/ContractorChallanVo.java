@@ -19,26 +19,26 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class ContractorChalaanVo {
+public class ContractorChallanVo {
 
 	private Long id;
 	
 	@NotNull
-	private Integer chalaanNumber;
+	private Integer challanNumber;
 	
 	@NotNull
-	private LocalDate chalaanDate;
+	private LocalDate challanDate;
 	
 	@NotNull
 	private ContractorVo contractor;
 	
 	@NotBlank
 	@Pattern(regexp = "I|R")
-	private String chalaanType;//I - Issue  R - Received
+	private String challanType;//I - Issue  R - Received
 	
 	private LocalDateTime createdOn;
 	
 	@ToString.Exclude
 	@EqualsAndHashCode.Exclude
-	private Set<ContractorChalaanItemVo> chalaanItems;
+	private Set<ContractorChallanItemVo> challanItems;
 }

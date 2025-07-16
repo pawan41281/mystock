@@ -45,6 +45,7 @@ public class UserController {
 
 		try {
 			userVo = userService.save(userVo);
+			userVo.setPassword("********");
 			return ResponseEntity.status(201)
 					.body(ApiResponseVoWrapper.success("User created successfully", userVo, null));
 		} catch (Exception e) {

@@ -134,20 +134,20 @@ public class AuthServiceImpl implements AuthService {
 		Set<RoleEntity> roles = new HashSet<>();
 		if (roleNames != null && !roleNames.isEmpty()) {
 			for (String role : roleNames) {
-				RoleEntity userRole = roleRepository.findByName(role);
+				RoleEntity userRole = roleRepository.findByNameIgnoreCase(role);
 				if (userRole == null) {
-					throw new RuntimeException("Role '" + role + "' not found.");
+					throw new ResourceNotFoundException("Role '" + role + "' not found.");
 				}
 				roles.add(userRole);
 			}
 		}
-//		else {
-//			RoleEntity userRole = roleRepository.findByName("ROLE_USER");
-//			if (userRole == null) {
-//				throw new RuntimeException("Default role not found.");
-//			}
-//			roles.add(userRole);
-//		}
+		else {//Assign default role
+			RoleEntity userRole = roleRepository.findByNameIgnoreCase("ROLE_USER");
+			if (userRole == null) {
+				throw new ResourceNotFoundException("Default role not found.");
+			}
+			roles.add(userRole);
+		}
 		return roles;
 	}
 	

@@ -18,21 +18,21 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "clientchalaaniteminfo")
+@Table(name = "clientchallaniteminfo")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ClientChalaanItemEntity {
+public class ClientChallanItemEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@ManyToOne
-	@JoinColumn(name = "chalaan_id", nullable = false)
+	@JoinColumn(name = "challan_id", nullable = false)
 	@JsonIgnore
-	private ClientChalaanEntity chalaan;
+	private ClientChallanEntity challan;
 
 	@ManyToOne
 	@JoinColumn(name = "design_id", nullable = false)

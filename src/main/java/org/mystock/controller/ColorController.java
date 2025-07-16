@@ -91,15 +91,9 @@ public class ColorController {
 	public ResponseEntity<ApiResponseVo<List<ColorVo>>> getAll() {
 		log.info("Received request for find all");
 		List<ColorVo> found = colorService.getAll();
-		if (found != null && !found.isEmpty()) {
-			log.info("Record found :: {}", found);
-			return ResponseEntity.status(201)
-					.body(ApiResponseVoWrapper.success("Record saved", found, metadataGenerator.getMetadata(found)));
-		} else {
-			log.error("Record not found :: {}", found);
-			return ResponseEntity.status(201).body(
-					ApiResponseVoWrapper.success("Record not saved", found, metadataGenerator.getMetadata(found)));
-		}
+		log.info("Record found :: {}", found);
+		return ResponseEntity.status(201)
+				.body(ApiResponseVoWrapper.success("Record fetched", found, metadataGenerator.getMetadata(found)));
 	}
 
 	@PatchMapping("/{id}/{status}")

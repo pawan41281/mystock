@@ -5,10 +5,10 @@ import java.util.Set;
 
 import org.mystock.apiresponse.ApiResponseVo;
 import org.mystock.apiresponse.ApiResponseVoWrapper;
-import org.mystock.service.ContractorChalaanService;
+import org.mystock.service.ContractorChallanService;
 import org.mystock.util.DateTimeUtil;
 import org.mystock.util.MetadataGenerator;
-import org.mystock.vo.ContractorChalaanVo;
+import org.mystock.vo.ContractorChallanVo;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -28,23 +28,23 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/v1/contractorchalaans/")
+@RequestMapping("/v1/contractorchallans/")
 @AllArgsConstructor
-@Tag(name = "Contractor Chalaan Operations", description = "CRUD Operations for contractor chalaan record")
+@Tag(name = "Contractor Challan Operations", description = "CRUD Operations for contractor challan record")
 @Slf4j
 @SecurityRequirement(name = "Bearer Authentication")
-public class ContractorChalaanController {
+public class ContractorChallanController {
 
-	private final ContractorChalaanService service;
+	private final ContractorChallanService service;
 	private final MetadataGenerator metadataGenerator;
 	private final DateTimeUtil dateTimeUtil;
 
 	@PostMapping
-	@Operation(summary = "Create contractor chalaan", description = "Chalaan Type :: I - Issue, R - Received")
+	@Operation(summary = "Create contractor challan", description = "Challan Type :: I - Issue, R - Received")
 	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
-	public ResponseEntity<ApiResponseVo<ContractorChalaanVo>> save(@Valid @RequestBody ContractorChalaanVo vo) {
+	public ResponseEntity<ApiResponseVo<ContractorChallanVo>> save(@Valid @RequestBody ContractorChallanVo vo) {
 		log.info("Received request for save :: {}", vo);
-		ContractorChalaanVo saved = service.save(vo);
+		ContractorChallanVo saved = service.save(vo);
 		if (saved != null && saved.getId() != null) {
 			log.info("Record saved :: {}", saved);
 			return ResponseEntity.status(201)
@@ -57,11 +57,11 @@ public class ContractorChalaanController {
 	}
 
 //	@PostMapping
-//	@Operation(summary = "Create contractor chalaan", description = "Chalaan Type :: I - Issue, R - Received")
+//	@Operation(summary = "Create contractor challan", description = "Challan Type :: I - Issue, R - Received")
 //	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
-//	public ResponseEntity<ApiResponseVo<ContractorChalaanVo>> save(@Valid @RequestBody ContractorChalaanRequestVo vo) {
+//	public ResponseEntity<ApiResponseVo<ContractorChallanVo>> save(@Valid @RequestBody ContractorChallanRequestVo vo) {
 //		log.info("Received request for save :: {}", vo);
-//		ContractorChalaanVo saved = service.save(vo);
+//		ContractorChallanVo saved = service.save(vo);
 //		if (saved != null && saved.getId() != null) {
 //			log.info("Record saved :: {}", saved);
 //			return ResponseEntity.status(201)
@@ -74,11 +74,11 @@ public class ContractorChalaanController {
 //	}
 
 	@PostMapping("bulk")
-	@Operation(summary = "Create multiple contractor chalaan", description = "Chalaan Type :: I - Issue, R - Received")
+	@Operation(summary = "Create multiple contractor challan", description = "Challan Type :: I - Issue, R - Received")
 	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
-	public ResponseEntity<ApiResponseVo<Set<ContractorChalaanVo>>> saveAll(@RequestBody Set<ContractorChalaanVo> vos) {
+	public ResponseEntity<ApiResponseVo<Set<ContractorChallanVo>>> saveAll(@RequestBody Set<ContractorChallanVo> vos) {
 		log.info("Received request for bulk save :: {}", vos);
-		Set<ContractorChalaanVo> saved = service.saveAll(vos);
+		Set<ContractorChallanVo> saved = service.saveAll(vos);
 		if (saved != null && !saved.isEmpty()) {
 			log.info("Record saved :: {}", saved);
 			return ResponseEntity.status(201)
@@ -91,27 +91,27 @@ public class ContractorChalaanController {
 	}
 
 	@DeleteMapping("{id}")
-	@Operation(summary = "Delete contractor chalaan")
+	@Operation(summary = "Delete contractor challan")
 	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
-	public ResponseEntity<ApiResponseVo<ContractorChalaanVo>> delete(@PathVariable Long id) {
-		log.info("Received request for delete :: chalaanId {}", id);
-		ContractorChalaanVo deleted = service.deleteById(id);
+	public ResponseEntity<ApiResponseVo<ContractorChallanVo>> delete(@PathVariable Long id) {
+		log.info("Received request for delete :: challanId {}", id);
+		ContractorChallanVo deleted = service.deleteById(id);
 		if (deleted != null) {
 			log.info("Record deleted :: {}", deleted);
 			return ResponseEntity.status(201).body(
 					ApiResponseVoWrapper.success("Record deleted", deleted, metadataGenerator.getMetadata(deleted)));
 		} else {
-			log.error("Record not deleted :: chalaanId {}", id);
+			log.error("Record not deleted :: challanId {}", id);
 			return ResponseEntity.status(500).body(ApiResponseVoWrapper.success("Record not deleted", deleted,
 					metadataGenerator.getMetadata(deleted)));
 		}
 	}
 
 	@GetMapping("{id}")
-	@Operation(summary = "Get all chalaans by Id")
-	public ResponseEntity<ApiResponseVo<ContractorChalaanVo>> findById(@PathVariable Long id) {
+	@Operation(summary = "Get all challans by Id")
+	public ResponseEntity<ApiResponseVo<ContractorChallanVo>> findById(@PathVariable Long id) {
 		log.info("Received request for find :: id - {}", id);
-		ContractorChalaanVo found = service.findById(id);
+		ContractorChallanVo found = service.findById(id);
 		if (found != null) {
 			log.info("Record found :: {}", found);
 			return ResponseEntity.status(201)
@@ -124,20 +124,20 @@ public class ContractorChalaanController {
 	}
 
 	@GetMapping
-	@Operation(summary = "Get all chalaans by chalaan number and chalaan date range and chalaan type and contractor Id", description = "Chalaan Type :: I - Issue, R - Received")
+	@Operation(summary = "Get all challans by challan number and challan date range and challan type and contractor Id", description = "Challan Type :: I - Issue, R - Received")
 	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
-	public ResponseEntity<ApiResponseVo<List<ContractorChalaanVo>>> find(
-			@RequestParam(value = "chalaannumber", required = false) Integer chalaanNumber,
+	public ResponseEntity<ApiResponseVo<List<ContractorChallanVo>>> find(
+			@RequestParam(value = "challannumber", required = false) Integer challanNumber,
 			@RequestParam(value = "contractorid", required = false) Long contractorId,
-			@RequestParam(value = "fromchalaandate", required = false) Long fromChalaanDate,
-			@RequestParam(value = "tochalaandate", required = false) Long toChalaanDate,
-			@RequestParam(value = "chalaantype", required = false) String chalaanType) {
+			@RequestParam(value = "fromchallandate", required = false) Long fromChallanDate,
+			@RequestParam(value = "tochallandate", required = false) Long toChallanDate,
+			@RequestParam(value = "challantype", required = false) String challanType) {
 		log.info(
-				"Received request for find :: chalaanNumber {}, contractorId {}, fromChalaanDate {}, toChalaanDate {}, chalaanType {}",
-				chalaanNumber, contractorId, fromChalaanDate, toChalaanDate, chalaanType);
+				"Received request for find :: challanNumber {}, contractorId {}, fromChallanDate {}, toChallanDate {}, challanType {}",
+				challanNumber, contractorId, fromChallanDate, toChallanDate, challanType);
 
-		List<ContractorChalaanVo> found = service.findAll(chalaanNumber, contractorId,
-				dateTimeUtil.toLocalDate(fromChalaanDate), dateTimeUtil.toLocalDate(toChalaanDate), chalaanType);
+		List<ContractorChallanVo> found = service.findAll(challanNumber, contractorId,
+				dateTimeUtil.toLocalDate(fromChallanDate), dateTimeUtil.toLocalDate(toChallanDate), challanType);
 		log.info("Record {} :: {}", found != null && !found.isEmpty() ? "found" : "not found", found);
 
 		return ResponseEntity.status(201)

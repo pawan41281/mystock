@@ -6,13 +6,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
 public class SignupRequestVo {
 
 	private String name;
@@ -52,6 +50,12 @@ public class SignupRequestVo {
 		this.username = username;
 		this.email = email;
 		this.password = password;
+	}
+
+	@Override
+	public String toString() {
+		return "SignupRequestVo [name=" + name + ", username=" + username + ", email=" + email + ", mobile=" + mobile
+				+ ", locked=" + locked + ", roles=" + roles + "]";
 	}
 
 }
