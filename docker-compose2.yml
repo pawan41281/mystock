@@ -1,0 +1,40 @@
+version: '3.7'
+
+networks:
+  mynetwork:
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mystock-api
+    ports:
+      - 9090:9090
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysqldb:3306/mystockdb?createDatabaseIfNotExist=true&useSSL=false
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+    depends_on:
+      mysqldb:
+        condition: service_healthy
+    networks:
+      - mynetwork
+
+  mysqldb:
+    image: mysql:8.0.33
+    container_name: mystock-mysqldb
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_DATABASE=msdb
+      - MYSQL_ROOT_PASSWORD=root
+    volumes:
+      - /c/msdata:/var/lib/mysql  # 👈 Bind mount to host's C:\msdata
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      retries: 10
+      interval: 3s
+      timeout: 30s
+    networks:
+      - mynetwork
