@@ -2,8 +2,8 @@
 <configuration>
 
     <!-- Define properties -->
-    <property name="LOG_PATH" value="logs" />
-    <property name="LOG_FILE" value="c:/mslogs/mslogger.log" />
+    <property name="LOG_PATH" value="/c/mslogs" />
+    <property name="LOG_FILE" value="/c/mslogs/mslogger.log" />
 
     <!-- File Appender with Size + Time Rolling -->
     <appender name="ROLLING_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
