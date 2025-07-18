@@ -222,7 +222,7 @@ public class ClientChallanServiceImpl implements ClientChallanService {
 	public List<ClientChallanVo> findAll(Integer challanNumber, Long clientId, LocalDate fromChallanDate,
 			LocalDate toChallanDate, String challanType) {
 
-		return repository.findAll(challanNumber, clientId, fromChallanDate, toChallanDate, challanType).stream()
+		return repository.findAll(challanNumber, clientId, fromChallanDate, toChallanDate, challanType).stream().filter(obj -> obj!=null)
 				.map(mapper::toVo).collect(Collectors.toList());
 	}
 

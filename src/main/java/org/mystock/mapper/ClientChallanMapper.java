@@ -7,28 +7,31 @@ import org.mystock.vo.ClientChallanVo;
 import org.springframework.stereotype.Component;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
 @AllArgsConstructor
+@Slf4j
 public class ClientChallanMapper {
 
 	private final ModelMapper modelMapper;
 	private final ClientMapper clientMapper;
 
 	public ClientChallanVo toVo(ClientChallanEntity clientChallanEntity) {
+		log.info("clientChallanEntity to ClientChallanVo :: start");
 		ClientChallanVo clientChallanVo = modelMapper.map(clientChallanEntity, ClientChallanVo.class);
 		clientChallanVo.setClient(clientMapper.toVo(clientChallanEntity.getClient()));
+		log.info("clientChallanEntity to ClientChallanVo :: end");
 		return clientChallanVo;
 	}
 
 	public ClientChallanEntity toEntity(ClientChallanVo clientChallanVo) {
+		log.info("clientChallanVo to ClientChallanEntity :: start");
 		ClientChallanEntity entity = modelMapper.map(clientChallanVo, ClientChallanEntity.class);
-
 		if (entity.getChallanItems() != null) {
 			for (ClientChallanItemEntity item : entity.getChallanItems()) {
 				// Set parent reference for bi-directional relationship
 				item.setChallan(entity);
-
 				// If ID is 0 or present (and you want to create new), null it to avoid detached
 				// entity error
 				if (item.getId() != null && item.getId() > 0) {
@@ -36,7 +39,7 @@ public class ClientChallanMapper {
 				}
 			}
 		}
-
+		log.info("clientChallanVo to ClientChallanEntity :: end");
 		return entity;
 	}
 

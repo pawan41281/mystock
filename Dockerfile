@@ -8,7 +8,7 @@
 #ENTRYPOINT ["java", "-Dspring.profiles.active=docker", "-jar", "mystock.jar"]
 
 # Stage 1: Build
-FROM maven:3.9.6-eclipse-temurin-17 as builder
+FROM maven:3.9.6-eclipse-temurin-17 AS builder
 COPY . /app
 WORKDIR /app
 RUN mvn clean package -DskipTests
