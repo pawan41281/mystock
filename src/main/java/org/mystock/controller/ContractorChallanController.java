@@ -1,12 +1,12 @@
 package org.mystock.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
 import org.mystock.apiresponse.ApiResponseVo;
 import org.mystock.apiresponse.ApiResponseVoWrapper;
 import org.mystock.service.ContractorChallanService;
-import org.mystock.util.DateTimeUtil;
 import org.mystock.util.MetadataGenerator;
 import org.mystock.vo.ContractorChallanVo;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +34,6 @@ public class ContractorChallanController {
 
 	private final ContractorChallanService service;
 	private final MetadataGenerator metadataGenerator;
-	private final DateTimeUtil dateTimeUtil;
 
 	@PostMapping
 	@Operation(summary = "Create contractor challan", description = "Challan Type :: I - Issue, R - Received")
@@ -105,15 +104,15 @@ public class ContractorChallanController {
 	public ResponseEntity<ApiResponseVo<List<ContractorChallanVo>>> find(
 			@RequestParam(value = "challannumber", required = false) Integer challanNumber,
 			@RequestParam(value = "contractorid", required = false) Long contractorId,
-			@RequestParam(value = "fromchallandate", required = false) Long fromChallanDate,
-			@RequestParam(value = "tochallandate", required = false) Long toChallanDate,
+			@RequestParam(value = "fromchallandate", required = false) LocalDate fromChallanDate,
+			@RequestParam(value = "tochallandate", required = false) LocalDate toChallanDate,
 			@RequestParam(value = "challantype", required = false) String challanType) {
 		log.info(
 				"Received request for find :: challanNumber {}, contractorId {}, fromChallanDate {}, toChallanDate {}, challanType {}",
 				challanNumber, contractorId, fromChallanDate, toChallanDate, challanType);
 
 		List<ContractorChallanVo> found = service.findAll(challanNumber, contractorId,
-				dateTimeUtil.toLocalDate(fromChallanDate), dateTimeUtil.toLocalDate(toChallanDate), challanType);
+				fromChallanDate, toChallanDate, challanType);
 		log.info("Record {} :: {}", found != null && !found.isEmpty() ? "found" : "not found", found);
 
 		return ResponseEntity

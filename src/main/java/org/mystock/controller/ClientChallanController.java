@@ -1,12 +1,12 @@
 package org.mystock.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
 import org.mystock.apiresponse.ApiResponseVo;
 import org.mystock.apiresponse.ApiResponseVoWrapper;
 import org.mystock.service.ClientChallanService;
-import org.mystock.util.DateTimeUtil;
 import org.mystock.util.MetadataGenerator;
 import org.mystock.vo.ClientChallanVo;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +34,6 @@ public class ClientChallanController {
 
 	private final ClientChallanService service;
 	private final MetadataGenerator metadataGenerator;
-	private final DateTimeUtil dateTimeUtil;
 
 	@PostMapping
 	@Operation(summary = "Create client challan", description = "Challan Type :: I - Issue, R - Received")
@@ -100,13 +99,36 @@ public class ClientChallanController {
 		}
 	}
 
+//	@GetMapping
+//	@Operation(summary = "Get all challans by challan number and challan date range and challan type and client Id", description = "Challan Type :: I - Issue, R - Received")
+//	public ResponseEntity<ApiResponseVo<List<ClientChallanVo>>> find(
+//			@RequestParam(value = "challannumber", required = false) Integer challanNumber,
+//			@RequestParam(value = "clientid", required = false) Long clientId,
+//			@RequestParam(value = "fromchallandate", required = false) Long fromChallanDate,
+//			@RequestParam(value = "tochallandate", required = false) Long toChallanDate,
+//			@RequestParam(value = "challantype", required = false) String challanType) {
+//
+//		log.info(
+//				"Received request for find :: challanNumber {}, clientId {}, fromChallanDate {}, toChallanDate {}, challanType {}",
+//				challanNumber, clientId, fromChallanDate, toChallanDate, challanType);
+//
+//		List<ClientChallanVo> found = service.findAll(challanNumber, clientId,
+//				dateTimeUtil.toLocalDate(fromChallanDate), dateTimeUtil.toLocalDate(toChallanDate), challanType);
+//		log.info("Record {} :: {}", found != null && !found.isEmpty() ? "found" : "not found", found);
+//
+//		return ResponseEntity
+//				.ok(ApiResponseVoWrapper.success("Record fetched", found, metadataGenerator.getMetadata(found)));
+//	}
+	
+
+
 	@GetMapping
 	@Operation(summary = "Get all challans by challan number and challan date range and challan type and client Id", description = "Challan Type :: I - Issue, R - Received")
 	public ResponseEntity<ApiResponseVo<List<ClientChallanVo>>> find(
 			@RequestParam(value = "challannumber", required = false) Integer challanNumber,
 			@RequestParam(value = "clientid", required = false) Long clientId,
-			@RequestParam(value = "fromchallandate", required = false) Long fromChallanDate,
-			@RequestParam(value = "tochallandate", required = false) Long toChallanDate,
+			@RequestParam(value = "fromchallandate", required = false) LocalDate fromChallanDate,
+			@RequestParam(value = "tochallandate", required = false) LocalDate toChallanDate,
 			@RequestParam(value = "challantype", required = false) String challanType) {
 
 		log.info(
@@ -114,7 +136,8 @@ public class ClientChallanController {
 				challanNumber, clientId, fromChallanDate, toChallanDate, challanType);
 
 		List<ClientChallanVo> found = service.findAll(challanNumber, clientId,
-				dateTimeUtil.toLocalDate(fromChallanDate), dateTimeUtil.toLocalDate(toChallanDate), challanType);
+				fromChallanDate, toChallanDate, challanType);
+		
 		log.info("Record {} :: {}", found != null && !found.isEmpty() ? "found" : "not found", found);
 
 		return ResponseEntity

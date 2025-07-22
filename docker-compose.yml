@@ -12,7 +12,7 @@ services:
     ports:
       - 9090:9090  # match with server.port in application.properties
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysqldb:3306/mystockdb?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysqldb:3306/msdb?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root
     volumes:
