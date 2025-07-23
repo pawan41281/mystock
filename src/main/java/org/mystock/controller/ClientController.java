@@ -101,10 +101,14 @@ public class ClientController {
 
 	@GetMapping
 	@Operation(summary = "Get client by Name and City and State and Email and Mobile and GST Number and Status")
-	public ResponseEntity<ApiResponseVo<List<ClientVo>>> find(@RequestParam(required = false) String clientName,
-			@RequestParam(required = false) String city, @RequestParam(required = false) String state,
-			@RequestParam(required = false) String mobile, @RequestParam(required = false) String email,
-			@RequestParam(required = false) String gstNo, @RequestParam(required = false) Boolean active) {
+	public ResponseEntity<ApiResponseVo<List<ClientVo>>> find(
+			@RequestParam(required = false) String clientName,
+			@RequestParam(required = false) String city, 
+			@RequestParam(required = false) String state,
+			@RequestParam(required = false) String mobile, 
+			@RequestParam(required = false) String email,
+			@RequestParam(required = false) String gstNo, 
+			@RequestParam(required = false) Boolean active) {
 
 		log.info(
 				"Received request for find :: clientName {}, city {}, state {}, mobile {}, email {}, gstNo {}, active {}",

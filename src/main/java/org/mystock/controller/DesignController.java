@@ -89,11 +89,11 @@ public class DesignController {
 		if (found != null && !found.isEmpty()) {
 			log.info("Record found :: {}", found);
 			return ResponseEntity
-					.ok(ApiResponseVoWrapper.success("Record saved", found, metadataGenerator.getMetadata(found)));
+					.ok(ApiResponseVoWrapper.success("Record found", found, metadataGenerator.getMetadata(found)));
 		} else {
 			log.error("Record not found :: {}", found);
 			return ResponseEntity
-					.ok(ApiResponseVoWrapper.success("Record not saved", found, metadataGenerator.getMetadata(found)));
+					.ok(ApiResponseVoWrapper.success("Record not found", found, metadataGenerator.getMetadata(found)));
 		}
 	}
 
