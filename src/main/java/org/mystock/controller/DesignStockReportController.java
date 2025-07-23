@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/v2/designstockreports")
 @AllArgsConstructor
 @Slf4j
-@Tag(name = "Reports", description = "All Reports")
+@Tag(name = "Report", description = "Endpoints for reports")
 public class DesignStockReportController {
 
 	private final DesignStockReportService designStockReportService;
@@ -36,16 +36,16 @@ public class DesignStockReportController {
 			@RequestParam(required = false) String designName,
 			@Parameter(description = "Filter by color name (partial match)") 
 			@RequestParam(required = false) String colorName){
-		log.info("Received request for find all");
+		log.info("Received request for design wise stock report");
 		List<DesignStockReportVo> found = designStockReportService.getDesignStockReport(designName, colorName);
 		if (found != null && !found.isEmpty()) {
 			log.info("Record found :: {}", found);
 			return ResponseEntity
-					.ok(ApiResponseVoWrapper.success("Record saved", found, metadataGenerator.getMetadata(found)));
+					.ok(ApiResponseVoWrapper.success("Record found", found, metadataGenerator.getMetadata(found)));
 		} else {
 			log.error("Record not found :: {}", found);
 			return ResponseEntity
-					.ok(ApiResponseVoWrapper.success("Record not saved", found, metadataGenerator.getMetadata(found)));
+					.ok(ApiResponseVoWrapper.success("Record not found", found, metadataGenerator.getMetadata(found)));
 		}
 	}
 }
