@@ -22,8 +22,8 @@ public class DesignVo {
 	private String designName;
 
 	private String description;
-
-	private boolean active = true;
+	
+	private Boolean active;
 
 	private LocalDateTime createdOn;
 }

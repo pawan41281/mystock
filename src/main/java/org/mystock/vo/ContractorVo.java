@@ -34,8 +34,8 @@ public class ContractorVo {
 	private String mobile;
 
 	private String gstNo;
-
-	private boolean active = true;
+	
+	private Boolean active;
 
 	private LocalDateTime createdOn;
 }

@@ -23,7 +23,7 @@ public class UserVo {
 	private String mobile;
 	private String password;
 
-	private boolean locked;
+	private Boolean locked;
 
 	private Set<RoleVo> roles;
 
@@ -44,7 +44,7 @@ public class UserVo {
 		this.password = password;
 	}
 
-	public UserVo(String name, String username, String email, String password, boolean locked) {
+	public UserVo(String name, String username, String email, String password, Boolean locked) {
 		super();
 		this.name = name;
 		this.userName = username;
@@ -53,7 +53,7 @@ public class UserVo {
 		this.locked = locked;
 	}
 
-	public UserVo(String name, String username, String email, String mobile, String password, boolean locked) {
+	public UserVo(String name, String username, String email, String mobile, String password, Boolean locked) {
 		super();
 		this.name = name;
 		this.userName = username;
