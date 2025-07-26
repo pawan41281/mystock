@@ -23,7 +23,7 @@ public class DesignVo {
 
 	private String description;
 
-	private boolean active = true;
+	private Boolean active;
 
-	private LocalDateTime createdOn;
+	private LocalDateTime createdOn = LocalDateTime.now();
 }

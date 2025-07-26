@@ -1,11 +1,13 @@
 package org.mystock.service.impl;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.mystock.entity.ClientEntity;
+import org.mystock.exception.ResourceNotFoundException;
 import org.mystock.mapper.ClientMapper;
 import org.mystock.repository.ClientRepository;
 import org.mystock.service.ClientService;
@@ -23,6 +25,24 @@ public class ClientServiceImpl implements ClientService {
 
 	@Override
 	public ClientVo save(ClientVo clientVo) {
+		if(clientVo.getId()!=null) {//update request
+			ClientVo existingVo = getById(clientVo.getId());
+			if (existingVo == null)
+				throw new ResourceNotFoundException("Invalid ID :: ".concat(String.valueOf(clientVo.getId())));
+			if(clientVo.getActive()==null) clientVo.setActive(existingVo.getActive());
+			if(clientVo.getAddress()==null) clientVo.setAddress(existingVo.getAddress());
+			if(clientVo.getCity()==null) clientVo.setCity(existingVo.getCity());
+			if(clientVo.getClientName()==null) clientVo.setClientName(existingVo.getClientName());
+			if(clientVo.getCountry()==null) clientVo.setCountry(existingVo.getCountry());
+			clientVo.setCreatedOn(existingVo.getCreatedOn());
+			if(clientVo.getEmail()==null) clientVo.setEmail(existingVo.getEmail());
+			if(clientVo.getGstNo()==null) clientVo.setGstNo(existingVo.getGstNo());
+			if(clientVo.getMobile()==null) clientVo.setMobile(existingVo.getMobile());
+			if(clientVo.getState()==null) clientVo.setState(existingVo.getState());
+		}else {//new request
+			clientVo.setCreatedOn(LocalDateTime.now());
+			clientVo.setActive(Boolean.TRUE);
+		}
 		ClientEntity saved = clientRepository.save(clientMapper.toEntity(clientVo));
 		return clientMapper.toVo(saved);
 	}

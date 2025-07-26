@@ -1,11 +1,13 @@
 package org.mystock.service.impl;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.mystock.entity.DesignEntity;
+import org.mystock.exception.ResourceNotFoundException;
 import org.mystock.mapper.DesignMapper;
 import org.mystock.repository.DesignRepository;
 import org.mystock.service.DesignService;
@@ -23,6 +25,19 @@ public class DesignServiceImpl implements DesignService {
 
 	@Override
 	public DesignVo save(DesignVo designVo) {
+		if(designVo.getId()!=null) {//update request
+			DesignVo existingVo = getById(designVo.getId());
+			if (existingVo == null)
+				throw new ResourceNotFoundException("Invalid ID :: ".concat(String.valueOf(designVo.getId())));
+			if(designVo.getDesignName()==null) designVo.setDesignName(existingVo.getDesignName());
+			if(designVo.getDescription()==null) designVo.setDescription(existingVo.getDescription());
+			if(designVo.getActive()==null) designVo.setActive(existingVo.getActive());
+			designVo.setCreatedOn(existingVo.getCreatedOn());
+		}else {//new request
+			designVo.setId(null);
+			designVo.setActive(Boolean.TRUE);
+			designVo.setCreatedOn(LocalDateTime.now());
+		}
 		DesignEntity designEntity = designMapper.toEntity(designVo);
 		designEntity = designRepository.save(designEntity);
 		return designMapper.toVo(designEntity);

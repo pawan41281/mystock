@@ -37,5 +37,5 @@ public class ContractorChallanItemVo {
 	@Min(0)
 	private Integer quantity;
 
-	private LocalDateTime createdOn;
+	private LocalDateTime createdOn = LocalDateTime.now();
 }

@@ -35,7 +35,7 @@ public class ClientVo {
 	
 	private String gstNo;
 	
-	private boolean active = true;
+	private Boolean active;
     
-	private LocalDateTime createdOn;
+	private LocalDateTime createdOn = LocalDateTime.now();
 }

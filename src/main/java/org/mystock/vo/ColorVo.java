@@ -19,6 +19,6 @@ public class ColorVo {
 	private Long id;
 	@NotNull
 	private String colorName;
-	private boolean active = true;
+	private Boolean active;
 	private LocalDateTime createdOn;
 }

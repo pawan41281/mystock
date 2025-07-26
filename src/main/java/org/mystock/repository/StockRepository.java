@@ -46,7 +46,6 @@ public interface StockRepository extends JpaRepository<StockEntity, Long> {
 	public int reduceBalance(Long designId, Long colorId, Integer quantity);
 
 	@Query(value = """
-			WITH stock_balance AS(
 			SELECT
 			    d.description AS designName,
 			    c.colorname AS colorName,
@@ -60,14 +59,12 @@ public interface StockRepository extends JpaRepository<StockEntity, Long> {
 			WHERE
 			    d.description LIKE :designName
 			    AND
-			    c.colorname LIKE :colorName)
-			SELECT * FROM stock_balance
+			    c.colorname LIKE :colorName
 			""", nativeQuery = true)
 	public List<DesignStockReportVo> getDesignStockReport(@Param("designName") String designName,
 			@Param("colorName") String colorName);
 
 	@Query(value = """
-			WITH stock_balance AS(
 			SELECT
 			  c.id AS contractorId,
 			  c.contractorname AS contractorName,
@@ -88,8 +85,7 @@ public interface StockRepository extends JpaRepository<StockEntity, Long> {
 			  AND
 			  d.description LIKE :designName
 			  AND
-			  clr.colorname LIKE :colorName)
-			SELECT * FROM stock_balance
+			  clr.colorname LIKE :colorName
 			""", nativeQuery = true)
 	public List<ContractorStockReportVo> getContractorStockReport(String contractorName, String designName,
 			String colorName);

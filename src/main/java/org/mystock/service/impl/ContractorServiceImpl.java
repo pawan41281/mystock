@@ -1,11 +1,13 @@
 package org.mystock.service.impl;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.mystock.entity.ContractorEntity;
+import org.mystock.exception.ResourceNotFoundException;
 import org.mystock.mapper.ContractorMapper;
 import org.mystock.repository.ContractorRepository;
 import org.mystock.service.ContractorService;
@@ -23,6 +25,33 @@ public class ContractorServiceImpl implements ContractorService {
 
 	@Override
 	public ContractorVo save(ContractorVo contractorVo) {
+		if (contractorVo.getId() != null) {// update request
+			ContractorVo existingVo = getById(contractorVo.getId());
+			if (existingVo == null)
+				throw new ResourceNotFoundException("Invalid ID :: ".concat(String.valueOf(contractorVo.getId())));
+			if (contractorVo.getActive() == null)
+				contractorVo.setActive(existingVo.getActive());
+			if (contractorVo.getAddress() == null)
+				contractorVo.setAddress(existingVo.getAddress());
+			if (contractorVo.getCity() == null)
+				contractorVo.setCity(existingVo.getCity());
+			if (contractorVo.getContractorName() == null)
+				contractorVo.setContractorName(existingVo.getContractorName());
+			if (contractorVo.getCountry() == null)
+				contractorVo.setCountry(existingVo.getCountry());
+			contractorVo.setCreatedOn(existingVo.getCreatedOn());
+			if (contractorVo.getEmail() == null)
+				contractorVo.setEmail(existingVo.getEmail());
+			if (contractorVo.getGstNo() == null)
+				contractorVo.setGstNo(existingVo.getGstNo());
+			if (contractorVo.getMobile() == null)
+				contractorVo.setMobile(existingVo.getMobile());
+			if (contractorVo.getState() == null)
+				contractorVo.setState(existingVo.getState());
+		} else {// new request
+			contractorVo.setCreatedOn(LocalDateTime.now());
+			contractorVo.setActive(Boolean.TRUE);
+		}
 		ContractorEntity saved = contractorRepository.save(contractorMapper.toEntity(contractorVo));
 		return contractorMapper.toVo(saved);
 	}
@@ -106,10 +135,10 @@ public class ContractorServiceImpl implements ContractorService {
 	}
 
 	@Override
-	public List<ContractorVo> find(String contractorName, String city,
-			String state, String mobile, String email, String gstNo, Boolean active) {
-		return contractorRepository.find(contractorName, city, state,
-				mobile, email, gstNo, active).stream().map(contractorMapper::toVo).collect(Collectors.toList());
+	public List<ContractorVo> find(String contractorName, String city, String state, String mobile, String email,
+			String gstNo, Boolean active) {
+		return contractorRepository.find(contractorName, city, state, mobile, email, gstNo, active).stream()
+				.map(contractorMapper::toVo).collect(Collectors.toList());
 	}
 
 }

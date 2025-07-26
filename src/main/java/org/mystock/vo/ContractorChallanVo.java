@@ -38,7 +38,7 @@ public class ContractorChallanVo {
 	@Pattern(regexp = "I|R")
 	private String challanType;//I - Issue  R - Received
 	
-	private LocalDateTime createdOn;
+	private LocalDateTime createdOn = LocalDateTime.now();
 	
 	@ToString.Exclude
 	@EqualsAndHashCode.Exclude

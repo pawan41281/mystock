@@ -1,11 +1,13 @@
 package org.mystock.service.impl;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.mystock.entity.ColorEntity;
+import org.mystock.exception.ResourceNotFoundException;
 import org.mystock.mapper.ColorMapper;
 import org.mystock.repository.ColorRepository;
 import org.mystock.service.ColorService;
@@ -23,6 +25,22 @@ public class ColorServiceImpl implements ColorService {
 
 	@Override
 	public ColorVo save(ColorVo colorVo) {
+		if (colorVo.getId() != null) {// update request
+			ColorVo existingVo = getById(colorVo.getId());
+			if (existingVo == null)
+				throw new ResourceNotFoundException("Invalid ID :: ".concat(String.valueOf(colorVo.getId())));
+			if (colorVo.getColorName() == null)
+				colorVo.setColorName(existingVo.getColorName());
+			if (colorVo.getActive() == null)
+				colorVo.setActive(existingVo.getActive());
+			colorVo.setCreatedOn(existingVo.getCreatedOn());
+		} else {// new request
+			colorVo.setId(null);
+			if (colorVo.getActive() == null)
+				colorVo.setActive(Boolean.TRUE);
+			if (colorVo.getCreatedOn() == null)
+				colorVo.setCreatedOn(LocalDateTime.now());
+		}
 		ColorEntity saved = colorRepository.save(colorMapper.toEntity(colorVo));
 		return colorMapper.toVo(saved);
 	}

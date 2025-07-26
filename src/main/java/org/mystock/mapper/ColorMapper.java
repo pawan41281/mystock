@@ -14,6 +14,7 @@ public class ColorMapper {
 	private final ModelMapper modelMapper;
 
 	public ColorVo toVo(ColorEntity colorEntity) {
+
 		return modelMapper.map(colorEntity, ColorVo.class);
 	}
 

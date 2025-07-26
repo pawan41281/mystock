@@ -21,5 +21,5 @@ public class ContractorStockVo {
 	private ColorVo color;
 	private Integer balance=0;
 	private LocalDateTime updatedOn = LocalDateTime.now();
-	private LocalDateTime createdOn;
+	private LocalDateTime createdOn = LocalDateTime.now();
 }
