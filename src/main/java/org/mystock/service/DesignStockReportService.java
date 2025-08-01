@@ -8,4 +8,6 @@ public interface DesignStockReportService {
 
 	public List<DesignStockReportVo> getDesignStockReport(String designName, String colorName);
 
+	public List<DesignStockReportVo> getDesignStockReport(String designName, String colorName, Integer pageSize, Integer pageCount);
+	public int getDesignStockCount(String designName, String colorName);
 }

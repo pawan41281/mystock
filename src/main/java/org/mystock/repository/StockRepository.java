@@ -3,7 +3,6 @@ package org.mystock.repository;
 import java.util.List;
 
 import org.mystock.entity.StockEntity;
-import org.mystock.vo.ContractorStockReportVo;
 import org.mystock.vo.DesignStockReportVo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
@@ -65,29 +64,34 @@ public interface StockRepository extends JpaRepository<StockEntity, Long> {
 			@Param("colorName") String colorName);
 
 	@Query(value = """
-			SELECT
-			  c.id AS contractorId,
-			  c.contractorname AS contractorName,
-			  d.id AS designId,
-			  d.description AS designName,
-			  clr.colorname AS colorName,
-			  COALESCE(cs.balance, 0) AS stockBalance
-			FROM
-			  contractorinfo c
-			CROSS JOIN
-			  designinfo d
-			CROSS JOIN
-			  colorinfo clr
-			LEFT JOIN
-			  contractorstockinfo cs ON cs.contractor_id = c.id AND cs.design_id = d.id AND cs.color_id = clr.id
-			WHERE
-			  c.contractorname like :contractorName
-			  AND
-			  d.description LIKE :designName
-			  AND
-			  clr.colorname LIKE :colorName
+			SELECT COUNT(*)
+			FROM designinfo d
+			CROSS JOIN colorinfo c
+			LEFT JOIN stockinfo s ON s.design_id = d.id AND s.color_id = c.id
+			WHERE d.description LIKE :designName
+			  AND c.colorname LIKE :colorName
 			""", nativeQuery = true)
-	public List<ContractorStockReportVo> getContractorStockReport(String contractorName, String designName,
-			String colorName);
+	public int getDesignStockCount(@Param("designName") String designName, @Param("colorName") String colorName);
+
+	@Query(value = """
+			SELECT
+			    d.description AS designName,
+			    c.colorname AS colorName,
+			    COALESCE(s.balance, 0) AS stockBalance
+			FROM
+			    designinfo d
+			CROSS JOIN
+			    colorinfo c
+			LEFT JOIN
+			    stockinfo s ON s.design_id = d.id AND s.color_id = c.id
+			WHERE
+			    d.description LIKE :designName
+			    AND
+			    c.colorname LIKE :colorName
+			LIMIT :pageSize OFFSET :pageCount
+			""", nativeQuery = true)
+	public List<DesignStockReportVo> getDesignStockReport(@Param("designName") String designName,
+			@Param("colorName") String colorName, @Param("pageSize") Integer pageSize,
+			@Param("pageCount") Integer pageCount);
 
 }

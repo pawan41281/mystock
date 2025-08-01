@@ -3,10 +3,12 @@ package org.mystock.repository;
 import java.util.List;
 
 import org.mystock.entity.ContractorStockEntity;
+import org.mystock.vo.ContractorStockReportVo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import jakarta.persistence.LockModeType;
@@ -50,5 +52,79 @@ public interface ContractorStockRepository extends JpaRepository<ContractorStock
 			AND d.color.id = :colorId
 			""")
 	public int reduceBalance(Long contractorId, Long designId, Long colorId, Integer quantity);
+
+	@Query(value = """
+			SELECT
+			  c.id AS contractorId,
+			  c.contractorname AS contractorName,
+			  d.id AS designId,
+			  d.description AS designName,
+			  clr.colorname AS colorName,
+			  COALESCE(cs.balance, 0) AS stockBalance
+			FROM
+			  contractorinfo c
+			CROSS JOIN
+			  designinfo d
+			CROSS JOIN
+			  colorinfo clr
+			LEFT JOIN
+			  contractorstockinfo cs ON cs.contractor_id = c.id AND cs.design_id = d.id AND cs.color_id = clr.id
+			WHERE
+			  c.contractorname like :contractorName
+			  AND
+			  d.description LIKE :designName
+			  AND
+			  clr.colorname LIKE :colorName
+			""", nativeQuery = true)
+	public List<ContractorStockReportVo> getContractorStockReport(String contractorName, String designName,
+			String colorName);
+
+	@Query(value = """
+			SELECT
+			  c.id AS contractorId,
+			  c.contractorname AS contractorName,
+			  d.id AS designId,
+			  d.description AS designName,
+			  clr.colorname AS colorName,
+			  COALESCE(cs.balance, 0) AS stockBalance
+			FROM
+			  contractorinfo c
+			CROSS JOIN
+			  designinfo d
+			CROSS JOIN
+			  colorinfo clr
+			LEFT JOIN
+			  contractorstockinfo cs ON cs.contractor_id = c.id AND cs.design_id = d.id AND cs.color_id = clr.id
+			WHERE
+			  c.contractorname like :contractorName
+			  AND
+			  d.description LIKE :designName
+			  AND
+			  clr.colorname LIKE :colorName
+			LIMIT :pageSize OFFSET :pageCount
+			""", nativeQuery = true)
+	public List<ContractorStockReportVo> getContractorStockReport(@Param("contractorName") String contractorName,
+			@Param("designName") String designName, @Param("colorName") String colorName,
+			@Param("pageSize") Integer pageSize, @Param("pageCount") Integer pageCount);
+
+	@Query(value = """
+			SELECT
+			  count(*)
+			FROM
+			  contractorinfo c
+			CROSS JOIN
+			  designinfo d
+			CROSS JOIN
+			  colorinfo clr
+			LEFT JOIN
+			  contractorstockinfo cs ON cs.contractor_id = c.id AND cs.design_id = d.id AND cs.color_id = clr.id
+			WHERE
+			  c.contractorname like :contractorName
+			  AND
+			  d.description LIKE :designName
+			  AND
+			  clr.colorname LIKE :colorName
+			""", nativeQuery = true)
+	public int getContractorStockCount(String contractorName, String designName, String colorName);
 
 }

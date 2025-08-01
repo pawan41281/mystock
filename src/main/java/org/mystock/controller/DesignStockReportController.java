@@ -20,7 +20,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/v2/designstockreports")
+@RequestMapping("/v2/designstockreports/")
 @AllArgsConstructor
 @Slf4j
 @Tag(name = "Report", description = "Endpoints for reports")

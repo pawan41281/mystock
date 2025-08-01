@@ -1,5 +1,6 @@
 package org.mystock.service.impl;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.mystock.repository.StockRepository;
@@ -19,7 +20,25 @@ public class DesignStockReportServiceImpl implements DesignStockReportService {
 	public List<DesignStockReportVo> getDesignStockReport(String designName, String colorName) {
 		designName = designName != null && !designName.isEmpty() ? "%" + designName + "%" : "%";
 		colorName = colorName != null && !colorName.isEmpty() ? "%" + colorName + "%" : "%";
-		return stockRepository.getDesignStockReport(designName, colorName);
+		List<DesignStockReportVo> found = stockRepository.getDesignStockReport(designName, colorName);
+		return found != null ? found : Collections.emptyList();
+	}
+
+	@Override
+	public List<DesignStockReportVo> getDesignStockReport(String designName, String colorName, Integer pageSize,
+			Integer pageCount) {
+		designName = designName != null && !designName.isEmpty() ? "%" + designName + "%" : "%";
+		colorName = colorName != null && !colorName.isEmpty() ? "%" + colorName + "%" : "%";
+		List<DesignStockReportVo> found = stockRepository.getDesignStockReport(designName, colorName, pageSize,
+				(pageCount * pageSize));
+		return found != null ? found : Collections.emptyList();
+	}
+
+	@Override
+	public int getDesignStockCount(String designName, String colorName) {
+		designName = designName != null && !designName.isEmpty() ? "%" + designName + "%" : "%";
+		colorName = colorName != null && !colorName.isEmpty() ? "%" + colorName + "%" : "%";
+		return stockRepository.getDesignStockCount(designName, colorName);
 	}
 
 }
