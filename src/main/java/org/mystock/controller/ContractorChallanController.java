@@ -39,6 +39,7 @@ public class ContractorChallanController {
 	@Operation(summary = "Create contractor challan", description = "Challan Type :: I - Issue, R - Received")
 	public ResponseEntity<ApiResponseVo<ContractorChallanVo>> save(@Valid @RequestBody ContractorChallanVo vo) {
 		log.info("Received request for save :: {}", vo);
+		if(vo.getId()!=null && vo.getId().equals(0L)) vo.setId(null);
 		ContractorChallanVo saved = service.save(vo);
 		if (saved != null && saved.getId() != null) {
 			log.info("Record saved :: {}", saved);

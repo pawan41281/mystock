@@ -36,6 +36,7 @@ public class ColorController {
 	@Operation(summary = "Create or update color")
 	public ResponseEntity<ApiResponseVo<ColorVo>> save(@RequestBody ColorVo vo) {
 		log.info("Received request for save :: {}", vo);
+		if(vo.getId()!=null && vo.getId().equals(0L)) vo.setId(null);
 		ColorVo saved = colorService.save(vo);
 		if (saved != null && saved.getId() != null) {
 			log.info("Record saved :: {}", saved);

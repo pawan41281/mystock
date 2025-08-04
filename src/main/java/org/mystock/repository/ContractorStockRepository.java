@@ -58,7 +58,7 @@ public interface ContractorStockRepository extends JpaRepository<ContractorStock
 			  c.id AS contractorId,
 			  c.contractorname AS contractorName,
 			  d.id AS designId,
-			  d.description AS designName,
+			  d.design AS designName,
 			  clr.colorname AS colorName,
 			  COALESCE(cs.balance, 0) AS stockBalance
 			FROM
@@ -84,7 +84,7 @@ public interface ContractorStockRepository extends JpaRepository<ContractorStock
 			  c.id AS contractorId,
 			  c.contractorname AS contractorName,
 			  d.id AS designId,
-			  d.description AS designName,
+			  d.design AS designName,
 			  clr.colorname AS colorName,
 			  COALESCE(cs.balance, 0) AS stockBalance
 			FROM

@@ -37,6 +37,7 @@ public class ContractorController {
 	@Operation(summary = "Create or update contractor")
 	public ResponseEntity<ApiResponseVo<ContractorVo>> save(@RequestBody ContractorVo vo) {
 		log.info("Received request for save :: {}", vo);
+		if(vo.getId()!=null && vo.getId().equals(0L)) vo.setId(null);
 		ContractorVo saved = contractorService.save(vo);
 		if (saved != null && saved.getId() != null) {
 			log.info("Record saved :: {}", saved);

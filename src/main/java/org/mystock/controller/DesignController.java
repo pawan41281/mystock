@@ -9,6 +9,7 @@ import org.mystock.service.DesignService;
 import org.mystock.util.MetadataGenerator;
 import org.mystock.vo.DesignVo;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,8 +35,9 @@ public class DesignController {
 
 	@PostMapping
 	@Operation(summary = "Save operation", description = "Save design record")
-	public ResponseEntity<ApiResponseVo<DesignVo>> save(@RequestBody DesignVo vo) {
+	public ResponseEntity<ApiResponseVo<DesignVo>> save(@Validated @RequestBody DesignVo vo) {
 		log.info("Received request for save :: {}", vo);
+		if(vo.getId()!=null && vo.getId().equals(0L)) vo.setId(null);
 		DesignVo saved = designService.save(vo);
 		if (saved != null && saved.getId() != null) {
 			log.info("Record saved :: {}", saved);

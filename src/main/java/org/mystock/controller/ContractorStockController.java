@@ -61,6 +61,7 @@ public class ContractorStockController {
 	@Operation(summary = "Save Operation", description = "Set opening balance of contractor stock item")
 	public ResponseEntity<ApiResponseVo<ContractorStockVo>> save(@Valid @RequestBody ContractorStockVo vo) {
 		log.info("Received request for save :: {}", vo);
+		if(vo.getId()!=null && vo.getId().equals(0L)) vo.setId(null);
 		ContractorStockVo saved = contractorStockService.addOpenningBalance(vo.getContractor().getId(),
 				vo.getDesign().getId(), vo.getColor().getId(), vo.getBalance());
 		if (saved != null && saved.getId() != null) {

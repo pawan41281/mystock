@@ -37,6 +37,7 @@ public class ClientController {
 	@Operation(summary = "Create or update client")
 	public ResponseEntity<ApiResponseVo<ClientVo>> save(@RequestBody ClientVo vo) {
 		log.info("Received request for save :: {}", vo);
+		if(vo.getId()!=null && vo.getId().equals(0L)) vo.setId(null);
 		ClientVo saved = clientService.save(vo);
 		if (saved != null && saved.getId() != null) {
 			log.info("Record saved :: {}", saved);
