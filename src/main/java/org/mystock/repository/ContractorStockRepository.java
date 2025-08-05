@@ -56,10 +56,10 @@ public interface ContractorStockRepository extends JpaRepository<ContractorStock
 	@Query(value = """
 			SELECT
 			  c.id AS contractorId,
-			  c.contractorname AS contractorName,
+			  UPPER(c.contractorname) AS contractorName,
 			  d.id AS designId,
-			  d.design AS designName,
-			  clr.colorname AS colorName,
+			  UPPER(d.design) AS designName,
+			  UPPER(clr.colorname) AS colorName,
 			  COALESCE(cs.balance, 0) AS stockBalance
 			FROM
 			  contractorinfo c
@@ -82,10 +82,10 @@ public interface ContractorStockRepository extends JpaRepository<ContractorStock
 	@Query(value = """
 			SELECT
 			  c.id AS contractorId,
-			  c.contractorname AS contractorName,
+			  UPPER(c.contractorname) AS contractorName,
 			  d.id AS designId,
-			  d.design AS designName,
-			  clr.colorname AS colorName,
+			  UPPER(d.design) AS designName,
+			  UPPER(clr.colorname) AS colorName,
 			  COALESCE(cs.balance, 0) AS stockBalance
 			FROM
 			  contractorinfo c

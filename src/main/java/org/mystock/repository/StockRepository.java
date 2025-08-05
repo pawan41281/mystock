@@ -46,8 +46,8 @@ public interface StockRepository extends JpaRepository<StockEntity, Long> {
 
 	@Query(value = """
 			SELECT
-			    d.description AS designName,
-			    c.colorname AS colorName,
+			    UPPER(d.design) AS designName,
+			    UPPER(c.colorname) AS colorName,
 			    COALESCE(s.balance, 0) AS stockBalance
 			FROM
 			    designinfo d
@@ -75,8 +75,8 @@ public interface StockRepository extends JpaRepository<StockEntity, Long> {
 
 	@Query(value = """
 			SELECT
-			    d.description AS designName,
-			    c.colorname AS colorName,
+			    UPPER(d.design) AS designName,
+			    UPPER(c.colorname) AS colorName,
 			    COALESCE(s.balance, 0) AS stockBalance
 			FROM
 			    designinfo d

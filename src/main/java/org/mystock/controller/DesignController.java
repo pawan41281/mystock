@@ -82,6 +82,26 @@ public class DesignController {
 		}
 
 	}
+	
+
+
+	@GetMapping("/name/{name}")
+	@Operation(summary = "Get by name", description = "Get a design by its name")
+	public ResponseEntity<ApiResponseVo<List<DesignVo>>> getByName(@PathVariable(required = false) String name) {
+		log.info("Received request for find :: name - {}", name);
+		if(name==null) name="";
+		List<DesignVo> found = designService.getByName(name.trim());
+		if (found != null) {
+			log.info("Record found :: {}", found);
+			return ResponseEntity
+					.ok(ApiResponseVoWrapper.success("Record found", found, metadataGenerator.getMetadata(found)));
+		} else {
+			log.info("Record not found :: {}", found);
+			return ResponseEntity
+					.ok(ApiResponseVoWrapper.success("Record not found", found, metadataGenerator.getMetadata(found)));
+		}
+
+	}
 
 	@GetMapping
 	@Operation(summary = "Get All", description = "Get all designs")

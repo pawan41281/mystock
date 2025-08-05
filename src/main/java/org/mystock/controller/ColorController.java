@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -112,6 +113,25 @@ public class ColorController {
 					ApiResponseVoWrapper.success("Record not updated", saved, metadataGenerator.getMetadata(saved)));
 		}
 
+	}
+
+	@GetMapping("/name/{name}")
+	@Operation(summary = "Get All by Name", description = "Get all colors by name")
+	public ResponseEntity<ApiResponseVo<List<ColorVo>>> getAll(
+			@Parameter(name = "name", description = "Color Name to Search")
+			@PathVariable String name) {
+		log.info("Received request for find all");
+		name=name==null?"%":"%"+name.trim()+"%";
+		List<ColorVo> found = colorService.findByNameIgnoreCaseLike(name);
+		if (found != null && !found.isEmpty()) {
+			log.info("Record found :: {}", found);
+			return ResponseEntity
+					.ok(ApiResponseVoWrapper.success("Record saved", found, metadataGenerator.getMetadata(found)));
+		} else {
+			log.error("Record not found :: {}", found);
+			return ResponseEntity
+					.ok(ApiResponseVoWrapper.success("Record not saved", found, metadataGenerator.getMetadata(found)));
+		}
 	}
 
 }

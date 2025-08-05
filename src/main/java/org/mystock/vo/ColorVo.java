@@ -21,4 +21,8 @@ public class ColorVo {
 	private String colorName;
 	private Boolean active;
 	private LocalDateTime createdOn;
+	
+	public String getColorName() {
+		return colorName!=null?colorName.toUpperCase():"";
+	}
 }

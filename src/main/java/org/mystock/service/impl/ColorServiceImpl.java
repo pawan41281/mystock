@@ -59,6 +59,11 @@ public class ColorServiceImpl implements ColorService {
 	}
 
 	@Override
+	public List<ColorVo> findByNameIgnoreCaseLike(String name) {
+		return colorRepository.findByNameIgnoreCaseLike(name).stream().map(colorMapper::toVo).collect(Collectors.toList());
+	}
+
+	@Override
 	public ColorVo getById(Long id) {
 		return colorRepository.findById(id).map(colorMapper::toVo).orElse(null);
 	}

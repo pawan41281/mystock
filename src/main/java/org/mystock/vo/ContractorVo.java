@@ -20,6 +20,10 @@ public class ContractorVo {
 
 	@NotNull
 	private String contractorName;
+	
+	public String getContractorName() {
+		return contractorName!=null?contractorName.toUpperCase():"";
+	}
 
 	private String address;
 

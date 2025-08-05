@@ -57,6 +57,12 @@ public class DesignServiceImpl implements DesignService {
 	}
 
 	@Override
+	public List<DesignVo> getByName(String name) {
+		List<DesignEntity> entities = designRepository.findByDesignNameIgnoreCaseLike("%"+name+"%");
+		return entities.stream().map(designMapper::toVo).collect(Collectors.toList());
+	}
+
+	@Override
 	public List<DesignVo> getByStatus(boolean status) {
 		List<DesignEntity> entities = designRepository.findByActive(status);
 		return entities.stream().map(designMapper::toVo).collect(Collectors.toList());

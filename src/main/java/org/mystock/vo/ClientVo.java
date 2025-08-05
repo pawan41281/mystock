@@ -21,6 +21,10 @@ public class ClientVo {
 	@NotNull
 	private String clientName;
 	
+	public String getClientName() {
+		return clientName!=null?clientName.toUpperCase():"";
+	}
+	
 	private String address;
 	
 	private String city;

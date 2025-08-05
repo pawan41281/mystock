@@ -21,6 +21,10 @@ public class DesignVo {
 	@NotNull
 	private String designName;
 
+	public String getDesignName() {
+		return designName!=null?designName.toUpperCase():"";
+	}
+	
 	private String description;
 
 	private Boolean active;
