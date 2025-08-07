@@ -43,11 +43,11 @@ public class ContractorStockReportController {
 		List<ContractorStockReportVo> found = contractorStockReportService.getStockReport(contractorName, designName,
 				colorName);
 		if (found != null && !found.isEmpty()) {
-			log.info("Record found :: {}", found);
+			log.info("Record found");
 			return ResponseEntity
 					.ok(ApiResponseVoWrapper.success("Record found", found, metadataGenerator.getMetadata(found)));
 		} else {
-			log.error("Record not found :: {}", found);
+			log.error("Record not found");
 			return ResponseEntity
 					.ok(ApiResponseVoWrapper.success("Record not found", found, metadataGenerator.getMetadata(found)));
 		}

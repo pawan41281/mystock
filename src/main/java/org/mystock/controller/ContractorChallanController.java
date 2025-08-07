@@ -38,15 +38,15 @@ public class ContractorChallanController {
 	@PostMapping
 	@Operation(summary = "Create contractor challan", description = "Challan Type :: I - Issue, R - Received")
 	public ResponseEntity<ApiResponseVo<ContractorChallanVo>> save(@Valid @RequestBody ContractorChallanVo vo) {
-		log.info("Received request for save :: {}", vo);
+		log.info("Received request for save");
 		if(vo.getId()!=null && vo.getId().equals(0L)) vo.setId(null);
 		ContractorChallanVo saved = service.save(vo);
 		if (saved != null && saved.getId() != null) {
-			log.info("Record saved :: {}", saved);
+			log.info("Record saved");
 			return ResponseEntity.status(201)
 					.body(ApiResponseVoWrapper.success("Record saved", saved, metadataGenerator.getMetadata(saved)));
 		} else {
-			log.error("Record not saved :: {}", vo);
+			log.error("Record not saved");
 			return ResponseEntity.status(500).body(
 					ApiResponseVoWrapper.success("Record not saved", saved, metadataGenerator.getMetadata(saved)));
 		}
@@ -55,14 +55,14 @@ public class ContractorChallanController {
 	@PostMapping("bulk")
 	@Operation(summary = "Create multiple contractor challan", description = "Challan Type :: I - Issue, R - Received")
 	public ResponseEntity<ApiResponseVo<Set<ContractorChallanVo>>> saveAll(@RequestBody Set<ContractorChallanVo> vos) {
-		log.info("Received request for bulk save :: {}", vos);
+		log.info("Received request for bulk save");
 		Set<ContractorChallanVo> saved = service.saveAll(vos);
 		if (saved != null && !saved.isEmpty()) {
-			log.info("Record saved :: {}", saved);
+			log.info("Record saved");
 			return ResponseEntity.status(201)
 					.body(ApiResponseVoWrapper.success("Record saved", saved, metadataGenerator.getMetadata(saved)));
 		} else {
-			log.error("Record not saved :: {}", vos);
+			log.error("Record not saved");
 			return ResponseEntity.status(500).body(
 					ApiResponseVoWrapper.success("Record not saved", saved, metadataGenerator.getMetadata(saved)));
 		}
@@ -74,7 +74,7 @@ public class ContractorChallanController {
 		log.info("Received request for delete :: challanId {}", id);
 		ContractorChallanVo deleted = service.deleteById(id);
 		if (deleted != null) {
-			log.info("Record deleted :: {}", deleted);
+			log.info("Record deleted");
 			return ResponseEntity.status(201).body(
 					ApiResponseVoWrapper.success("Record deleted", deleted, metadataGenerator.getMetadata(deleted)));
 		} else {
@@ -90,11 +90,11 @@ public class ContractorChallanController {
 		log.info("Received request for find :: id - {}", id);
 		ContractorChallanVo found = service.findById(id);
 		if (found != null) {
-			log.info("Record found :: {}", found);
+			log.info("Record found");
 			return ResponseEntity
 					.ok(ApiResponseVoWrapper.success("Record found", found, metadataGenerator.getMetadata(found)));
 		} else {
-			log.info("Record not found :: {}", found);
+			log.info("Record not found");
 			return ResponseEntity
 					.ok(ApiResponseVoWrapper.success("Record not found", found, metadataGenerator.getMetadata(found)));
 		}
@@ -114,7 +114,7 @@ public class ContractorChallanController {
 
 		List<ContractorChallanVo> found = service.findAll(challanNumber, contractorId,
 				fromChallanDate, toChallanDate, challanType);
-		log.info("Record {} :: {}", found != null && !found.isEmpty() ? "found" : "not found", found);
+		log.info("Record {}", found != null && !found.isEmpty() ? "found" : "not found");
 
 		return ResponseEntity
 				.ok(ApiResponseVoWrapper.success("Record fetched", found, metadataGenerator.getMetadata(found)));

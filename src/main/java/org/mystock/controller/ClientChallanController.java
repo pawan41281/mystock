@@ -42,7 +42,7 @@ public class ClientChallanController {
 		if(vo.getId()!=null && vo.getId().equals(0L)) vo.setId(null);
 		ClientChallanVo saved = service.save(vo);
 		if (saved != null && saved.getId() != null) {
-			log.info("Record saved :: {}", saved);
+			log.info("Record saved");
 			return ResponseEntity.status(201)
 					.body(ApiResponseVoWrapper.success("Record saved", saved, metadataGenerator.getMetadata(saved)));
 		} else {
@@ -58,11 +58,11 @@ public class ClientChallanController {
 		log.info("Received request for bulk save :: {}", vos);
 		Set<ClientChallanVo> saved = service.saveAll(vos);
 		if (saved != null) {
-			log.info("Record saved :: {}", saved);
+			log.info("Record saved");
 			return ResponseEntity.status(201)
 					.body(ApiResponseVoWrapper.success("Record saved", saved, metadataGenerator.getMetadata(saved)));
 		} else {
-			log.error("Record not saved :: {}", vos);
+			log.error("Record not saved");
 			return ResponseEntity.status(500).body(
 					ApiResponseVoWrapper.success("Record not saved", saved, metadataGenerator.getMetadata(saved)));
 		}
@@ -74,7 +74,7 @@ public class ClientChallanController {
 		log.info("Received request for delete :: challanId {}", id);
 		ClientChallanVo deleted = service.deleteById(id);
 		if (deleted != null) {
-			log.info("Record deleted :: {}", deleted);
+			log.info("Record deleted");
 			return ResponseEntity.status(201).body(
 					ApiResponseVoWrapper.success("Record deleted", deleted, metadataGenerator.getMetadata(deleted)));
 		} else {
@@ -90,38 +90,15 @@ public class ClientChallanController {
 		log.info("Received request for find :: id - {}", id);
 		ClientChallanVo found = service.findById(id);
 		if (found != null) {
-			log.info("Record found :: {}", found);
+			log.info("Record found");
 			return ResponseEntity
 					.ok(ApiResponseVoWrapper.success("Record found", found, metadataGenerator.getMetadata(found)));
 		} else {
-			log.info("Record not found :: {}", found);
+			log.info("Record not found");
 			return ResponseEntity
 					.ok(ApiResponseVoWrapper.success("Record not found", found, metadataGenerator.getMetadata(found)));
 		}
 	}
-
-//	@GetMapping
-//	@Operation(summary = "Get all challans by challan number and challan date range and challan type and client Id", description = "Challan Type :: I - Issue, R - Received")
-//	public ResponseEntity<ApiResponseVo<List<ClientChallanVo>>> find(
-//			@RequestParam(value = "challannumber", required = false) Integer challanNumber,
-//			@RequestParam(value = "clientid", required = false) Long clientId,
-//			@RequestParam(value = "fromchallandate", required = false) Long fromChallanDate,
-//			@RequestParam(value = "tochallandate", required = false) Long toChallanDate,
-//			@RequestParam(value = "challantype", required = false) String challanType) {
-//
-//		log.info(
-//				"Received request for find :: challanNumber {}, clientId {}, fromChallanDate {}, toChallanDate {}, challanType {}",
-//				challanNumber, clientId, fromChallanDate, toChallanDate, challanType);
-//
-//		List<ClientChallanVo> found = service.findAll(challanNumber, clientId,
-//				dateTimeUtil.toLocalDate(fromChallanDate), dateTimeUtil.toLocalDate(toChallanDate), challanType);
-//		log.info("Record {} :: {}", found != null && !found.isEmpty() ? "found" : "not found", found);
-//
-//		return ResponseEntity
-//				.ok(ApiResponseVoWrapper.success("Record fetched", found, metadataGenerator.getMetadata(found)));
-//	}
-	
-
 
 	@GetMapping
 	@Operation(summary = "Get all challans by challan number and challan date range and challan type and client Id", description = "Challan Type :: I - Issue, R - Received")
@@ -139,7 +116,7 @@ public class ClientChallanController {
 		List<ClientChallanVo> found = service.findAll(challanNumber, clientId,
 				fromChallanDate, toChallanDate, challanType);
 		
-		log.info("Record {} :: {}", found != null && !found.isEmpty() ? "found" : "not found", found);
+		log.info("Record {}", found != null && !found.isEmpty() ? "found" : "not found");
 
 		return ResponseEntity
 				.ok(ApiResponseVoWrapper.success("Record fetched", found, metadataGenerator.getMetadata(found)));

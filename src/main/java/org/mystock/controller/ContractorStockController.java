@@ -39,11 +39,11 @@ public class ContractorStockController {
 		log.info("Received request for find :: id - {}", id);
 		ContractorStockVo found = contractorStockService.getById(id);
 		if (found != null) {
-			log.info("Record found :: {}", found);
+			log.info("Record found");
 			return ResponseEntity
 					.ok(ApiResponseVoWrapper.success("Record found", found, metadataGenerator.getMetadata(found)));
 		} else {
-			log.info("Record not found :: {}", found);
+			log.info("Record not found");
 			return ResponseEntity
 					.ok(ApiResponseVoWrapper.success("Record not found", found, metadataGenerator.getMetadata(found)));
 		}
@@ -65,11 +65,11 @@ public class ContractorStockController {
 		ContractorStockVo saved = contractorStockService.addOpenningBalance(vo.getContractor().getId(),
 				vo.getDesign().getId(), vo.getColor().getId(), vo.getBalance());
 		if (saved != null && saved.getId() != null) {
-			log.info("Record saved :: {}", saved);
+			log.info("Record saved");
 			return ResponseEntity
 					.ok(ApiResponseVoWrapper.success("Record saved", saved, metadataGenerator.getMetadata(saved)));
 		} else {
-			log.error("Record not saved :: {}", vo);
+			log.error("Record not saved");
 			return ResponseEntity
 					.ok(ApiResponseVoWrapper.success("Record not saved", vo, metadataGenerator.getMetadata(saved)));
 		}
@@ -82,11 +82,11 @@ public class ContractorStockController {
 		log.info("Received request for bulk save :: {}", vos);
 		List<ContractorStockVo> saved = contractorStockService.addOpenningBalance(vos);
 		if (saved != null && !saved.isEmpty()) {
-			log.info("Record saved :: {}", saved);
+			log.info("Record saved");
 			return ResponseEntity.ok(ApiResponseVoWrapper.success("Record updated successfully", saved,
 					metadataGenerator.getMetadata(saved)));
 		} else {
-			log.error("Record not saved :: {}", vos);
+			log.error("Record not saved");
 			return ResponseEntity.ok(ApiResponseVoWrapper.success("Record not updated",
 					vos.stream().collect(Collectors.toList()), metadataGenerator.getMetadata(saved)));
 		}

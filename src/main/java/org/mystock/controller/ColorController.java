@@ -36,15 +36,15 @@ public class ColorController {
 	@PostMapping
 	@Operation(summary = "Create or update color")
 	public ResponseEntity<ApiResponseVo<ColorVo>> save(@RequestBody ColorVo vo) {
-		log.info("Received request for save :: {}", vo);
+		log.info("Received request for save");
 		if(vo.getId()!=null && vo.getId().equals(0L)) vo.setId(null);
 		ColorVo saved = colorService.save(vo);
 		if (saved != null && saved.getId() != null) {
-			log.info("Record saved :: {}", saved);
+			log.info("Record saved");
 			return ResponseEntity
 					.ok(ApiResponseVoWrapper.success("Record saved", saved, metadataGenerator.getMetadata(saved)));
 		} else {
-			log.error("Record not saved :: {}", vo);
+			log.error("Record not saved");
 			return ResponseEntity
 					.ok(ApiResponseVoWrapper.success("Record not saved", vo, metadataGenerator.getMetadata(saved)));
 		}
@@ -53,14 +53,14 @@ public class ColorController {
 	@PostMapping("bulk")
 	@Operation(summary = "Create or update multiple colors")
 	public ResponseEntity<ApiResponseVo<Set<ColorVo>>> saveAll(@RequestBody Set<ColorVo> vos) {
-		log.info("Received request for bulk save :: {}", vos);
+		log.info("Received request for bulk save");
 		Set<ColorVo> saved = colorService.saveAll(vos);
 		if (saved != null && !saved.isEmpty()) {
-			log.info("Record saved :: {}", saved);
+			log.info("Record saved");
 			return ResponseEntity
 					.ok(ApiResponseVoWrapper.success("Record saved", saved, metadataGenerator.getMetadata(saved)));
 		} else {
-			log.error("Record not saved :: {}", vos);
+			log.error("Record not saved");
 			return ResponseEntity
 					.ok(ApiResponseVoWrapper.success("Record not saved", vos, metadataGenerator.getMetadata(saved)));
 		}
@@ -72,11 +72,11 @@ public class ColorController {
 		log.info("Received request for find :: id - {}", id);
 		ColorVo found = colorService.getById(id);
 		if (found != null) {
-			log.info("Record found :: {}", found);
+			log.info("Record found");
 			return ResponseEntity
 					.ok(ApiResponseVoWrapper.success("Record found", found, metadataGenerator.getMetadata(found)));
 		} else {
-			log.info("Record not found :: {}", found);
+			log.info("Record not found");
 			return ResponseEntity
 					.ok(ApiResponseVoWrapper.success("Record not found", found, metadataGenerator.getMetadata(found)));
 		}
@@ -88,11 +88,11 @@ public class ColorController {
 		log.info("Received request for find all");
 		List<ColorVo> found = colorService.getAll();
 		if (found != null && !found.isEmpty()) {
-			log.info("Record found :: {}", found);
+			log.info("Record found");
 			return ResponseEntity
 					.ok(ApiResponseVoWrapper.success("Record saved", found, metadataGenerator.getMetadata(found)));
 		} else {
-			log.error("Record not found :: {}", found);
+			log.error("Record not found");
 			return ResponseEntity
 					.ok(ApiResponseVoWrapper.success("Record not saved", found, metadataGenerator.getMetadata(found)));
 		}
@@ -104,11 +104,11 @@ public class ColorController {
 		log.info("Received request for status update :: {} - {}", id, status);
 		ColorVo saved = colorService.updateStatus(id, status);
 		if (saved != null && saved.getId() != null) {
-			log.info("Record updated :: {}", saved);
+			log.info("Record updated");
 			return ResponseEntity
 					.ok(ApiResponseVoWrapper.success("Record updated", saved, metadataGenerator.getMetadata(saved)));
 		} else {
-			log.error("Record not saved :: {}", saved);
+			log.error("Record not saved");
 			return ResponseEntity.ok(
 					ApiResponseVoWrapper.success("Record not updated", saved, metadataGenerator.getMetadata(saved)));
 		}
@@ -124,11 +124,11 @@ public class ColorController {
 		name=name==null?"%":"%"+name.trim()+"%";
 		List<ColorVo> found = colorService.findByNameIgnoreCaseLike(name);
 		if (found != null && !found.isEmpty()) {
-			log.info("Record found :: {}", found);
+			log.info("Record found");
 			return ResponseEntity
 					.ok(ApiResponseVoWrapper.success("Record saved", found, metadataGenerator.getMetadata(found)));
 		} else {
-			log.error("Record not found :: {}", found);
+			log.error("Record not found");
 			return ResponseEntity
 					.ok(ApiResponseVoWrapper.success("Record not saved", found, metadataGenerator.getMetadata(found)));
 		}
