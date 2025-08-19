@@ -26,4 +26,15 @@ public interface ContractorChallanRepository extends JpaRepository<ContractorCha
 			@Param("contractorId") Long contractorId, @Param("fromChallanDate") LocalDate fromChallanDate,
 			@Param("toChallanDate") LocalDate toChallanDate, @Param("challanType") String challanType);
 
+	@Query("""
+			    SELECT c
+			    FROM ContractorChallanEntity c
+			    WHERE (c.challanDate = :challanDate)
+			      AND (c.challanType like :challanType)
+			    ORDER BY c.id DESC
+			""")
+	List<ContractorChallanEntity> getRecentChallans(
+			@Param("challanDate") LocalDate challanDate,
+			@Param("challanType") String challanType);
+
 }

@@ -24,7 +24,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/v2/contractors/")
+@RequestMapping("/v2/contractors")
 @AllArgsConstructor
 @Tag(name = "Contractor Operations", description = "CRUD Operations for contractor record")
 @Slf4j
@@ -50,7 +50,7 @@ public class ContractorController {
 		}
 	}
 
-	@PostMapping("bulk")
+	@PostMapping("/bulk")
 	@Operation(summary = "Create or update multiple contractors")
 	public ResponseEntity<ApiResponseVo<Set<ContractorVo>>> saveAll(@RequestBody Set<ContractorVo> vos) {
 		log.info("Received request for bulk save :: {}", vos);
@@ -66,7 +66,7 @@ public class ContractorController {
 		}
 	}
 
-	@GetMapping("{id}")
+	@GetMapping("/{id}")
 	@Operation(summary = "Get contractor by ID")
 	public ResponseEntity<ApiResponseVo<ContractorVo>> getById(@PathVariable Long id) {
 		log.info("Received request for find :: id - {}", id);
@@ -82,7 +82,7 @@ public class ContractorController {
 		}
 	}
 
-	@PatchMapping("{id}/{status}")
+	@PatchMapping("/{id}/{status}")
 	@Operation(summary = "Update status by ID", description = "Update contractor status by ID")
 	public ResponseEntity<ApiResponseVo<ContractorVo>> update(@PathVariable Long id, @PathVariable boolean status) {
 

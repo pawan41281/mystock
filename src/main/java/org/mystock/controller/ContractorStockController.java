@@ -24,7 +24,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/v2/contractorstocks/")
+@RequestMapping("/v2/contractorstocks")
 @AllArgsConstructor
 @Tag(name = "Contractor Stock Operations", description = "CRUD Operations for contractor stock record")
 @Slf4j
@@ -75,7 +75,7 @@ public class ContractorStockController {
 		}
 	}
 
-	@PostMapping("bulk")
+	@PostMapping("/bulk")
 	@Operation(summary = "Save Operation", description = "Set opening balance of multiple contractor stock items")
 	public ResponseEntity<ApiResponseVo<List<ContractorStockVo>>> saveAll(
 			@Valid @RequestBody Set<ContractorStockVo> vos) {

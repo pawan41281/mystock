@@ -1,5 +1,6 @@
 package org.mystock.controller;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.mystock.apiresponse.ApiResponseVo;
@@ -22,7 +23,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/v2/contractorstockreports/")
+@RequestMapping("/v2/contractorstockreports")
 @AllArgsConstructor
 @Slf4j
 @Tag(name = "Report", description = "Endpoints for reports")
@@ -35,13 +36,20 @@ public class ContractorStockReportController {
 	@Operation(summary = "Get contractor stock report", description = "Returns the stock balance for each contractor, design, and color combination.")
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Report fetched successfully"),
 			@ApiResponse(responseCode = "500", description = "Internal server error") })
-	public ResponseEntity<ApiResponseVo<List<ContractorStockReportVo>>> getReport(
+	public ResponseEntity<ApiResponseVo<List<ContractorStockReportVo>>> getBalanceReport(
 			@Parameter(description = "Filter by contractor name (partial match)") @RequestParam(required = false) String contractorName,
 			@Parameter(description = "Filter by design name (partial match)") @RequestParam(required = false) String designName,
 			@Parameter(description = "Filter by color name (partial match)") @RequestParam(required = false) String colorName) {
 		log.info("Received request for client's design wise stock report");
-		List<ContractorStockReportVo> found = contractorStockReportService.getStockReport(contractorName, designName,
-				colorName);
+
+		List<ContractorStockReportVo> found = Collections.emptyList();
+
+		if ((contractorName != null && !contractorName.isEmpty()) || (designName != null && !designName.isEmpty())
+				|| (colorName != null && !colorName.isEmpty()))
+			found = contractorStockReportService.getStockReport(contractorName, designName, colorName);
+		else
+			found = contractorStockReportService.getNonZeroStockReport(contractorName, designName, colorName);
+
 		if (found != null && !found.isEmpty()) {
 			log.info("Record found");
 			return ResponseEntity
@@ -52,4 +60,26 @@ public class ContractorStockReportController {
 					.ok(ApiResponseVoWrapper.success("Record not found", found, metadataGenerator.getMetadata(found)));
 		}
 	}
+
+//	@GetMapping("/nonzero")
+//	@Operation(summary = "Get contractor stock report (Non Zero Balance)", description = "Get contractor stock balance for each design, and color combination (Non Zero Balance)")
+//	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Report fetched successfully"),
+//			@ApiResponse(responseCode = "500", description = "Internal server error") })
+//	public ResponseEntity<ApiResponseVo<List<ContractorStockReportVo>>> getNonZeroBalanceReport(
+//			@Parameter(description = "Filter by contractor name (partial match)") @RequestParam(required = false) String contractorName,
+//			@Parameter(description = "Filter by design name (partial match)") @RequestParam(required = false) String designName,
+//			@Parameter(description = "Filter by color name (partial match)") @RequestParam(required = false) String colorName) {
+//		log.info("Received request for client's design wise stock report");
+//		List<ContractorStockReportVo> found = contractorStockReportService.getNonZeroStockReport(contractorName,
+//				designName, colorName);
+//		if (found != null && !found.isEmpty()) {
+//			log.info("Record found");
+//			return ResponseEntity
+//					.ok(ApiResponseVoWrapper.success("Record found", found, metadataGenerator.getMetadata(found)));
+//		} else {
+//			log.error("Record not found");
+//			return ResponseEntity
+//					.ok(ApiResponseVoWrapper.success("Record not found", found, metadataGenerator.getMetadata(found)));
+//		}
+//	}
 }

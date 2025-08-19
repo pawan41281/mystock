@@ -1,5 +1,6 @@
 package org.mystock.controller;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.mystock.apiresponse.ApiResponseVo;
@@ -20,7 +21,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/v2/designstockreports/")
+@RequestMapping("/v2/designstockreports")
 @AllArgsConstructor
 @Slf4j
 @Tag(name = "Report", description = "Endpoints for reports")
@@ -28,16 +29,21 @@ public class DesignStockReportController {
 
 	private final DesignStockReportService designStockReportService;
 	private final MetadataGenerator metadataGenerator;
-	
+
 	@GetMapping
 	@Operation(summary = "Get Design and Color wise Stock balance", description = "Get Design and Color wise Stock balance")
-	public ResponseEntity<ApiResponseVo<List<DesignStockReportVo>>> getReport(
-			@Parameter(description = "Filter by design name (partial match)") 
-			@RequestParam(required = false) String designName,
-			@Parameter(description = "Filter by color name (partial match)") 
-			@RequestParam(required = false) String colorName){
+	public ResponseEntity<ApiResponseVo<List<DesignStockReportVo>>> getBalanceReport(
+			@Parameter(description = "Filter by design name (partial match)") @RequestParam(required = false) String designName,
+			@Parameter(description = "Filter by color name (partial match)") @RequestParam(required = false) String colorName) {
 		log.info("Received request for design wise stock report");
-		List<DesignStockReportVo> found = designStockReportService.getDesignStockReport(designName, colorName);
+
+		List<DesignStockReportVo> found = Collections.emptyList();
+
+		if ((designName != null && !designName.isEmpty()) || (colorName != null && !colorName.isEmpty()))
+			found = designStockReportService.getDesignStockReport(designName, colorName);
+		else
+			found = designStockReportService.getDesignStockNonZeroReport(designName, colorName);
+
 		if (found != null && !found.isEmpty()) {
 			log.info("Record found");
 			return ResponseEntity
@@ -48,4 +54,24 @@ public class DesignStockReportController {
 					.ok(ApiResponseVoWrapper.success("Record not found", found, metadataGenerator.getMetadata(found)));
 		}
 	}
+
+//	@GetMapping("/nonzero")
+//	@Operation(summary = "Get Design and Color wise Stock balance", description = "Get Design and Color wise Stock balance (Non Zero Balance)")
+//	public ResponseEntity<ApiResponseVo<List<DesignStockReportVo>>> getNonZeroBalanceReport(
+//			@Parameter(description = "Filter by design name (partial match)") 
+//			@RequestParam(required = false) String designName,
+//			@Parameter(description = "Filter by color name (partial match)") 
+//			@RequestParam(required = false) String colorName){
+//		log.info("Received request for design wise stock report");
+//		List<DesignStockReportVo> found = designStockReportService.getDesignStockNonZeroReport(designName, colorName);
+//		if (found != null && !found.isEmpty()) {
+//			log.info("Record found");
+//			return ResponseEntity
+//					.ok(ApiResponseVoWrapper.success("Record found", found, metadataGenerator.getMetadata(found)));
+//		} else {
+//			log.error("Record not found");
+//			return ResponseEntity
+//					.ok(ApiResponseVoWrapper.success("Record not found", found, metadataGenerator.getMetadata(found)));
+//		}
+//	}
 }

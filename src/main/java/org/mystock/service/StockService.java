@@ -12,6 +12,8 @@ public interface StockService {
 	public StockVo getById(Long id);
 
 	public List<StockVo> getAll();
+	
+	public List<StockVo> getAllNonZero();
 
 	public List<StockVo> getAll(Long designId);
 

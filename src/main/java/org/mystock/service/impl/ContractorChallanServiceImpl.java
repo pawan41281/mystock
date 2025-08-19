@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.mystock.entity.ContractorChallanEntity;
+import org.mystock.exception.ResourceNotFoundException;
 import org.mystock.mapper.ColorMapper;
 import org.mystock.mapper.ContractorChallanMapper;
 import org.mystock.mapper.ContractorMapper;
@@ -267,7 +268,6 @@ public class ContractorChallanServiceImpl implements ContractorChallanService {
 
 				contractorChallanEntity.getChallanItems().stream().forEach(item -> {
 
-
 					if (isIssue) {
 
 						// reverse entry for issued products from contractor against cancel challan
@@ -303,7 +303,7 @@ public class ContractorChallanServiceImpl implements ContractorChallanService {
 									item.getDesign().getId(), item.getColor().getId(), item.getQuantity());
 						} else {
 							contractorStockVo = new ContractorStockVo();
-							contractorStockVo.setBalance((0-item.getQuantity()));
+							contractorStockVo.setBalance((0 - item.getQuantity()));
 							contractorStockVo.setColor(colorMapper.toVo(item.getColor()));
 							contractorStockVo.setDesign(designMapper.toVo(item.getDesign()));
 							contractorStockVo
@@ -331,7 +331,7 @@ public class ContractorChallanServiceImpl implements ContractorChallanService {
 							stockVo = new StockVo();
 							stockVo.setDesign(designMapper.toVo(item.getDesign()));
 							stockVo.setColor(colorMapper.toVo(item.getColor()));
-							stockVo.setBalance((0-item.getQuantity()));
+							stockVo.setBalance((0 - item.getQuantity()));
 							stockVo.setUpdatedOn(LocalDateTime.now());
 							stockService.save(stockVo);
 						}
@@ -370,6 +370,17 @@ public class ContractorChallanServiceImpl implements ContractorChallanService {
 
 		return repository.findAll(challanNumber, contractorId, fromChallanDate, toChallanDate, challanType).stream()
 				.map(mapper::toVo).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<ContractorChallanVo> getRecentChallans(String challanType) {
+		
+		if(challanType!=null && !challanType.equalsIgnoreCase("I") && !challanType.equalsIgnoreCase("R"))
+			throw new ResourceNotFoundException("Challan type is invalid :: " + challanType);
+		
+		challanType = challanType==null?"%":challanType;
+		
+		return repository.getRecentChallans(LocalDate.now(), challanType).stream().map(mapper::toVo).collect(Collectors.toList());
 	}
 
 }

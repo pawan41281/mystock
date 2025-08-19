@@ -101,6 +101,34 @@ public interface ContractorStockRepository extends JpaRepository<ContractorStock
 			  d.description LIKE :designName
 			  AND
 			  clr.colorname LIKE :colorName
+			  AND
+			  cs.balance<>0
+			""", nativeQuery = true)
+	public List<ContractorStockReportVo> getContractorNonZeroStockReport(String contractorName, String designName,
+			String colorName);
+
+	@Query(value = """
+			SELECT
+			  c.id AS contractorId,
+			  UPPER(c.contractorname) AS contractorName,
+			  d.id AS designId,
+			  UPPER(d.design) AS designName,
+			  UPPER(clr.colorname) AS colorName,
+			  COALESCE(cs.balance, 0) AS stockBalance
+			FROM
+			  contractorinfo c
+			CROSS JOIN
+			  designinfo d
+			CROSS JOIN
+			  colorinfo clr
+			LEFT JOIN
+			  contractorstockinfo cs ON cs.contractor_id = c.id AND cs.design_id = d.id AND cs.color_id = clr.id
+			WHERE
+			  c.contractorname like :contractorName
+			  AND
+			  d.description LIKE :designName
+			  AND
+			  clr.colorname LIKE :colorName
 			LIMIT :pageSize OFFSET :pageCount
 			""", nativeQuery = true)
 	public List<ContractorStockReportVo> getContractorStockReport(@Param("contractorName") String contractorName,

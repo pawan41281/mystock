@@ -16,7 +16,9 @@ public interface ContractorChallanService {
 
 	public ContractorChallanVo deleteById(Long id);
 
-	public List<ContractorChallanVo> findAll(Integer challanNumber, Long contractorId,
-	        LocalDate fromChallanDate, LocalDate toChallanDate, String challanType);
+	public List<ContractorChallanVo> findAll(Integer challanNumber, Long contractorId, LocalDate fromChallanDate,
+			LocalDate toChallanDate, String challanType);
+
+	public List<ContractorChallanVo> getRecentChallans(String challanType);
 
 }

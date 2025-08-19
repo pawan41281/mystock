@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.mystock.entity.ClientChallanEntity;
+import org.mystock.exception.ResourceNotFoundException;
 import org.mystock.mapper.ClientChallanMapper;
 import org.mystock.mapper.ColorMapper;
 import org.mystock.mapper.DesignMapper;
@@ -229,6 +230,19 @@ public class ClientChallanServiceImpl implements ClientChallanService {
 
 		return repository.findAll(challanNumber, clientId, fromChallanDate, toChallanDate, challanType).stream()
 				.map(mapper::toVo).collect(Collectors.toList());
+	}
+	
+
+
+	@Override
+	public List<ClientChallanVo> getRecentChallans(String challanType) {
+		
+		if(challanType!=null && !challanType.equalsIgnoreCase("I") && !challanType.equalsIgnoreCase("R"))
+			throw new ResourceNotFoundException("Challan type is invalid :: " + challanType);
+		
+		challanType=challanType==null?"%":challanType;
+		
+		return repository.getRecentChallans(LocalDate.now(), challanType).stream().map(mapper::toVo).collect(Collectors.toList());
 	}
 
 }

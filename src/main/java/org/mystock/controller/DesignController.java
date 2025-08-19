@@ -24,7 +24,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/v2/designs/")
+@RequestMapping("/v2/designs")
 @AllArgsConstructor
 @Tag(name = "Design Operations", description = "CRUD Operations for design record")
 @Slf4j
@@ -50,7 +50,7 @@ public class DesignController {
 		}
 	}
 
-	@PostMapping("bulk")
+	@PostMapping("/bulk")
 	@Operation(summary = "Bulk Save operation", description = "Save design record")
 	public ResponseEntity<ApiResponseVo<Set<DesignVo>>> save(@RequestBody Set<DesignVo> vos) {
 		log.info("Received request for bulk save :: {}", vos);

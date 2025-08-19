@@ -7,6 +7,8 @@ import org.mystock.vo.ContractorStockReportVo;
 public interface ContractorStockReportService {
 
 	public List<ContractorStockReportVo> getStockReport(String contractorName, String designName, String colorName);
+	
+	public List<ContractorStockReportVo> getNonZeroStockReport(String contractorName, String designName, String colorName);
 
 	public int getStockCount(String contractorName, String designName, String colorName);
 

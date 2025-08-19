@@ -26,7 +26,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/v2/contractorchallans/")
+@RequestMapping("/v2/contractorchallans")
 @AllArgsConstructor
 @Tag(name = "Contractor Challan Operations", description = "CRUD Operations for contractor challan record")
 @Slf4j
@@ -52,7 +52,7 @@ public class ContractorChallanController {
 		}
 	}
 
-	@PostMapping("bulk")
+	@PostMapping("/bulk")
 	@Operation(summary = "Create multiple contractor challan", description = "Challan Type :: I - Issue, R - Received")
 	public ResponseEntity<ApiResponseVo<Set<ContractorChallanVo>>> saveAll(@RequestBody Set<ContractorChallanVo> vos) {
 		log.info("Received request for bulk save");
@@ -68,7 +68,7 @@ public class ContractorChallanController {
 		}
 	}
 
-	@DeleteMapping("{id}")
+	@DeleteMapping("/{id}")
 	@Operation(summary = "Delete contractor challan")
 	public ResponseEntity<ApiResponseVo<ContractorChallanVo>> delete(@PathVariable Long id) {
 		log.info("Received request for delete :: challanId {}", id);
@@ -84,7 +84,7 @@ public class ContractorChallanController {
 		}
 	}
 
-	@GetMapping("{id}")
+	@GetMapping("/{id}")
 	@Operation(summary = "Get all challans by Id")
 	public ResponseEntity<ApiResponseVo<ContractorChallanVo>> findById(@PathVariable Long id) {
 		log.info("Received request for find :: id - {}", id);

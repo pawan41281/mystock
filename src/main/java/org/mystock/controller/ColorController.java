@@ -24,7 +24,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/v2/colors/")
+@RequestMapping("/v2/colors")
 @AllArgsConstructor
 @Tag(name = "Color Operations", description = "CRUD Operations for color record")
 @Slf4j
@@ -50,7 +50,7 @@ public class ColorController {
 		}
 	}
 
-	@PostMapping("bulk")
+	@PostMapping("/bulk")
 	@Operation(summary = "Create or update multiple colors")
 	public ResponseEntity<ApiResponseVo<Set<ColorVo>>> saveAll(@RequestBody Set<ColorVo> vos) {
 		log.info("Received request for bulk save");
@@ -66,7 +66,7 @@ public class ColorController {
 		}
 	}
 
-	@GetMapping("{id}")
+	@GetMapping("/{id}")
 	@Operation(summary = "Get color by ID")
 	public ResponseEntity<ApiResponseVo<ColorVo>> getById(@PathVariable Long id) {
 		log.info("Received request for find :: id - {}", id);

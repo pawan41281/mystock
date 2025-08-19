@@ -49,6 +49,11 @@ public class StockServiceImpl implements StockService {
 	}
 
 	@Override
+	public List<StockVo> getAllNonZero() {
+		return stockRepository.findAll().stream().filter(vo -> !vo.getBalance().equals(0)).map(stockMapper::toVo).collect(Collectors.toList());
+	}
+
+	@Override
 	public List<StockVo> getAll(Long designId) {
 		return stockRepository.findByDesign_Id(designId).stream().map(stockMapper::toVo).collect(Collectors.toList());
 	}

@@ -25,6 +25,14 @@ public class DesignStockReportServiceImpl implements DesignStockReportService {
 	}
 
 	@Override
+	public List<DesignStockReportVo> getDesignStockNonZeroReport(String designName, String colorName) {
+		designName = designName != null && !designName.isEmpty() ? "%" + designName + "%" : "%";
+		colorName = colorName != null && !colorName.isEmpty() ? "%" + colorName + "%" : "%";
+		List<DesignStockReportVo> found = stockRepository.getDesignStockNonZeroReport(designName, colorName);
+		return found != null ? found : Collections.emptyList();
+	}
+
+	@Override
 	public List<DesignStockReportVo> getDesignStockReport(String designName, String colorName, Integer pageSize,
 			Integer pageCount) {
 		designName = designName != null && !designName.isEmpty() ? "%" + designName + "%" : "%";

@@ -62,6 +62,27 @@ public interface StockRepository extends JpaRepository<StockEntity, Long> {
 			""", nativeQuery = true)
 	public List<DesignStockReportVo> getDesignStockReport(@Param("designName") String designName,
 			@Param("colorName") String colorName);
+	
+	@Query(value = """
+			SELECT
+			    UPPER(d.design) AS designName,
+			    UPPER(c.colorname) AS colorName,
+			    COALESCE(s.balance, 0) AS stockBalance
+			FROM
+			    designinfo d
+			CROSS JOIN
+			    colorinfo c
+			LEFT JOIN
+			    stockinfo s ON s.design_id = d.id AND s.color_id = c.id
+			WHERE
+			    d.description LIKE :designName
+			    AND
+			    c.colorname LIKE :colorName
+			    AND
+			    s.balance<>0
+			""", nativeQuery = true)
+	public List<DesignStockReportVo> getDesignStockNonZeroReport(@Param("designName") String designName,
+			@Param("colorName") String colorName);
 
 	@Query(value = """
 			SELECT COUNT(*)

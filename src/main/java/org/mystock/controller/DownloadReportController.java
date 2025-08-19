@@ -28,7 +28,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/v2/download/")
+@RequestMapping("/v2/download")
 @AllArgsConstructor
 @Slf4j
 @Tag(name = "Download", description = "Endpoints for download reports")
@@ -38,7 +38,7 @@ public class DownloadReportController {
 	private final ContractorStockReportService contractorStockReportService;
 //	private final MetadataGenerator metadataGenerator;
 	
-//	@GetMapping("designs/colors/stock/report")
+//	@GetMapping("/designs/colors/stock/report")
 //	@Operation(summary = "Get Design and Color wise Stock balance Report", description = "Get Design and Color wise Stock balance Report")
 //	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Report fetched successfully"),
 //			@ApiResponse(responseCode = "500", description = "Internal server error") })
@@ -76,7 +76,7 @@ public class DownloadReportController {
 //		}
 //	}
 
-	@GetMapping("designs/colors/stock/report")
+	@GetMapping("/designs/colors/stock/report")
 	@Operation(summary = "Get Design and Color wise Stock balance Report", description = "Get Design and Color wise Stock balance Report")
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Report fetched successfully"),
 			@ApiResponse(responseCode = "500", description = "Internal server error") })
@@ -126,7 +126,7 @@ public class DownloadReportController {
 		}
 	}
 
-	@GetMapping("contractor/designs/colors/stock/report")
+	@GetMapping("/contractor/designs/colors/stock/report")
 	@Operation(summary = "Get Design and Color wise Contractor Stock balance Report", description = "Get Design and Color wise Contractor Stock balance Report")
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Report fetched successfully"),
 			@ApiResponse(responseCode = "500", description = "Internal server error") })

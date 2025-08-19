@@ -24,6 +24,14 @@ public class ContractorStockReportServiceImpl implements ContractorStockReportSe
 	}
 
 	@Override
+	public List<ContractorStockReportVo> getNonZeroStockReport(String contractorName, String designName, String colorName) {
+		contractorName = contractorName != null && !contractorName.isEmpty() ? "%" + contractorName + "%" : "%";
+		designName = designName != null && !designName.isEmpty() ? "%" + designName + "%" : "%";
+		colorName = colorName != null && !colorName.isEmpty() ? "%" + colorName + "%" : "%";
+		return contractorStockRepository.getContractorNonZeroStockReport(contractorName, designName, colorName);
+	}
+
+	@Override
 	public int getStockCount(String contractorName, String designName, String colorName) {
 		contractorName = contractorName != null && !contractorName.isEmpty() ? "%" + contractorName + "%" : "%";
 		designName = designName != null && !designName.isEmpty() ? "%" + designName + "%" : "%";

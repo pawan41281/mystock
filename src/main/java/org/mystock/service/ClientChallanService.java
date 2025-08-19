@@ -18,5 +18,7 @@ public interface ClientChallanService {
 
 	public List<ClientChallanVo> findAll(Integer challanNumber, Long clientId,
 	        LocalDate fromChallanDate, LocalDate toChallanDate, String challanType);
+	
+	public List<ClientChallanVo> getRecentChallans(String challanType);
 
 }
