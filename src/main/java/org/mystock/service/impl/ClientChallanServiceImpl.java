@@ -244,5 +244,17 @@ public class ClientChallanServiceImpl implements ClientChallanService {
 		
 		return repository.getRecentChallans(LocalDate.now(), challanType).stream().map(mapper::toVo).collect(Collectors.toList());
 	}
+	
+
+	@Override
+	public Integer getCurrentMonthChallanCount(String challanType) {
+		
+		if(challanType!=null && !challanType.equalsIgnoreCase("I") && !challanType.equalsIgnoreCase("R"))
+			throw new ResourceNotFoundException("Challan type is invalid :: " + challanType);
+		
+		challanType=challanType==null?"%":challanType;
+		
+		return repository.getCurrentMonthChallanCount(challanType);
+	}
 
 }

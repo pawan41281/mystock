@@ -4,6 +4,9 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.mystock.entity.ContractorChallanEntity;
+import org.mystock.vo.DashboardContractorGraphVo;
+import org.mystock.vo.DashboardCurrentMonthContractorCardVo;
+import org.mystock.vo.DashboardPreviousDayContractorCardVo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -33,8 +36,59 @@ public interface ContractorChallanRepository extends JpaRepository<ContractorCha
 			      AND (c.challanType like :challanType)
 			    ORDER BY c.id DESC
 			""")
-	List<ContractorChallanEntity> getRecentChallans(
-			@Param("challanDate") LocalDate challanDate,
+	List<ContractorChallanEntity> getRecentChallans(@Param("challanDate") LocalDate challanDate,
 			@Param("challanType") String challanType);
+
+	@Query(value = "SELECT COUNT(*) FROM CONTRACTORCHALLANINFO WHERE CHALLANDATE >= DATE_FORMAT(CURRENT_DATE, '%Y-%m-01') AND CHALLANDATE < DATE_FORMAT(CURRENT_DATE + INTERVAL 1 MONTH, '%Y-%m-01') AND CHALLANTYPE = :challanType", nativeQuery = true)
+	Integer getCurrentMonthChallanCount(@Param("challanType") String challanType);
+
+	@Query(value = """
+			SELECT challantype as ChallanType, count(*) as ChallanCount FROM CONTRACTORCHALLANINFO
+			WHERE CHALLANDATE >= DATE_FORMAT(CURRENT_DATE, '%Y-%m-01')
+			AND CHALLANDATE < DATE_FORMAT(CURRENT_DATE + INTERVAL 1 MONTH, '%Y-%m-01')
+			GROUP BY CHALLANTYPE
+			""", nativeQuery = true)
+	List<DashboardCurrentMonthContractorCardVo> getCurrentMonthChallanCount();
+
+	@Query(value = """
+			SELECT challantype as ChallanType, count(*) as ChallanCount FROM CONTRACTORCHALLANINFO
+			WHERE CHALLANDATE = (CURRENT_DATE-1) 
+			GROUP BY CHALLANTYPE
+			""", nativeQuery = true)
+	List<DashboardPreviousDayContractorCardVo> getPreviousDayChallanCount();
+
+	@Query(value = """
+						SELECT
+			    d.challan_day as ChallanDate,
+			    COALESCE(SUM(CASE WHEN src.movement_type = 'CONTRACTOR_ISSUED' THEN src.total_items END), 0) AS IssuedQuantity,
+			    COALESCE(SUM(CASE WHEN src.movement_type = 'CONTRACTOR_RECEIVED' THEN src.total_items END), 0) AS ReceivedQuantity
+			FROM (
+			    -- CONTRACTOR ISSUED
+			    SELECT DATE(c.challandate) AS challan_day, 'CONTRACTOR_ISSUED' AS movement_type, SUM(i.quantity) AS total_items
+			    FROM contractorchallaninfo c
+			    JOIN contractorchallaniteminfo i ON c.id = i.challan_id
+			    WHERE c.challandate >= CURRENT_DATE - INTERVAL 7 DAY AND c.challantype = 'I'
+			    GROUP BY challan_day
+
+			    UNION ALL
+			    -- CONTRACTOR RECEIVED
+			    SELECT DATE(c.challandate), 'CONTRACTOR_RECEIVED', SUM(i.quantity)
+			    FROM contractorchallaninfo c
+			    JOIN contractorchallaniteminfo i ON c.id = i.challan_id
+			    WHERE c.challandate >= CURRENT_DATE - INTERVAL 7 DAY AND c.challantype = 'R'
+			    GROUP BY DATE(c.challandate)
+			) src
+			RIGHT JOIN (
+			    -- generate last 7 days (so days with 0 items still appear)
+			    SELECT CURDATE() - INTERVAL n DAY AS challan_day
+			    FROM (
+			        SELECT 0 AS n UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3
+			        UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6
+			    ) days
+			) d ON d.challan_day = src.challan_day
+			GROUP BY d.challan_day
+			ORDER BY d.challan_day
+			""", nativeQuery = true)
+	public List<DashboardContractorGraphVo> getDashboardContractorGraphData();
 
 }

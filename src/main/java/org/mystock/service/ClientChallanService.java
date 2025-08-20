@@ -20,5 +20,7 @@ public interface ClientChallanService {
 	        LocalDate fromChallanDate, LocalDate toChallanDate, String challanType);
 	
 	public List<ClientChallanVo> getRecentChallans(String challanType);
+	
+	public Integer getCurrentMonthChallanCount(String challanType);
 
 }
