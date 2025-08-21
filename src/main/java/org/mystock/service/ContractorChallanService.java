@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.mystock.vo.ContractorChallanVo;
+import org.mystock.vo.DashboardCurrentMonthContractorCardVo;
+import org.mystock.vo.DashboardPreviousDayContractorCardVo;
 
 public interface ContractorChallanService {
 
@@ -20,5 +22,9 @@ public interface ContractorChallanService {
 			LocalDate toChallanDate, String challanType);
 
 	public List<ContractorChallanVo> getRecentChallans(String challanType);
+	
+	public List<DashboardCurrentMonthContractorCardVo> getCurrentMonthChallanCount();
+	
+	public List<DashboardPreviousDayContractorCardVo> getPreviousDayChallanCount();
 
 }

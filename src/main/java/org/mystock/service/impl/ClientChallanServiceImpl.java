@@ -17,6 +17,8 @@ import org.mystock.repository.ClientChallanRepository;
 import org.mystock.service.ClientChallanService;
 import org.mystock.service.StockService;
 import org.mystock.vo.ClientChallanVo;
+import org.mystock.vo.DashboardCurrentMonthClientCardVo;
+import org.mystock.vo.DashboardPreviousDayClientCardVo;
 import org.mystock.vo.StockVo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -255,6 +257,16 @@ public class ClientChallanServiceImpl implements ClientChallanService {
 		challanType=challanType==null?"%":challanType;
 		
 		return repository.getCurrentMonthChallanCount(challanType);
+	}
+
+	@Override
+	public List<DashboardCurrentMonthClientCardVo> getCurrentMonthChallanCount() {
+		return repository.getCurrentMonthChallanCount();
+	}
+
+	@Override
+	public List<DashboardPreviousDayClientCardVo> getPreviousDayChallanCount() {
+		return repository.getPreviousDayChallanCount();
 	}
 
 }

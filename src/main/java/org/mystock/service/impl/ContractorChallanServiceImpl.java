@@ -20,6 +20,8 @@ import org.mystock.service.ContractorStockService;
 import org.mystock.service.StockService;
 import org.mystock.vo.ContractorChallanVo;
 import org.mystock.vo.ContractorStockVo;
+import org.mystock.vo.DashboardCurrentMonthContractorCardVo;
+import org.mystock.vo.DashboardPreviousDayContractorCardVo;
 import org.mystock.vo.StockVo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -381,6 +383,16 @@ public class ContractorChallanServiceImpl implements ContractorChallanService {
 		challanType = challanType==null?"%":challanType;
 		
 		return repository.getRecentChallans(LocalDate.now(), challanType).stream().map(mapper::toVo).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<DashboardCurrentMonthContractorCardVo> getCurrentMonthChallanCount() {
+		return repository.getCurrentMonthChallanCount();
+	}
+
+	@Override
+	public List<DashboardPreviousDayContractorCardVo> getPreviousDayChallanCount() {
+		return repository.getPreviousDayChallanCount();
 	}
 
 }
