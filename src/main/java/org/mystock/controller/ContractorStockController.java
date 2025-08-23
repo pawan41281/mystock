@@ -1,13 +1,13 @@
 package org.mystock.controller;
 
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.mystock.apiresponse.ApiResponseVo;
 import org.mystock.apiresponse.ApiResponseVoWrapper;
 import org.mystock.service.ContractorStockService;
 import org.mystock.util.MetadataGenerator;
+import org.mystock.vo.ContractorStockBulkVo;
 import org.mystock.vo.ContractorStockVo;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -77,18 +77,19 @@ public class ContractorStockController {
 
 	@PostMapping("/bulk")
 	@Operation(summary = "Save Operation", description = "Set opening balance of multiple contractor stock items")
-	public ResponseEntity<ApiResponseVo<List<ContractorStockVo>>> saveAll(
-			@Valid @RequestBody Set<ContractorStockVo> vos) {
-		log.info("Received request for bulk save :: {}", vos);
-		List<ContractorStockVo> saved = contractorStockService.addOpenningBalance(vos);
+	public ResponseEntity<ApiResponseVo<ContractorStockBulkVo>> saveAll(
+			@Valid @RequestBody ContractorStockBulkVo bulkVo) {
+		log.info("Received request for bulk save :: {}", bulkVo);
+		List<ContractorStockVo> saved = contractorStockService.addOpenningBalance(bulkVo.getContractorStockVos());
 		if (saved != null && !saved.isEmpty()) {
+			bulkVo.setContractorStockVos(saved.stream().collect(Collectors.toSet()));
 			log.info("Record saved");
-			return ResponseEntity.ok(ApiResponseVoWrapper.success("Record updated successfully", saved,
+			return ResponseEntity.ok(ApiResponseVoWrapper.success("Record updated successfully", bulkVo,
 					metadataGenerator.getMetadata(saved)));
 		} else {
 			log.error("Record not saved");
 			return ResponseEntity.ok(ApiResponseVoWrapper.success("Record not updated",
-					vos.stream().collect(Collectors.toList()), metadataGenerator.getMetadata(saved)));
+					bulkVo, metadataGenerator.getMetadata(saved)));
 		}
 	}
 
