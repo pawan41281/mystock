@@ -6,6 +6,8 @@ public interface DesignStockReportVo {
 
 	String getColorName();
 
-	Integer getStockBalance();
+	Integer getOpeningBalance();
+	
+	Integer getClosingBalance();
 
 }

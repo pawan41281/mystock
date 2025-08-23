@@ -36,6 +36,9 @@ public class StockEntity {
 	@JoinColumn(name = "color_id", nullable = false)
 	private ColorEntity color;
 
+	@Column(name = "obalance", nullable = false)
+	private Integer openingBalance = 0;
+
 	@Column(name = "balance", nullable = false)
 	private Integer balance = 0;
 	

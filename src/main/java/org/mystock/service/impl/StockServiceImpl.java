@@ -18,6 +18,7 @@ import org.mystock.service.StockService;
 import org.mystock.vo.StockVo;
 import org.springframework.stereotype.Service;
 
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 
 @Service
@@ -50,7 +51,8 @@ public class StockServiceImpl implements StockService {
 
 	@Override
 	public List<StockVo> getAllNonZero() {
-		return stockRepository.findAll().stream().filter(vo -> !vo.getBalance().equals(0)).map(stockMapper::toVo).collect(Collectors.toList());
+		return stockRepository.findAll().stream().filter(vo -> !vo.getBalance().equals(0)).map(stockMapper::toVo)
+				.collect(Collectors.toList());
 	}
 
 	@Override
@@ -78,22 +80,29 @@ public class StockServiceImpl implements StockService {
 	}
 
 	@Override
+	@Transactional
 	public StockVo addOpenningBalance(Long designId, Long colorId, Integer quantity) {
-		StockVo existingStockVo = get(designId, colorId);
-		if (existingStockVo != null) {
-			existingStockVo.setBalance(existingStockVo.getBalance() + quantity);
-			existingStockVo.setUpdatedOn(LocalDateTime.now());
-		} else {
+		StockVo existingStockVo = get(designId, colorId);// design id + color id - should be unique
+		if (existingStockVo == null) {
 			StockVo stockVo = new StockVo();
-			stockVo.setBalance(0);
+			stockVo.setOpeningBalance(quantity);
+			stockVo.setBalance(quantity);
 			stockVo.setColor(colorService.getById(colorId));
 			stockVo.setDesign(designService.getById(designId));
 			return save(stockVo);
+
+		} else {
+			int existingopeningbalance = existingStockVo.getOpeningBalance();
+			int existingbalance = existingStockVo.getBalance();
+			existingStockVo.setOpeningBalance(quantity);
+			existingStockVo.setBalance(existingbalance - existingopeningbalance + quantity);
+			existingStockVo.setUpdatedOn(LocalDateTime.now());
 		}
 		return save(existingStockVo);
 	}
 
 	@Override
+	@Transactional
 	public List<StockVo> addOpenningBalance(Set<StockVo> vos) {
 		List<StockEntity> entities = new ArrayList<>();
 		vos.stream().forEach(vo -> {
@@ -101,10 +110,16 @@ public class StockServiceImpl implements StockService {
 					vo.getColor().getId());
 			if (entity == null) {
 				entity = new StockEntity();
+				entity.setBalance(vo.getOpeningBalance());
+			} else {
+				int existingopeningbalance = entity.getOpeningBalance();
+				int existingbalance = entity.getBalance();
+				entity.setBalance(existingbalance - existingopeningbalance + vo.getOpeningBalance());
 			}
+
+			entity.setOpeningBalance(vo.getOpeningBalance());
 			entity.setDesign(designMapper.toEntity(vo.getDesign()));
 			entity.setColor(colorMapper.toEntity(vo.getColor()));
-			entity.setBalance(entity.getBalance() + vo.getBalance());
 			entity.setUpdatedOn(LocalDateTime.now());
 			entities.add(entity);
 		});

@@ -42,6 +42,9 @@ public class ContractorStockEntity {
 
 	@Column(name = "balance", nullable = false)
 	private Integer balance = 0;
+
+	@Column(name = "obalance", nullable = false)
+	private Integer openingBalance = 0;
 	
 	@Column(name = "updatedon")
 	private LocalDateTime updatedOn = LocalDateTime.now();

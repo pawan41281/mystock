@@ -60,7 +60,8 @@ public interface ContractorStockRepository extends JpaRepository<ContractorStock
 			  d.id AS designId,
 			  UPPER(d.design) AS designName,
 			  UPPER(clr.colorname) AS colorName,
-			  COALESCE(cs.balance, 0) AS stockBalance
+			  COALESCE(cs.obalance, 0) AS openingBalance,
+			  COALESCE(cs.balance, 0) AS balance
 			FROM
 			  contractorinfo c
 			CROSS JOIN
@@ -86,7 +87,8 @@ public interface ContractorStockRepository extends JpaRepository<ContractorStock
 			  d.id AS designId,
 			  UPPER(d.design) AS designName,
 			  UPPER(clr.colorname) AS colorName,
-			  COALESCE(cs.balance, 0) AS stockBalance
+			  COALESCE(cs.obalance, 0) AS openingBalance,
+			  COALESCE(cs.balance, 0) AS balance
 			FROM
 			  contractorinfo c
 			CROSS JOIN
@@ -114,7 +116,8 @@ public interface ContractorStockRepository extends JpaRepository<ContractorStock
 			  d.id AS designId,
 			  UPPER(d.design) AS designName,
 			  UPPER(clr.colorname) AS colorName,
-			  COALESCE(cs.balance, 0) AS stockBalance
+			  COALESCE(cs.obalance, 0) AS openingBalance,
+			  COALESCE(cs.balance, 0) AS balance
 			FROM
 			  contractorinfo c
 			CROSS JOIN

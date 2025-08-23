@@ -63,7 +63,7 @@ public class ContractorStockController {
 		log.info("Received request for save :: {}", vo);
 		if(vo.getId()!=null && vo.getId().equals(0L)) vo.setId(null);
 		ContractorStockVo saved = contractorStockService.addOpenningBalance(vo.getContractor().getId(),
-				vo.getDesign().getId(), vo.getColor().getId(), vo.getBalance());
+				vo.getDesign().getId(), vo.getColor().getId(), vo.getOpeningBalance());
 		if (saved != null && saved.getId() != null) {
 			log.info("Record saved");
 			return ResponseEntity

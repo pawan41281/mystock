@@ -48,7 +48,8 @@ public interface StockRepository extends JpaRepository<StockEntity, Long> {
 			SELECT
 			    UPPER(d.design) AS designName,
 			    UPPER(c.colorname) AS colorName,
-			    COALESCE(s.balance, 0) AS stockBalance
+			    COALESCE(s.obalance, 0) AS openingBalance,
+			    COALESCE(s.balance, 0) AS closingBalance
 			FROM
 			    designinfo d
 			CROSS JOIN
@@ -67,7 +68,8 @@ public interface StockRepository extends JpaRepository<StockEntity, Long> {
 			SELECT
 			    UPPER(d.design) AS designName,
 			    UPPER(c.colorname) AS colorName,
-			    COALESCE(s.balance, 0) AS stockBalance
+			    COALESCE(s.obalance, 0) AS openingBalance,
+			    COALESCE(s.balance, 0) AS closingBalance
 			FROM
 			    designinfo d
 			CROSS JOIN

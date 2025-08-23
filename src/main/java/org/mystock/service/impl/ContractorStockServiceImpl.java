@@ -20,6 +20,7 @@ import org.mystock.service.DesignService;
 import org.mystock.vo.ContractorStockVo;
 import org.springframework.stereotype.Service;
 
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 
 @Service
@@ -93,15 +94,22 @@ public class ContractorStockServiceImpl implements ContractorStockService {
 	}
 
 	@Override
+	@Transactional
 	public ContractorStockVo addOpenningBalance(Long contractorId, Long designId, Long colorId, Integer quantity) {
 		ContractorStockVo existingContractorStockVo = get(contractorId, designId, colorId);
 		if (existingContractorStockVo != null) {
-			existingContractorStockVo.setBalance(existingContractorStockVo.getBalance() + quantity);
+			
+			Integer existingOpeningBalance = existingContractorStockVo.getOpeningBalance();
+			Integer existingClosingBalance = existingContractorStockVo.getBalance();
+			
+			existingContractorStockVo.setOpeningBalance(quantity);
+			existingContractorStockVo.setBalance(existingClosingBalance - existingOpeningBalance + quantity);
 			existingContractorStockVo.setUpdatedOn(LocalDateTime.now());
 			return save(existingContractorStockVo);
 		} else {
 			ContractorStockVo contractorStockVo = new ContractorStockVo();
-			contractorStockVo.setBalance(0);
+			contractorStockVo.setOpeningBalance(quantity);
+			contractorStockVo.setBalance(quantity);
 			contractorStockVo.setColor(colorService.getById(colorId));
 			contractorStockVo.setContractor(contractorService.getById(contractorId));
 			contractorStockVo.setDesign(designService.getById(designId));
@@ -111,6 +119,7 @@ public class ContractorStockServiceImpl implements ContractorStockService {
 	}
 
 	@Override
+	@Transactional
 	public List<ContractorStockVo> addOpenningBalance(Set<ContractorStockVo> vos) {
 		List<ContractorStockEntity> entities = new ArrayList<>();
 		vos.stream().forEach(vo -> {
@@ -118,11 +127,20 @@ public class ContractorStockServiceImpl implements ContractorStockService {
 					vo.getContractor().getId(), vo.getDesign().getId(), vo.getColor().getId());
 			if (entity == null) {
 				entity = new ContractorStockEntity();
+				entity.setBalance(vo.getOpeningBalance());
+				entity.setBalance(vo.getOpeningBalance());
+			}else {
+				
+				Integer existingOpeningBalance = entity.getOpeningBalance();
+				Integer existingClosingBalance = entity.getBalance();
+				
+				entity.setOpeningBalance(vo.getOpeningBalance());
+				entity.setBalance(existingClosingBalance - existingOpeningBalance + vo.getOpeningBalance());
+				
 			}
 			entity.setContractor(contractorMapper.toEntity(vo.getContractor()));
 			entity.setDesign(designMapper.toEntity(vo.getDesign()));
 			entity.setColor(colorMapper.toEntity(vo.getColor()));
-			entity.setBalance(entity.getBalance() + vo.getBalance());
 			entity.setUpdatedOn(LocalDateTime.now());
 			entities.add(entity);
 		});

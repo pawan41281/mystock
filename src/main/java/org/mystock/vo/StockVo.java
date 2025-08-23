@@ -18,6 +18,7 @@ public class StockVo {
 	private Long id;
 	private DesignVo design;
 	private ColorVo color;
+	private Integer openingBalance=0;
 	private Integer balance=0;
 	private LocalDateTime updatedOn = LocalDateTime.now();
 	private LocalDateTime createdOn = LocalDateTime.now();
