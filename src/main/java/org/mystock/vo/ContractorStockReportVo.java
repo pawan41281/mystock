@@ -10,6 +10,6 @@ public interface ContractorStockReportVo {
 
 	Integer getOpeningBalance();
 
-	Integer getBalance();
+	Integer getClosingBalance();
 
 }

@@ -13,34 +13,40 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(ResourceNotFoundException.class)
 	public ResponseEntity<ApiResponseVo<?>> handleResourceNotFound(ResourceNotFoundException ex) {
-		ApiResponseVo<Object> ApiResponseVo = new ApiResponseVo<Object>("error", ex.getMessage(), null, null);
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponseVo);
+		ApiResponseVo<Object> apiResponseVo = new ApiResponseVo<Object>("error", ex.getMessage(), null, null);
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponseVo);
 	}
 
 	@ExceptionHandler(ResourceAlreadyExistsException.class)
 	public ResponseEntity<ApiResponseVo<?>> handleRecordAlreadyExistsException(ResourceAlreadyExistsException ex) {
-		ApiResponseVo<Object> ApiResponseVo = new ApiResponseVo<Object>("error", ex.getMessage(), null, null);
-		return ResponseEntity.status(HttpStatus.CONFLICT).body(ApiResponseVo);
+		ApiResponseVo<Object> apiResponseVo = new ApiResponseVo<Object>("error", ex.getMessage(), null, null);
+		return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponseVo);
 	}
 
 	@ExceptionHandler(HttpClientErrorException.class)
 	public ResponseEntity<ApiResponseVo<?>> handleServiceNotRespondingException(
 			ServiceNotRespondingException ex) {
-		ApiResponseVo<Object> ApiResponseVo = new ApiResponseVo<Object>("error", ex.getMessage(), null, null);
-		return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(ApiResponseVo);
+		ApiResponseVo<Object> apiResponseVo = new ApiResponseVo<Object>("error", ex.getMessage(), null, null);
+		return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(apiResponseVo);
 	}
 
 	@ExceptionHandler(UnableToProcessException.class)
 	public ResponseEntity<ApiResponseVo<?>> handleUnableToProcessException(
 			ServiceNotRespondingException ex) {
-		ApiResponseVo<Object> ApiResponseVo = new ApiResponseVo<Object>("error", ex.getMessage(), null, null);
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponseVo);
+		ApiResponseVo<Object> apiResponseVo = new ApiResponseVo<Object>("error", ex.getMessage(), null, null);
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponseVo);
 	}
 
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<ApiResponseVo<?>> handleGenericException(
 			Exception ex) {
-		ApiResponseVo<Object> ApiResponseVo = new ApiResponseVo<Object>("error", ex.getMessage(), null, null);
-		return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(ApiResponseVo);
+		ApiResponseVo<Object> apiResponseVo = new ApiResponseVo<Object>("error", ex.getMessage(), null, null);
+		return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(apiResponseVo);
+	}
+
+	@ExceptionHandler(BusinessException.class)
+	public ResponseEntity<ApiResponseVo<?>> handleBusinessException(BusinessException ex) {
+		ApiResponseVo<Object> apiResponseVo = new ApiResponseVo<Object>("error", ex.getMessage(), null, null);
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponseVo);
 	}
 }

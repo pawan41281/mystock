@@ -1,11 +1,14 @@
 package org.mystock.controller;
 
 import java.time.LocalDate;
+import java.time.Period;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Set;
 
 import org.mystock.apiresponse.ApiResponseVo;
 import org.mystock.apiresponse.ApiResponseVoWrapper;
+import org.mystock.exception.BusinessException;
 import org.mystock.service.ClientChallanService;
 import org.mystock.util.MetadataGenerator;
 import org.mystock.vo.ClientChallanVo;
@@ -101,7 +104,7 @@ public class ClientChallanController {
 	}
 
 	@GetMapping
-	@Operation(summary = "Get all challans by challan number and challan date range and challan type and client Id", description = "Challan Type :: I - Issue, R - Received")
+	@Operation(summary = "Get all challans by challan number and challan date range (90 Days max) and challan type and client Id", description = "Challan Type :: I - Issue, R - Received")
 	public ResponseEntity<ApiResponseVo<List<ClientChallanVo>>> find(
 			@RequestParam(value = "challannumber", required = false) Integer challanNumber,
 			@RequestParam(value = "clientid", required = false) Long clientId,
@@ -112,6 +115,19 @@ public class ClientChallanController {
 		log.info(
 				"Received request for find :: challanNumber {}, clientId {}, fromChallanDate {}, toChallanDate {}, challanType {}",
 				challanNumber, clientId, fromChallanDate, toChallanDate, challanType);
+
+		if (fromChallanDate != null && toChallanDate != null) {
+			if (toChallanDate.isBefore(fromChallanDate)) {
+				throw new BusinessException("Invalid date range: 'toChallanDate' must be greater than or equal to 'fromChallanDate'");
+			}
+
+			long days = ChronoUnit.DAYS.between(fromChallanDate, toChallanDate);
+			log.info("Days {}",days);
+			if (days > 90) {
+				throw new BusinessException("Date range cannot exceed 90 days");
+			}
+		}
+
 
 		List<ClientChallanVo> found = service.findAll(challanNumber, clientId,
 				fromChallanDate, toChallanDate, challanType);

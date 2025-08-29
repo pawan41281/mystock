@@ -1,11 +1,13 @@
 package org.mystock.controller;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Set;
 
 import org.mystock.apiresponse.ApiResponseVo;
 import org.mystock.apiresponse.ApiResponseVoWrapper;
+import org.mystock.exception.BusinessException;
 import org.mystock.service.ContractorChallanService;
 import org.mystock.util.MetadataGenerator;
 import org.mystock.vo.ContractorChallanVo;
@@ -101,7 +103,7 @@ public class ContractorChallanController {
 	}
 
 	@GetMapping
-	@Operation(summary = "Get all challans by challan number and challan date range and challan type and contractor Id", description = "Challan Type :: I - Issue, R - Received")
+	@Operation(summary = "Get all challans by challan number and challan date range (90 Days max) and challan type and contractor Id", description = "Challan Type :: I - Issue, R - Received")
 	public ResponseEntity<ApiResponseVo<List<ContractorChallanVo>>> find(
 			@RequestParam(value = "challannumber", required = false) Integer challanNumber,
 			@RequestParam(value = "contractorid", required = false) Long contractorId,
@@ -112,6 +114,18 @@ public class ContractorChallanController {
 				"Received request for find :: challanNumber {}, contractorId {}, fromChallanDate {}, toChallanDate {}, challanType {}",
 				challanNumber, contractorId, fromChallanDate, toChallanDate, challanType);
 
+		if (fromChallanDate != null && toChallanDate != null) {
+			if (toChallanDate.isBefore(fromChallanDate)) {
+				throw new BusinessException("Invalid date range: 'toChallanDate' must be greater than or equal to 'fromChallanDate'");
+			}
+
+			long days = ChronoUnit.DAYS.between(fromChallanDate, toChallanDate);
+			log.info("Days {}",days);
+			if (days > 90) {
+				throw new BusinessException("Date range cannot exceed 90 days");
+			}
+		}
+		
 		List<ContractorChallanVo> found = service.findAll(challanNumber, contractorId,
 				fromChallanDate, toChallanDate, challanType);
 		log.info("Record {}", found != null && !found.isEmpty() ? "found" : "not found");
