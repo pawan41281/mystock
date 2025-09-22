@@ -13,7 +13,9 @@ public interface DesignService {
 
 	public DesignVo getById(Long id);
 	
-	public List<DesignVo> getByName(String name);
+	public List<DesignVo> getAllByName(String name);
+	
+	public DesignVo getByName(String name);
 	
 	public List<DesignVo> getByStatus(boolean status);
 

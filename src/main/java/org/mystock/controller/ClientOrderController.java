@@ -8,9 +8,9 @@ import java.util.Set;
 import org.mystock.apiresponse.ApiResponseVo;
 import org.mystock.apiresponse.ApiResponseVoWrapper;
 import org.mystock.exception.BusinessException;
-import org.mystock.service.ClientChallanService;
+import org.mystock.service.ClientOrderService;
 import org.mystock.util.MetadataGenerator;
-import org.mystock.vo.ClientChallanVo;
+import org.mystock.vo.ClientOrderVo;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,21 +28,22 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/v2/clientchallans")
+@RequestMapping("/v2/clientorders")
 @AllArgsConstructor
-@Tag(name = "Client Challan Operations", description = "CRUD Operations for client challan record")
+@Tag(name = "Client Order Operations", description = "CRUD Operations for client order record")
 @Slf4j
-public class ClientChallanController {
+public class ClientOrderController {
 
-	private final ClientChallanService service;
+	private final ClientOrderService service;
 	private final MetadataGenerator metadataGenerator;
 
 	@PostMapping
-	@Operation(summary = "Create client challan", description = "Challan Type :: I - Issue, R - Received")
-	public ResponseEntity<ApiResponseVo<ClientChallanVo>> save(@Valid @RequestBody ClientChallanVo vo) {
+	@Operation(summary = "Create client order")
+	public ResponseEntity<ApiResponseVo<ClientOrderVo>> save(@Valid @RequestBody ClientOrderVo vo) {
 		log.info("Received request for save :: {}", vo);
-		if(vo.getId()!=null && vo.getId().equals(0L)) vo.setId(null);
-		ClientChallanVo saved = service.save(vo);
+		if (vo.getId() != null && vo.getId().equals(0L))
+			vo.setId(null);
+		ClientOrderVo saved = service.save(vo);
 		if (saved != null && saved.getId() != null) {
 			log.info("Record saved");
 			return ResponseEntity.status(201)
@@ -55,10 +56,10 @@ public class ClientChallanController {
 	}
 
 	@PostMapping("/bulk")
-	@Operation(summary = "Create multiple client challan", description = "Challan Type :: I - Issue, R - Received")
-	public ResponseEntity<ApiResponseVo<Set<ClientChallanVo>>> saveAll(@RequestBody Set<ClientChallanVo> vos) {
+	@Operation(summary = "Create multiple client order")
+	public ResponseEntity<ApiResponseVo<Set<ClientOrderVo>>> saveAll(@RequestBody Set<ClientOrderVo> vos) {
 		log.info("Received request for bulk save :: {}", vos);
-		Set<ClientChallanVo> saved = service.saveAll(vos);
+		Set<ClientOrderVo> saved = service.saveAll(vos);
 		if (saved != null) {
 			log.info("Record saved");
 			return ResponseEntity.status(201)
@@ -71,26 +72,26 @@ public class ClientChallanController {
 	}
 
 	@DeleteMapping("/{id}")
-	@Operation(summary = "Delete client challan")
-	public ResponseEntity<ApiResponseVo<ClientChallanVo>> delete(@PathVariable Long id) {
-		log.info("Received request for delete :: challanId {}", id);
-		ClientChallanVo deleted = service.deleteById(id);
+	@Operation(summary = "Delete client order")
+	public ResponseEntity<ApiResponseVo<ClientOrderVo>> delete(@PathVariable Long id) {
+		log.info("Received request for delete :: orderId {}", id);
+		ClientOrderVo deleted = service.deleteById(id);
 		if (deleted != null) {
 			log.info("Record deleted");
 			return ResponseEntity.status(201).body(
 					ApiResponseVoWrapper.success("Record deleted", deleted, metadataGenerator.getMetadata(deleted)));
 		} else {
-			log.error("Record not deleted :: challanId {}", id);
+			log.error("Record not deleted :: orderId {}", id);
 			return ResponseEntity.status(500).body(ApiResponseVoWrapper.success("Record not deleted", deleted,
 					metadataGenerator.getMetadata(deleted)));
 		}
 	}
 
 	@GetMapping("/{id}")
-	@Operation(summary = "Get all challans by Id")
-	public ResponseEntity<ApiResponseVo<ClientChallanVo>> findById(@PathVariable Long id) {
+	@Operation(summary = "Get all orders by Id")
+	public ResponseEntity<ApiResponseVo<ClientOrderVo>> findById(@PathVariable Long id) {
 		log.info("Received request for find :: id - {}", id);
-		ClientChallanVo found = service.findById(id);
+		ClientOrderVo found = service.findById(id);
 		if (found != null) {
 			log.info("Record found");
 			return ResponseEntity
@@ -103,34 +104,31 @@ public class ClientChallanController {
 	}
 
 	@GetMapping
-	@Operation(summary = "Get all challans by challan number and challan date range (90 Days max) and challan type and client Id", description = "Challan Type :: I - Issue, R - Received")
-	public ResponseEntity<ApiResponseVo<List<ClientChallanVo>>> find(
-			@RequestParam(value = "challannumber", required = false) Integer challanNumber,
+	@Operation(summary = "Get all orders by order number and order date range (90 Days max) and client Id")
+	public ResponseEntity<ApiResponseVo<List<ClientOrderVo>>> find(
+			@RequestParam(value = "ordernumber", required = false) Integer orderNumber,
 			@RequestParam(value = "clientid", required = false) Long clientId,
-			@RequestParam(value = "fromchallandate", required = false) LocalDate fromChallanDate,
-			@RequestParam(value = "tochallandate", required = false) LocalDate toChallanDate,
-			@RequestParam(value = "challantype", required = false) String challanType) {
+			@RequestParam(value = "fromorderdate", required = false) LocalDate fromOrderDate,
+			@RequestParam(value = "toorderdate", required = false) LocalDate toOrderDate) {
 
-		log.info(
-				"Received request for find :: challanNumber {}, clientId {}, fromChallanDate {}, toChallanDate {}, challanType {}",
-				challanNumber, clientId, fromChallanDate, toChallanDate, challanType);
+		log.info("Received request for find :: orderNumber {}, clientId {}, fromOrderDate {}, toOrderDate {}",
+				orderNumber, clientId, fromOrderDate, toOrderDate);
 
-		if (fromChallanDate != null && toChallanDate != null) {
-			if (toChallanDate.isBefore(fromChallanDate)) {
-				throw new BusinessException("Invalid date range: 'To Date' must be greater than or equal to 'From Date'");
+		if (fromOrderDate != null && toOrderDate != null) {
+			if (toOrderDate.isBefore(fromOrderDate)) {
+				throw new BusinessException(
+						"Invalid date range: 'To Date' must be greater than or equal to 'From Date'");
 			}
 
-			long days = ChronoUnit.DAYS.between(fromChallanDate, toChallanDate);
-			log.info("Days {}",days);
+			long days = ChronoUnit.DAYS.between(fromOrderDate, toOrderDate);
+			log.info("Days {}", days);
 			if (days > 90) {
 				throw new BusinessException("Date range cannot exceed 90 days");
 			}
 		}
 
+		List<ClientOrderVo> found = service.findAll(orderNumber, clientId, fromOrderDate, toOrderDate);
 
-		List<ClientChallanVo> found = service.findAll(challanNumber, clientId,
-				fromChallanDate, toChallanDate, challanType);
-		
 		log.info("Record {}", found != null && !found.isEmpty() ? "found" : "not found");
 
 		return ResponseEntity

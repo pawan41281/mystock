@@ -90,7 +90,7 @@ public class DesignController {
 	public ResponseEntity<ApiResponseVo<List<DesignVo>>> getByName(@PathVariable(required = false) String name) {
 		log.info("Received request for find :: name - {}", name);
 		if(name==null) name="";
-		List<DesignVo> found = designService.getByName(name.trim());
+		List<DesignVo> found = designService.getAllByName(name.trim());
 		if (found != null) {
 			log.info("Record found");
 			return ResponseEntity

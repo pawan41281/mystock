@@ -37,7 +37,8 @@ public class ColorController {
 	@Operation(summary = "Create or update color")
 	public ResponseEntity<ApiResponseVo<ColorVo>> save(@RequestBody ColorVo vo) {
 		log.info("Received request for save");
-		if(vo.getId()!=null && vo.getId().equals(0L)) vo.setId(null);
+		if (vo.getId() != null && vo.getId().equals(0L))
+			vo.setId(null);
 		ColorVo saved = colorService.save(vo);
 		if (saved != null && saved.getId() != null) {
 			log.info("Record saved");
@@ -118,12 +119,11 @@ public class ColorController {
 	@GetMapping("/name/{name}")
 	@Operation(summary = "Get All by Name", description = "Get all colors by name")
 	public ResponseEntity<ApiResponseVo<List<ColorVo>>> getAll(
-			@Parameter(name = "name", description = "Color Name to Search")
-			@PathVariable String name) {
+			@Parameter(name = "name", description = "Color Name to Search") @PathVariable String name) {
 		log.info("Received request for find all");
-		name=name==null?"%":"%"+name.trim()+"%";
+		name = name == null ? "%" : "%" + name.trim() + "%";
 		List<ColorVo> found = colorService.findByNameIgnoreCaseLike(name);
-		if (found != null && !found.isEmpty()) {
+		if (found != null) {
 			log.info("Record found");
 			return ResponseEntity
 					.ok(ApiResponseVoWrapper.success("Record saved", found, metadataGenerator.getMetadata(found)));

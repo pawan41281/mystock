@@ -10,8 +10,10 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ColorRepository extends JpaRepository<ColorEntity, Long> {
-	
+
 	@Query("SELECT c FROM ColorEntity c WHERE UPPER(c.colorName) LIKE UPPER(:name)")
 	List<ColorEntity> findByNameIgnoreCaseLike(@Param("name") String name);
 
+	@Query("SELECT c FROM ColorEntity c WHERE UPPER(c.colorName) = UPPER(:name)")
+	ColorEntity findByNameIgnoreCase(@Param("name") String name);
 }

@@ -16,4 +16,7 @@ public interface DesignRepository extends JpaRepository<DesignEntity, Long>{
 	@Query("SELECT d FROM DesignEntity d WHERE UPPER(d.designName) LIKE UPPER(:designName)")
 	List<DesignEntity> findByDesignNameIgnoreCaseLike(@Param("designName") String designName);
 	
+	@Query("SELECT d FROM DesignEntity d WHERE UPPER(d.designName) = UPPER(:designName)")
+	DesignEntity findByDesignNameIgnoreCase(@Param("designName") String designName);
+	
 }

@@ -116,7 +116,7 @@ public class ContractorChallanController {
 
 		if (fromChallanDate != null && toChallanDate != null) {
 			if (toChallanDate.isBefore(fromChallanDate)) {
-				throw new BusinessException("Invalid date range: 'toChallanDate' must be greater than or equal to 'fromChallanDate'");
+				throw new BusinessException("Invalid date range: 'To Date' must be greater than or equal to 'From Date'");
 			}
 
 			long days = ChronoUnit.DAYS.between(fromChallanDate, toChallanDate);
