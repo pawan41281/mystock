@@ -9,11 +9,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.mystock.entity.ClientChallanEntity;
+import org.mystock.entity.ClientOrderEntity;
 import org.mystock.exception.ResourceNotFoundException;
 import org.mystock.mapper.ClientChallanMapper;
 import org.mystock.mapper.ColorMapper;
 import org.mystock.mapper.DesignMapper;
 import org.mystock.repository.ClientChallanRepository;
+import org.mystock.repository.ClientOrderRepository;
 import org.mystock.service.ClientChallanService;
 import org.mystock.service.StockService;
 import org.mystock.vo.ClientChallanVo;
@@ -30,6 +32,7 @@ import lombok.AllArgsConstructor;
 public class ClientChallanServiceImpl implements ClientChallanService {
 
 	private final ClientChallanRepository repository;
+	private final ClientOrderRepository orderRepository;
 	private final ClientChallanMapper mapper;
 	private final StockService stockService;
 	private final DesignMapper designMapper;
@@ -40,6 +43,20 @@ public class ClientChallanServiceImpl implements ClientChallanService {
 	public ClientChallanVo save(ClientChallanVo vo) {
 
 		ClientChallanEntity entity = mapper.toEntity(vo);
+		if (null != entity.getOrder() && null != entity.getOrder().getId()) {
+			Optional<ClientOrderEntity> orderEntity = orderRepository.findById(entity.getOrder().getId());
+			if (orderEntity.isPresent()) {
+				entity.setOrder(orderEntity.get());
+
+				if (!orderEntity.get().getClient().getId().equals(vo.getClient().getId()))
+					throw new ResourceNotFoundException("Mismatched Client ID in order and challan : "
+							+ orderEntity.get().getClient().getId() + "|" + vo.getClient().getId());
+
+			} else {
+				throw new ResourceNotFoundException("Invalid Order ID: " + vo.getOrder().getId());
+			}
+		}
+
 		final ClientChallanEntity savedEntity = repository.save(entity);
 
 		if (entity.getId() != null) {
@@ -227,35 +244,33 @@ public class ClientChallanServiceImpl implements ClientChallanService {
 	}
 
 	@Override
-	public List<ClientChallanVo> findAll(Integer challanNumber, Long clientId, LocalDate fromChallanDate,
+	public List<ClientChallanVo> findAll(Integer challanNumber, Long clientId, Long orderId, LocalDate fromChallanDate,
 			LocalDate toChallanDate, String challanType) {
 
-		return repository.findAll(challanNumber, clientId, fromChallanDate, toChallanDate, challanType).stream()
-				.map(mapper::toVo).collect(Collectors.toList());
+		return repository.findAll(challanNumber, clientId, orderId, fromChallanDate, toChallanDate, challanType)
+				.stream().map(mapper::toVo).collect(Collectors.toList());
 	}
-	
-
 
 	@Override
 	public List<ClientChallanVo> getRecentChallans(String challanType) {
-		
-		if(challanType!=null && !challanType.equalsIgnoreCase("I") && !challanType.equalsIgnoreCase("R"))
+
+		if (challanType != null && !challanType.equalsIgnoreCase("I") && !challanType.equalsIgnoreCase("R"))
 			throw new ResourceNotFoundException("Challan type is invalid :: " + challanType);
-		
-		challanType=challanType==null?"%":challanType;
-		
-		return repository.getRecentChallans(LocalDate.now(), challanType).stream().map(mapper::toVo).collect(Collectors.toList());
+
+		challanType = challanType == null ? "%" : challanType;
+
+		return repository.getRecentChallans(LocalDate.now(), challanType).stream().map(mapper::toVo)
+				.collect(Collectors.toList());
 	}
-	
 
 	@Override
 	public Integer getCurrentMonthChallanCount(String challanType) {
-		
-		if(challanType!=null && !challanType.equalsIgnoreCase("I") && !challanType.equalsIgnoreCase("R"))
+
+		if (challanType != null && !challanType.equalsIgnoreCase("I") && !challanType.equalsIgnoreCase("R"))
 			throw new ResourceNotFoundException("Challan type is invalid :: " + challanType);
-		
-		challanType=challanType==null?"%":challanType;
-		
+
+		challanType = challanType == null ? "%" : challanType;
+
 		return repository.getCurrentMonthChallanCount(challanType);
 	}
 

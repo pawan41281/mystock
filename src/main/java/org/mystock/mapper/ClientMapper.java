@@ -14,10 +14,16 @@ public class ClientMapper {
 	private final ModelMapper modelMapper;
 
 	public ClientVo toVo(ClientEntity clientEntity) {
+		if(clientEntity==null)
+			return null;
+		
 		return modelMapper.map(clientEntity, ClientVo.class);
 	}
 
 	public ClientEntity toEntity(ClientVo clientVo) {
+		if(clientVo==null)
+			return null;
+		
 		return modelMapper.map(clientVo, ClientEntity.class);
 	}
 

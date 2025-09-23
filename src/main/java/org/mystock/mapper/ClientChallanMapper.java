@@ -14,10 +14,13 @@ public class ClientChallanMapper {
 
 	private final ModelMapper modelMapper;
 	private final ClientMapper clientMapper;
+	private final ClientOrderMapper clientOrderMapper;
 
 	public ClientChallanVo toVo(ClientChallanEntity clientChallanEntity) {
 		ClientChallanVo clientChallanVo = modelMapper.map(clientChallanEntity, ClientChallanVo.class);
 		clientChallanVo.setClient(clientMapper.toVo(clientChallanEntity.getClient()));
+		if(null!=clientChallanEntity.getOrder())
+			clientChallanVo.setOrder(clientOrderMapper.toVo(clientChallanEntity.getOrder()));
 		return clientChallanVo;
 	}
 

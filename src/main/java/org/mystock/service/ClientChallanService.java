@@ -18,7 +18,7 @@ public interface ClientChallanService {
 
 	public ClientChallanVo deleteById(Long id);
 
-	public List<ClientChallanVo> findAll(Integer challanNumber, Long clientId, LocalDate fromChallanDate,
+	public List<ClientChallanVo> findAll(Integer challanNumber, Long clientId, Long orderId, LocalDate fromChallanDate,
 			LocalDate toChallanDate, String challanType);
 
 	public List<ClientChallanVo> getRecentChallans(String challanType);
@@ -26,7 +26,7 @@ public interface ClientChallanService {
 	public Integer getCurrentMonthChallanCount(String challanType);
 
 	public List<DashboardCurrentMonthClientCardVo> getCurrentMonthChallanCount();
-	
+
 	public List<DashboardPreviousDayClientCardVo> getPreviousDayChallanCount();
 
 }

@@ -33,6 +33,8 @@ public class ClientChallanVo {
 	
 	@NotNull
 	private ClientVo client;
+	
+	private ClientOrderVo order;
 
 	@NotBlank
 	@Pattern(regexp = "I|R")

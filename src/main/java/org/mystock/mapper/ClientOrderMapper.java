@@ -16,6 +16,9 @@ public class ClientOrderMapper {
 	private final ClientMapper clientMapper;
 
 	public ClientOrderVo toVo(ClientOrderEntity clientOrderEntity) {
+		if(null==clientOrderEntity)
+			return null;
+		
 		ClientOrderVo clientOrderVo = modelMapper.map(clientOrderEntity, ClientOrderVo.class);
 		clientOrderVo.setClient(clientMapper.toVo(clientOrderEntity.getClient()));
 		return clientOrderVo;

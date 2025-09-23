@@ -41,7 +41,8 @@ public class ClientChallanController {
 	@Operation(summary = "Create client challan", description = "Challan Type :: I - Issue, R - Received")
 	public ResponseEntity<ApiResponseVo<ClientChallanVo>> save(@Valid @RequestBody ClientChallanVo vo) {
 		log.info("Received request for save :: {}", vo);
-		if(vo.getId()!=null && vo.getId().equals(0L)) vo.setId(null);
+		if (vo.getId() != null && vo.getId().equals(0L))
+			vo.setId(null);
 		ClientChallanVo saved = service.save(vo);
 		if (saved != null && saved.getId() != null) {
 			log.info("Record saved");
@@ -103,34 +104,35 @@ public class ClientChallanController {
 	}
 
 	@GetMapping
-	@Operation(summary = "Get all challans by challan number and challan date range (90 Days max) and challan type and client Id", description = "Challan Type :: I - Issue, R - Received")
+	@Operation(summary = "Get all challans by challan number and challan date range (90 Days max) and challan type and client Id and order Id", description = "Challan Type :: I - Issue, R - Received")
 	public ResponseEntity<ApiResponseVo<List<ClientChallanVo>>> find(
 			@RequestParam(value = "challannumber", required = false) Integer challanNumber,
 			@RequestParam(value = "clientid", required = false) Long clientId,
+			@RequestParam(value = "orderid", required = false) Long orderId,
 			@RequestParam(value = "fromchallandate", required = false) LocalDate fromChallanDate,
 			@RequestParam(value = "tochallandate", required = false) LocalDate toChallanDate,
 			@RequestParam(value = "challantype", required = false) String challanType) {
 
 		log.info(
-				"Received request for find :: challanNumber {}, clientId {}, fromChallanDate {}, toChallanDate {}, challanType {}",
-				challanNumber, clientId, fromChallanDate, toChallanDate, challanType);
+				"Received request for find :: challanNumber {}, clientId {}, fromChallanDate {}, toChallanDate {}, challanType {}, orderId {}",
+				challanNumber, clientId, fromChallanDate, toChallanDate, challanType, orderId);
 
 		if (fromChallanDate != null && toChallanDate != null) {
 			if (toChallanDate.isBefore(fromChallanDate)) {
-				throw new BusinessException("Invalid date range: 'To Date' must be greater than or equal to 'From Date'");
+				throw new BusinessException(
+						"Invalid date range: 'To Date' must be greater than or equal to 'From Date'");
 			}
 
 			long days = ChronoUnit.DAYS.between(fromChallanDate, toChallanDate);
-			log.info("Days {}",days);
+			log.info("Days {}", days);
 			if (days > 90) {
 				throw new BusinessException("Date range cannot exceed 90 days");
 			}
 		}
 
+		List<ClientChallanVo> found = service.findAll(challanNumber, clientId, orderId, fromChallanDate, toChallanDate,
+				challanType);
 
-		List<ClientChallanVo> found = service.findAll(challanNumber, clientId,
-				fromChallanDate, toChallanDate, challanType);
-		
 		log.info("Record {}", found != null && !found.isEmpty() ? "found" : "not found");
 
 		return ResponseEntity
