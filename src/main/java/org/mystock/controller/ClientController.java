@@ -1,12 +1,12 @@
 package org.mystock.controller;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 import org.mystock.apiresponse.ApiResponseVo;
 import org.mystock.apiresponse.ApiResponseVoWrapper;
 import org.mystock.service.ClientService;
+import org.mystock.util.MetadataGenerator;
 import org.mystock.vo.ClientVo;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,95 +21,106 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/v1/clients/")
+@RequestMapping("/v2/clients")
 @AllArgsConstructor
-@Tag(name="Client Operations")
+@Tag(name = "Client Operations", description = "CRUD Operations for client record")
+@Slf4j
 public class ClientController {
 
 	private final ClientService clientService;
-
-	@GetMapping
-	@Operation(summary = "List Operation", description = "Fetch client list")
-	public ResponseEntity<ApiResponseVo<List<ClientVo>>> getClients() {
-		List<ClientVo> list = clientService.list();
-		Map<String, String> metadata = new HashMap<>();
-		metadata.put("recordcount", String.valueOf(list.size()));
-		return ResponseEntity.ok(ApiResponseVoWrapper.success(null, list, metadata));
-	}
+	private final MetadataGenerator metadataGenerator;
 
 	@PostMapping
-	@Operation(summary = "Save Operation", description = "Save client record")
-	public ResponseEntity<ApiResponseVo<ClientVo>> save(@RequestBody ClientVo clientVo) {
-		clientVo = clientService.save(clientVo);
-		return ResponseEntity.ok(ApiResponseVoWrapper.success(null, clientVo, null));
+	@Operation(summary = "Create or update client")
+	public ResponseEntity<ApiResponseVo<ClientVo>> save(@RequestBody ClientVo vo) {
+		log.info("Received request for save");
+		if(vo.getId()!=null && vo.getId().equals(0L)) vo.setId(null);
+		ClientVo saved = clientService.save(vo);
+		if (saved != null && saved.getId() != null) {
+			log.info("Record saved");
+			return ResponseEntity
+					.ok(ApiResponseVoWrapper.success("Record saved", saved, metadataGenerator.getMetadata(saved)));
+		} else {
+			log.error("Record not saved");
+			return ResponseEntity
+					.ok(ApiResponseVoWrapper.success("Record not saved", vo, metadataGenerator.getMetadata(saved)));
+		}
 	}
-	
-	@GetMapping("id/{id}")
-	@Operation(summary = "Find Operation", description = "Find clients by id")
-	public ResponseEntity<ApiResponseVo<ClientVo>> getClientsById(@PathVariable Long id) {
-		ClientVo clientVo = clientService.findById(id);
-		Map<String, String> metadata = new HashMap<>();
-		metadata.put("recordcount", String.valueOf(clientVo!=null?1:0));
-		return ResponseEntity.ok(ApiResponseVoWrapper.success(clientVo!=null?"Record found":"Record not found", clientVo, metadata));
+
+	@PostMapping("/bulk")
+	@Operation(summary = "Create or update multiple clients")
+	public ResponseEntity<ApiResponseVo<Set<ClientVo>>> saveAll(@RequestBody Set<ClientVo> vos) {
+		log.info("Received request for bulk save");
+		Set<ClientVo> saved = clientService.saveAll(vos);
+		if (saved != null && !saved.isEmpty()) {
+			log.info("Record saved");
+			return ResponseEntity
+					.ok(ApiResponseVoWrapper.success("Record saved", saved, metadataGenerator.getMetadata(saved)));
+		} else {
+			log.error("Record not saved");
+			return ResponseEntity
+					.ok(ApiResponseVoWrapper.success("Record not saved", vos, metadataGenerator.getMetadata(saved)));
+		}
 	}
-	
-	@GetMapping("email")
-	@Operation(summary = "Find Operation", description = "Find clients by email")
-	public ResponseEntity<ApiResponseVo<List<ClientVo>>> getClientsByEmail(@RequestParam String email) {
-		List<ClientVo> list = clientService.findByEmailIgnoreCase(email);
-		Map<String, String> metadata = new HashMap<>();
-		metadata.put("recordcount", String.valueOf(list.size()));
-		return ResponseEntity.ok(ApiResponseVoWrapper.success(null, list, metadata));
+
+	@GetMapping("/{id}")
+	@Operation(summary = "Get client by ID")
+	public ResponseEntity<ApiResponseVo<ClientVo>> getById(@PathVariable Long id) {
+		log.info("Received request for find :: id - {}", id);
+		ClientVo found = clientService.getById(id);
+		if (found != null) {
+			log.info("Record found");
+			return ResponseEntity
+					.ok(ApiResponseVoWrapper.success("Record found", found, metadataGenerator.getMetadata(found)));
+		} else {
+			log.info("Record not found");
+			return ResponseEntity
+					.ok(ApiResponseVoWrapper.success("Record not found", found, metadataGenerator.getMetadata(found)));
+		}
 	}
-	
-	@GetMapping("mobile/{mobile}")
-	@Operation(summary = "Find Operation", description = "Find clients by mobile")
-	public ResponseEntity<ApiResponseVo<List<ClientVo>>> getClientsByMobile(@PathVariable String mobile) {
-		List<ClientVo> list = clientService.findByMobile(mobile);
-		Map<String, String> metadata = new HashMap<>();
-		metadata.put("recordcount", String.valueOf(list.size()));
-		return ResponseEntity.ok(ApiResponseVoWrapper.success(null, list, metadata));
+
+	@PatchMapping("/{id}/{status}")
+	@Operation(summary = "Update status by ID", description = "Update client status by ID")
+	public ResponseEntity<ApiResponseVo<ClientVo>> update(@PathVariable Long id, @PathVariable boolean status) {
+
+		log.info("Received request for status update :: {} - {}", id, status);
+		ClientVo saved = clientService.updateStatus(id, status);
+		if (saved != null && saved.getId() != null) {
+			log.info("Record updated");
+			return ResponseEntity
+					.ok(ApiResponseVoWrapper.success("Record updated", saved, metadataGenerator.getMetadata(saved)));
+		} else {
+			log.error("Record not saved");
+			return ResponseEntity.ok(
+					ApiResponseVoWrapper.success("Record not updated", saved, metadataGenerator.getMetadata(saved)));
+		}
+
 	}
-	
-	@GetMapping("gstno/{gstNo}")
-	@Operation(summary = "Find Operation", description = "Find clients by GST Number")
-	public ResponseEntity<ApiResponseVo<List<ClientVo>>> getClientsByGstNo(@PathVariable String gstNo) {
-		List<ClientVo> list = clientService.findByGstNoIgnoreCase(gstNo);
-		Map<String, String> metadata = new HashMap<>();
-		metadata.put("recordcount", String.valueOf(list.size()));
-		return ResponseEntity.ok(ApiResponseVoWrapper.success(null, list, metadata));
-	}
-	
-	@GetMapping("status/{status}")
-	@Operation(summary = "Find Operation", description = "Find clients by status")
-	public ResponseEntity<ApiResponseVo<List<ClientVo>>> getClientsByStatus(@PathVariable boolean status) {
-		List<ClientVo> list = clientService.findByStatus(status);
-		Map<String, String> metadata = new HashMap<>();
-		metadata.put("recordcount", String.valueOf(list.size()));
-		return ResponseEntity.ok(ApiResponseVoWrapper.success(null, list, metadata));
-	}
-	
-	@GetMapping("email/mobile/gstno/status")
-	@Operation(summary = "Find Operation", description = "Find clients by email or mobile or gstno or status")
-	public ResponseEntity<ApiResponseVo<List<ClientVo>>> findByEmailOrMobileOrGstNoOrStatus(
+
+	@GetMapping
+	@Operation(summary = "Get client by Name and City and State and Email and Mobile and GST Number and Status")
+	public ResponseEntity<ApiResponseVo<List<ClientVo>>> find(
+			@RequestParam(required = false) String clientName,
+			@RequestParam(required = false) String city, 
+			@RequestParam(required = false) String state,
+			@RequestParam(required = false) String mobile, 
 			@RequestParam(required = false) String email,
-			@RequestParam(required = false) String mobile,
-			@RequestParam(required = false) String gstNo,
-			@RequestParam(required = false) boolean status) {
-		List<ClientVo> list = clientService.findByEmailOrMobileOrGstNoOrStatus(email, mobile, gstNo, status);
-		Map<String, String> metadata = new HashMap<>();
-		metadata.put("recordcount", String.valueOf(list.size()));
-		return ResponseEntity.ok(ApiResponseVoWrapper.success(null, list, metadata));
+			@RequestParam(required = false) String gstNo, 
+			@RequestParam(required = false) Boolean active) {
+
+		log.info(
+				"Received request for find :: clientName {}, city {}, state {}, mobile {}, email {}, gstNo {}, active {}",
+				clientName, city, state, mobile, email, gstNo, active);
+
+		List<ClientVo> found = clientService.find(clientName, city, state, mobile, email, gstNo, active);
+		log.info("Record {} :: {}", found != null && !found.isEmpty() ? "found" : "not found", found);
+
+		return ResponseEntity
+				.ok(ApiResponseVoWrapper.success("Record fetched", found, metadataGenerator.getMetadata(found)));
+
 	}
-	
-	@PatchMapping("{id}/{status}")
-	@Operation(summary = "Update Operation", description = "Update status by id")
-	public ResponseEntity<ApiResponseVo<ClientVo>> updateStatus(@PathVariable Long id, @PathVariable boolean status) {
-		ClientVo clientVo = clientService.updateStatus(status, id);
-		Map<String, String> metadata = new HashMap<>();
-		metadata.put("recordcount", String.valueOf(clientVo!=null?1:0));
-		return ResponseEntity.ok(ApiResponseVoWrapper.success(clientVo!=null?"Status updated successfully":"Record not found", clientVo, metadata));
-	}
+
 }

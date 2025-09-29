@@ -1,14 +1,15 @@
 package org.mystock.controller;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 import org.mystock.apiresponse.ApiResponseVo;
 import org.mystock.apiresponse.ApiResponseVoWrapper;
 import org.mystock.service.DesignService;
+import org.mystock.util.MetadataGenerator;
 import org.mystock.vo.DesignVo;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,86 +21,119 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/v1/designs/")
+@RequestMapping("/v2/designs")
 @AllArgsConstructor
-@Tag(name = "Design Operations")
+@Tag(name = "Design Operations", description = "CRUD Operations for design record")
+@Slf4j
 public class DesignController {
 
 	private final DesignService designService;
-
-	@GetMapping
-	@Operation(summary = "List Operation", description = "Fetch design list")
-	public ResponseEntity<ApiResponseVo<List<DesignVo>>> getDesigns() {
-		List<DesignVo> list = designService.list();
-		Map<String, String> metadata = new HashMap<>();
-		metadata.put("recordcount", String.valueOf(list.size()));
-		return ResponseEntity.ok(ApiResponseVoWrapper.success(null, list, metadata));
-	}
-
-	@GetMapping("{id}")
-	@Operation(summary = "Find Operation", description = "Find based on id")
-	public ResponseEntity<ApiResponseVo<DesignVo>> getDesignsById(@PathVariable Long id) {
-		DesignVo designVo = designService.findById(id);
-		Map<String, String> metadata = new HashMap<>();
-		metadata.put("recordcount", designVo==null?"0":"1");
-		return ResponseEntity.ok(ApiResponseVoWrapper.success(designVo==null?"Record not found":"Record found", designVo, metadata));
-	}
-
-	@GetMapping("designnumber/{designnumber}")
-	@Operation(summary = "Find Operation", description = "Find based on design number")
-	public ResponseEntity<ApiResponseVo<List<DesignVo>>> getDesignsByDesignNumber(@PathVariable String designnumber) {
-		List<DesignVo> list = designService.findByDesignIgnoreCase(designnumber);
-		Map<String, String> metadata = new HashMap<>();
-		metadata.put("recordcount", String.valueOf(list.size()));
-		return ResponseEntity.ok(ApiResponseVoWrapper.success(null, list, metadata));
-	}
-
-	@GetMapping("color/{color}")
-	@Operation(summary = "Find Operation", description = "Find based on color")
-	public ResponseEntity<ApiResponseVo<List<DesignVo>>> getDesignsByColor(@PathVariable String color) {
-		List<DesignVo> list = designService.findByColorIgnoreCase(color);
-		Map<String, String> metadata = new HashMap<>();
-		metadata.put("recordcount", String.valueOf(list.size()));
-		return ResponseEntity.ok(ApiResponseVoWrapper.success(null, list, metadata));
-	}
-
-	@GetMapping("status/{status}")
-	@Operation(summary = "Find Operation", description = "Find based on status")
-	public ResponseEntity<ApiResponseVo<List<DesignVo>>> getDesignsByStatus(@PathVariable boolean status) {
-		List<DesignVo> list = designService.findByStatusIgnoreCase(status);
-		Map<String, String> metadata = new HashMap<>();
-		metadata.put("recordcount", String.valueOf(list.size()));
-		return ResponseEntity.ok(ApiResponseVoWrapper.success(null, list, metadata));
-	}
-
-	@GetMapping("{designnumber}/{color}/{status}")
-	@Operation(summary = "Find Operation", description = "Find based on design number or color or status")
-	public ResponseEntity<ApiResponseVo<List<DesignVo>>> getDesignsByDesignNumberOrColorOrStatus(
-			@PathVariable String designnumber, @PathVariable String color, @PathVariable boolean status) {
-		List<DesignVo> list = designService.findByDesignIgnoreCaseOrColorIgnoreCaseOrStatus(designnumber, color,
-				status);
-		Map<String, String> metadata = new HashMap<>();
-		metadata.put("recordcount", String.valueOf(list.size()));
-		return ResponseEntity.ok(ApiResponseVoWrapper.success(null, list, metadata));
-	}
+	private final MetadataGenerator metadataGenerator;
 
 	@PostMapping
-	@Operation(summary = "Save Operation", description = "Save design record")
-	public ResponseEntity<ApiResponseVo<DesignVo>> save(@RequestBody DesignVo designVo) {
-		designVo = designService.save(designVo);
-		return ResponseEntity.ok(ApiResponseVoWrapper.success(null, designVo, null));
+	@Operation(summary = "Save operation", description = "Save design record")
+	public ResponseEntity<ApiResponseVo<DesignVo>> save(@Validated @RequestBody DesignVo vo) {
+		log.info("Received request for save :: {}", vo);
+		if(vo.getId()!=null && vo.getId().equals(0L)) vo.setId(null);
+		DesignVo saved = designService.save(vo);
+		if (saved != null && saved.getId() != null) {
+			log.info("Record saved");
+			return ResponseEntity
+					.ok(ApiResponseVoWrapper.success("Record saved", saved, metadataGenerator.getMetadata(saved)));
+		} else {
+			log.error("Record not saved");
+			return ResponseEntity
+					.ok(ApiResponseVoWrapper.success("Record not saved", vo, metadataGenerator.getMetadata(saved)));
+		}
+	}
+
+	@PostMapping("/bulk")
+	@Operation(summary = "Bulk Save operation", description = "Save design record")
+	public ResponseEntity<ApiResponseVo<Set<DesignVo>>> save(@RequestBody Set<DesignVo> vos) {
+		log.info("Received request for bulk save :: {}", vos);
+		Set<DesignVo> saved = designService.saveAll(vos);
+		if (saved != null && !saved.isEmpty()) {
+			log.info("Record saved");
+			return ResponseEntity
+					.ok(ApiResponseVoWrapper.success("Record saved", saved, metadataGenerator.getMetadata(saved)));
+		} else {
+			log.error("Record not saved");
+			return ResponseEntity
+					.ok(ApiResponseVoWrapper.success("Record not saved", vos, metadataGenerator.getMetadata(saved)));
+		}
+	}
+
+	@GetMapping("/{id}")
+	@Operation(summary = "Get by ID", description = "Get a design by its ID")
+	public ResponseEntity<ApiResponseVo<DesignVo>> getById(@PathVariable Long id) {
+		log.info("Received request for find :: id - {}", id);
+		DesignVo found = designService.getById(id);
+		if (found != null) {
+			log.info("Record found");
+			return ResponseEntity
+					.ok(ApiResponseVoWrapper.success("Record found", found, metadataGenerator.getMetadata(found)));
+		} else {
+			log.info("Record not found");
+			return ResponseEntity
+					.ok(ApiResponseVoWrapper.success("Record not found", found, metadataGenerator.getMetadata(found)));
+		}
+
 	}
 	
 
 
-	@PatchMapping("{id}/{status}")
-	@Operation(summary = "Update Operation", description = "Update status based on id")
-	public ResponseEntity<ApiResponseVo<DesignVo>> updateStatus(@PathVariable Long id, @PathVariable boolean status) {
-		DesignVo designVo = designService.updateStatus(status, id);
-		Map<String, String> metadata = new HashMap<>();
-		metadata.put("recordcount", designVo==null?"0":"1");
-		return ResponseEntity.ok(ApiResponseVoWrapper.success(designVo==null?"Record not found":"Record updated successfully", designVo, metadata));
+	@GetMapping("/name/{name}")
+	@Operation(summary = "Get by name", description = "Get a design by its name")
+	public ResponseEntity<ApiResponseVo<List<DesignVo>>> getByName(@PathVariable(required = false) String name) {
+		log.info("Received request for find :: name - {}", name);
+		if(name==null) name="";
+		List<DesignVo> found = designService.getAllByName(name.trim());
+		if (found != null) {
+			log.info("Record found");
+			return ResponseEntity
+					.ok(ApiResponseVoWrapper.success("Record found", found, metadataGenerator.getMetadata(found)));
+		} else {
+			log.info("Record not found");
+			return ResponseEntity
+					.ok(ApiResponseVoWrapper.success("Record not found", found, metadataGenerator.getMetadata(found)));
+		}
+
 	}
+
+	@GetMapping
+	@Operation(summary = "Get All", description = "Get all designs")
+	public ResponseEntity<ApiResponseVo<List<DesignVo>>> getAll() {
+		log.info("Received request for find all");
+		List<DesignVo> found = designService.getAll();
+		if (found != null && !found.isEmpty()) {
+			log.info("Record found");
+			return ResponseEntity
+					.ok(ApiResponseVoWrapper.success("Record found", found, metadataGenerator.getMetadata(found)));
+		} else {
+			log.error("Record not found");
+			return ResponseEntity
+					.ok(ApiResponseVoWrapper.success("Record not found", found, metadataGenerator.getMetadata(found)));
+		}
+	}
+
+	@PatchMapping("/{id}/{status}")
+	@Operation(summary = "Update status by ID", description = "Update design record status by ID")
+	public ResponseEntity<ApiResponseVo<DesignVo>> update(@PathVariable Long id, @PathVariable boolean status) {
+		log.info("Received request for status update :: {} - {}", id, status);
+		DesignVo saved = designService.updateStatus(id, status);
+		if (saved != null && saved.getId() != null) {
+			log.info("Record updated");
+			return ResponseEntity
+					.ok(ApiResponseVoWrapper.success("Record updated", saved, metadataGenerator.getMetadata(saved)));
+		} else {
+			log.error("Record not saved");
+			return ResponseEntity.ok(
+					ApiResponseVoWrapper.success("Record not updated", saved, metadataGenerator.getMetadata(saved)));
+		}
+
+	}
+
 }

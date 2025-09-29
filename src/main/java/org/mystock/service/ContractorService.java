@@ -1,29 +1,39 @@
 package org.mystock.service;
 
 import java.util.List;
+import java.util.Set;
 
 import org.mystock.vo.ContractorVo;
 
 public interface ContractorService {
 
-	public List<ContractorVo> list();
-
 	public ContractorVo save(ContractorVo contractorVo);
-
-	public List<ContractorVo> findByContractorNameIgnoreCase(String name);
-
-	public List<ContractorVo> findByEmailIgnoreCase(String email);
-
-	public List<ContractorVo> findByMobile(String mobile);
-
-	public List<ContractorVo> findByGstNoIgnoreCase(String gstNo);
-
-	public List<ContractorVo> findByStatus(boolean active);
-
-	public List<ContractorVo> findByEmailOrMobileOrGstNoOrStatus(String email, String mobile, String gstNo,
-			boolean active);
-
-	public ContractorVo findById(Long id);
 	
-	public ContractorVo updateStatus(boolean status, Long id);
+	public Set<ContractorVo> saveAll(Set<ContractorVo> contractorVos);
+
+	public List<ContractorVo> getAll();
+
+	public ContractorVo getById(Long id);
+
+	public ContractorVo updateStatus(Long id, boolean status);
+
+	List<ContractorVo> findByContractorNameIgnoreCase(String contractorName);
+
+	List<ContractorVo> findByCityIgnoreCase(String city);
+
+	List<ContractorVo> findByStateIgnoreCase(String state);
+
+	List<ContractorVo> findByCountryIgnoreCase(String country);
+
+	List<ContractorVo> findByEmailIgnoreCase(String email);
+
+	List<ContractorVo> findByMobile(String mobile);
+
+	List<ContractorVo> findByGstNoIgnoreCase(String gstNo);
+
+	List<ContractorVo> findByActive(boolean active);
+	
+	public List<ContractorVo> find(String clientName, String city, String state, String mobile, String email, String gstNo, Boolean active);
+
+
 }

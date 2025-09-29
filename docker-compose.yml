@@ -1,41 +1,42 @@
-version: '3.7'
-
-volumes:
-  mysql-data:
+version: '3.8'
 
 networks:
   mynetwork:
-	
+
 services:
   app:
     build:
       context: .
       dockerfile: Dockerfile
+    container_name: mystock
     ports:
-      - 9999:9999
+      - 9090:9090  # match with server.port in application.properties
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysqldb:3306/msdb?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    volumes:
+      - /c/mslogs:/c/mslogs   # 👈 bind mount to C:\mslogs on Windows
     depends_on:
       mysqldb:
         condition: service_healthy
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysqldb:3306/mystockdb?createDatabaseIfNotExist=true&useSSL=false
-      - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=root
     networks:
       - mynetwork
-	  
+
   mysqldb:
     image: mysql:8.0.33
+    container_name: mystock-mysqldb
     ports:
       - 3306:3306
     environment:
-      - MYSQL_DATABASE=mydb
-      - MYSQL_ROOT_PASSWORD=root
+      MYSQL_DATABASE: msdb
+      MYSQL_ROOT_PASSWORD: root
     volumes:
-      - mysql-data:/var/lib/mysql
-    networks:
-      - mynetwork
+      - /c/msdb:/var/lib/mysql   # 👈 bind mount to C:\msdb on Windows
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       retries: 10
       interval: 3s
       timeout: 30s
+    networks:
+      - mynetwork

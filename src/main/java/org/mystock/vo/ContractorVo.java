@@ -2,24 +2,44 @@ package org.mystock.vo;
 
 import java.time.LocalDateTime;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class ContractorVo {
-	
+
 	private Long id;
+
+	@NotNull
 	private String contractorName;
+	
+	public String getContractorName() {
+		return contractorName!=null?contractorName.toUpperCase():"";
+	}
+
 	private String address;
+
 	private String city;
+
 	private String state;
+
 	private String country;
+
 	private String email;
+
 	private String mobile;
+
 	private String gstNo;
-	private boolean active;
-    private LocalDateTime createdOn;
+
+	private Boolean active;
+
+	private LocalDateTime createdOn = LocalDateTime.now();
 }

@@ -1,12 +1,15 @@
 package org.mystock.service.impl;
 
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-import org.mystock.dto.ClientDto;
+import org.mystock.entity.ClientEntity;
+import org.mystock.exception.ResourceNotFoundException;
 import org.mystock.mapper.ClientMapper;
-import org.mystock.repositoty.ClientRepository;
+import org.mystock.repository.ClientRepository;
 import org.mystock.service.ClientService;
 import org.mystock.vo.ClientVo;
 import org.springframework.stereotype.Service;
@@ -17,109 +20,114 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class ClientServiceImpl implements ClientService {
 
-	private final ClientMapper clientMapper;
 	private final ClientRepository clientRepository;
-
-	@Override
-	public List<ClientVo> list() {
-		List<ClientVo> voList = new ArrayList<>();
-		List<ClientDto> dtoList = clientRepository.findAll();
-		if (dtoList != null && dtoList.size() > 0) {
-			dtoList.stream().forEach(dto -> {
-				voList.add(clientMapper.convert(dto));
-			});
-		}
-		return voList;
-	}
+	private final ClientMapper clientMapper;
 
 	@Override
 	public ClientVo save(ClientVo clientVo) {
-		ClientDto clientDto = clientMapper.convert(clientVo);
-		clientDto = clientRepository.save(clientDto);
-		clientVo = clientMapper.convert(clientDto);
-		return clientVo;
-
+		if(clientVo.getId()!=null) {//update request
+			ClientVo existingVo = getById(clientVo.getId());
+			if (existingVo == null)
+				throw new ResourceNotFoundException("Invalid ID :: ".concat(String.valueOf(clientVo.getId())));
+			if(clientVo.getActive()==null) clientVo.setActive(existingVo.getActive());
+			if(clientVo.getAddress()==null) clientVo.setAddress(existingVo.getAddress());
+			if(clientVo.getCity()==null) clientVo.setCity(existingVo.getCity());
+			if(clientVo.getClientName()==null) clientVo.setClientName(existingVo.getClientName());
+			if(clientVo.getCountry()==null) clientVo.setCountry(existingVo.getCountry());
+			clientVo.setCreatedOn(existingVo.getCreatedOn());
+			if(clientVo.getEmail()==null) clientVo.setEmail(existingVo.getEmail());
+			if(clientVo.getGstNo()==null) clientVo.setGstNo(existingVo.getGstNo());
+			if(clientVo.getMobile()==null) clientVo.setMobile(existingVo.getMobile());
+			if(clientVo.getState()==null) clientVo.setState(existingVo.getState());
+		}else {//new request
+			clientVo.setCreatedOn(LocalDateTime.now());
+			clientVo.setActive(Boolean.TRUE);
+		}
+		ClientEntity saved = clientRepository.save(clientMapper.toEntity(clientVo));
+		return clientMapper.toVo(saved);
 	}
 
 	@Override
-	public ClientVo findById(Long id) {
-		ClientVo clientVo = null;
-		Optional<ClientDto> optionDto = clientRepository.findById(id);
-		if (optionDto.isPresent()) {
-			clientVo = clientMapper.convert(optionDto.get());
+	public Set<ClientVo> saveAll(Set<ClientVo> clientVos) {
+		List<ClientEntity> entities = clientVos.stream().map(clientMapper::toEntity).collect(Collectors.toList());
+		entities = clientRepository.saveAll(entities);
+		Set<ClientVo> saved = entities.stream().map(clientMapper::toVo).collect(Collectors.toSet());
+		return saved;
+	}
+
+	@Override
+	public List<ClientVo> getAll() {
+		return clientRepository.findAll().stream().map(clientMapper::toVo).collect(Collectors.toList());
+	}
+
+	@Override
+	public ClientVo getById(Long id) {
+		return clientRepository.findById(id).map(clientMapper::toVo).orElse(null);
+	}
+
+	@Override
+	public ClientVo updateStatus(Long id, boolean status) {
+		Optional<ClientEntity> existing = clientRepository.findById(id);
+		if (existing.isPresent()) {
+			ClientEntity entity = existing.get();
+			entity.setActive(status);
+			ClientEntity saved = clientRepository.save(entity);
+			return clientMapper.toVo(saved);
 		}
-		return clientVo;
+		return null;
+	}
+
+	@Override
+	public List<ClientVo> findByClientNameIgnoreCase(String clientName) {
+		return clientRepository.findByClientNameContainingIgnoreCase(clientName).stream().map(clientMapper::toVo)
+				.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<ClientVo> findByCityIgnoreCase(String city) {
+		return clientRepository.findByCityContainingIgnoreCase(city).stream().map(clientMapper::toVo)
+				.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<ClientVo> findByStateIgnoreCase(String state) {
+		return clientRepository.findByStateContainingIgnoreCase(state).stream().map(clientMapper::toVo)
+				.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<ClientVo> findByCountryIgnoreCase(String country) {
+		return clientRepository.findByCountryIgnoreCase(country).stream().map(clientMapper::toVo)
+				.collect(Collectors.toList());
 	}
 
 	@Override
 	public List<ClientVo> findByEmailIgnoreCase(String email) {
-		List<ClientVo> voList = new ArrayList<>();
-		List<ClientDto> dtoList = clientRepository.findByEmailIgnoreCase(email);
-		if (dtoList != null && dtoList.size() > 0) {
-			dtoList.stream().forEach(dto -> {
-				voList.add(clientMapper.convert(dto));
-			});
-		}
-		return voList;
+		return clientRepository.findByEmailIgnoreCase(email).stream().map(clientMapper::toVo)
+				.collect(Collectors.toList());
 	}
 
 	@Override
 	public List<ClientVo> findByMobile(String mobile) {
-		List<ClientVo> voList = new ArrayList<>();
-		List<ClientDto> dtoList = clientRepository.findByMobile(mobile);
-		if (dtoList != null && dtoList.size() > 0) {
-			dtoList.stream().forEach(dto -> {
-				voList.add(clientMapper.convert(dto));
-			});
-		}
-		return voList;
+		return clientRepository.findByMobile(mobile).stream().map(clientMapper::toVo).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<ClientVo> findByGstNoIgnoreCase(String gstNo) {
-		List<ClientVo> voList = new ArrayList<>();
-		List<ClientDto> dtoList = clientRepository.findByGstNoIgnoreCase(gstNo);
-		if (dtoList != null && dtoList.size() > 0) {
-			dtoList.stream().forEach(dto -> {
-				voList.add(clientMapper.convert(dto));
-			});
-		}
-		return voList;
+		return clientRepository.findByGstNoContainingIgnoreCase(gstNo).stream().map(clientMapper::toVo)
+				.collect(Collectors.toList());
 	}
 
 	@Override
-	public List<ClientVo> findByStatus(boolean active) {
-		List<ClientVo> voList = new ArrayList<>();
-		List<ClientDto> dtoList = clientRepository.findByStatus(active);
-		if (dtoList != null && dtoList.size() > 0) {
-			dtoList.stream().forEach(dto -> {
-				voList.add(clientMapper.convert(dto));
-			});
-		}
-		return voList;
+	public List<ClientVo> findByActive(boolean active) {
+		return clientRepository.findByActive(active).stream().map(clientMapper::toVo).collect(Collectors.toList());
 	}
 
 	@Override
-	public List<ClientVo> findByEmailOrMobileOrGstNoOrStatus(String email, String mobile, String gstNo,
-			boolean active) {
-		List<ClientVo> voList = new ArrayList<>();
-		List<ClientDto> dtoList = clientRepository.findByEmailOrMobileOrGstNoOrStatus(email, mobile, gstNo, active);
-		if (dtoList != null && dtoList.size() > 0) {
-			dtoList.stream().forEach(dto -> {
-				voList.add(clientMapper.convert(dto));
-			});
-		}
-		return voList;
-	}
-	
-	@Override
-	public ClientVo updateStatus(boolean status, Long id) {
-		ClientVo clientVo = findById(id);
-		if (clientVo!=null) {
-			clientRepository.updateStatus(status, id);
-			clientVo.setActive(status);
-		}
-		return clientVo;
+	public List<ClientVo> find(String clientName, String city,
+			String state, String mobile, String email, String gstNo, Boolean active) {
+		return clientRepository.find(clientName, city, state,
+				mobile, email, gstNo, active).stream().map(clientMapper::toVo).collect(Collectors.toList());
 	}
 
 }

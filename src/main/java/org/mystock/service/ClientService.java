@@ -1,16 +1,29 @@
 package org.mystock.service;
 
 import java.util.List;
+import java.util.Set;
 
 import org.mystock.vo.ClientVo;
 
 public interface ClientService {
 
-	public List<ClientVo> list();
-
 	public ClientVo save(ClientVo clientVo);
 
-	public ClientVo findById(Long id);
+	public Set<ClientVo> saveAll(Set<ClientVo> clientVos);
+
+	public List<ClientVo> getAll();
+
+	public ClientVo getById(Long id);
+
+	public ClientVo updateStatus(Long id, boolean status);
+
+	public List<ClientVo> findByClientNameIgnoreCase(String clientName);
+
+	public List<ClientVo> findByCityIgnoreCase(String city);
+
+	public List<ClientVo> findByStateIgnoreCase(String state);
+
+	public List<ClientVo> findByCountryIgnoreCase(String country);
 
 	public List<ClientVo> findByEmailIgnoreCase(String email);
 
@@ -18,10 +31,8 @@ public interface ClientService {
 
 	public List<ClientVo> findByGstNoIgnoreCase(String gstNo);
 
-	public List<ClientVo> findByStatus(boolean active);
-
-	public List<ClientVo> findByEmailOrMobileOrGstNoOrStatus(String email, String mobile, String gstNo, boolean active);
+	public List<ClientVo> findByActive(boolean active);
 	
-	public ClientVo updateStatus(boolean status, Long id);
+	public List<ClientVo> find(String clientName, String city, String state, String mobile, String email, String gstNo, Boolean active);
 
 }
