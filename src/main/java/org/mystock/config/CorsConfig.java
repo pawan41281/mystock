@@ -13,7 +13,6 @@ public class CorsConfig {
 		return new WebMvcConfigurer() {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
-				// TODO Auto-generated method stub
 				registry.addMapping("/**")
 						.allowedOrigins("*")
 						.allowedMethods("GET", "PUT", "POST", "PATCH", "DELETE")
