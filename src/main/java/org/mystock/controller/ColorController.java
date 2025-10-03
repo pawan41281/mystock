@@ -3,12 +3,14 @@ package org.mystock.controller;
 import java.util.List;
 import java.util.Set;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.mystock.apiresponse.ApiResponseVo;
 import org.mystock.apiresponse.ApiResponseVoWrapper;
 import org.mystock.service.ColorService;
 import org.mystock.util.MetadataGenerator;
 import org.mystock.vo.ColorVo;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,10 +26,12 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/v2/colors")
+@RequestMapping("/v1/colors")
 @AllArgsConstructor
 @Tag(name = "Color Operations", description = "CRUD Operations for color record")
 @Slf4j
+@SecurityRequirement(name = "Bearer Authentication")
+@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 public class ColorController {
 
 	private final ColorService colorService;

@@ -3,12 +3,14 @@ package org.mystock.controller;
 import java.util.List;
 import java.util.Set;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.mystock.apiresponse.ApiResponseVo;
 import org.mystock.apiresponse.ApiResponseVoWrapper;
 import org.mystock.service.DesignService;
 import org.mystock.util.MetadataGenerator;
 import org.mystock.vo.DesignVo;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -24,10 +26,12 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/v2/designs")
+@RequestMapping("/v1/designs")
 @AllArgsConstructor
 @Tag(name = "Design Operations", description = "CRUD Operations for design record")
 @Slf4j
+@SecurityRequirement(name = "Bearer Authentication")
+@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 public class DesignController {
 
 	private final DesignService designService;

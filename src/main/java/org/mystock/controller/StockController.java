@@ -3,6 +3,7 @@ package org.mystock.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.mystock.apiresponse.ApiResponseVo;
 import org.mystock.apiresponse.ApiResponseVoWrapper;
 import org.mystock.exception.UnableToProcessException;
@@ -11,6 +12,7 @@ import org.mystock.util.MetadataGenerator;
 import org.mystock.vo.StockBulkVo;
 import org.mystock.vo.StockVo;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,10 +27,12 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/v2/stocks")
+@RequestMapping("/v1/stocks")
 @AllArgsConstructor
 @Tag(name = "Stock Operations", description = "CRUD Operations for stock record")
 @Slf4j
+@SecurityRequirement(name = "Bearer Authentication")
+@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 public class StockController {
 
 	private final StockService stockService;

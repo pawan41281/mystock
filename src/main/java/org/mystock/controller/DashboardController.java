@@ -2,6 +2,7 @@ package org.mystock.controller;
 
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.mystock.apiresponse.ApiResponseVo;
 import org.mystock.apiresponse.ApiResponseVoWrapper;
 import org.mystock.service.ClientChallanService;
@@ -14,6 +15,7 @@ import org.mystock.vo.ContractorChallanVo;
 import org.mystock.vo.DashboardCardVo;
 import org.mystock.vo.DashboardGraphVo;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -26,10 +28,11 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/v2/dashboard")
+@RequestMapping("/v1/dashboard")
 @AllArgsConstructor
 @Tag(name = "Dashboard Operations", description = "Dashboard Operations")
 @Slf4j
+@SecurityRequirement(name = "Bearer Authentication")
 public class DashboardController {
 
 	private final ClientChallanService clientChallanService;
@@ -40,6 +43,7 @@ public class DashboardController {
 
 	@GetMapping("/clients/challans/challantype")
 	@Operation(summary = "Get today's client challans", description = "Challan Type :: I - Issue, R - Received")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<List<ClientChallanVo>>> getRecentClientChallans(
 			@Parameter(description = "Challan Type :: I - Issue, R - Received", name = "challantype") @RequestParam(value = "challantype", required = false) String challanType) {
 		log.info("Received request for getRecentIssuedChallans with challantype :: {} and recordcount :: {}",
@@ -54,9 +58,10 @@ public class DashboardController {
 
 	@GetMapping("/contractors/challans/challantype")
 	@Operation(summary = "Get today's contractor challans", description = "Challan Type :: I - Issue, R - Received")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<List<ContractorChallanVo>>> getRecentContractorChallans(
 			@Parameter(description = "Challan Type :: I - Issue, R - Received", name = "challantype") @RequestParam(value = "challantype", required = false) String challanType) {
-		log.info("Received request for getRecentIssuedChallans with challantype :: {} and recordcount :: {}",
+		log.info("Received request for getRecentIssuedChallans with challantype :: {}",
 				challanType);
 
 		List<ContractorChallanVo> found = contractorChallanService.getRecentChallans(challanType);
@@ -68,6 +73,7 @@ public class DashboardController {
 
 	@GetMapping("/cards")
 	@Operation(summary = "Get dashboard card values")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<DashboardCardVo>> getDashboardCardValues() {
 		log.info("Received request for getDashboardCardValues");
 
@@ -79,6 +85,7 @@ public class DashboardController {
 
 	@GetMapping("/graphs")
 	@Operation(summary = "Get dashboard graph values")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<DashboardGraphVo>> getDashboardGarphValues() {
 		log.info("Received request for getDashboardGarphValues");
 

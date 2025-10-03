@@ -5,6 +5,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Set;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.mystock.apiresponse.ApiResponseVo;
 import org.mystock.apiresponse.ApiResponseVoWrapper;
 import org.mystock.exception.BusinessException;
@@ -12,6 +13,7 @@ import org.mystock.service.ClientChallanService;
 import org.mystock.util.MetadataGenerator;
 import org.mystock.vo.ClientChallanVo;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,10 +30,11 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/v2/clientchallans")
+@RequestMapping("/v1/clientchallans")
 @AllArgsConstructor
 @Tag(name = "Client Challan Operations", description = "CRUD Operations for client challan record")
 @Slf4j
+@SecurityRequirement(name = "Bearer Authentication")
 public class ClientChallanController {
 
 	private final ClientChallanService service;
@@ -39,6 +42,7 @@ public class ClientChallanController {
 
 	@PostMapping
 	@Operation(summary = "Create client challan", description = "Challan Type :: I - Issue, R - Received")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<ClientChallanVo>> save(@Valid @RequestBody ClientChallanVo vo) {
 		log.info("Received request for save :: {}", vo);
 		if (vo.getId() != null && vo.getId().equals(0L))
@@ -57,6 +61,7 @@ public class ClientChallanController {
 
 	@PostMapping("/bulk")
 	@Operation(summary = "Create multiple client challan", description = "Challan Type :: I - Issue, R - Received")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<Set<ClientChallanVo>>> saveAll(@RequestBody Set<ClientChallanVo> vos) {
 		log.info("Received request for bulk save :: {}", vos);
 		Set<ClientChallanVo> saved = service.saveAll(vos);
@@ -73,6 +78,7 @@ public class ClientChallanController {
 
 	@DeleteMapping("/{id}")
 	@Operation(summary = "Delete client challan")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<ClientChallanVo>> delete(@PathVariable Long id) {
 		log.info("Received request for delete :: challanId {}", id);
 		ClientChallanVo deleted = service.deleteById(id);
@@ -89,6 +95,7 @@ public class ClientChallanController {
 
 	@GetMapping("/{id}")
 	@Operation(summary = "Get all challans by Id")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<ClientChallanVo>> findById(@PathVariable Long id) {
 		log.info("Received request for find :: id - {}", id);
 		ClientChallanVo found = service.findById(id);
@@ -105,6 +112,7 @@ public class ClientChallanController {
 
 	@GetMapping
 	@Operation(summary = "Get all challans by challan number and challan date range (90 Days max) and challan type and client Id and order Id", description = "Challan Type :: I - Issue, R - Received")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<List<ClientChallanVo>>> find(
 			@RequestParam(value = "challannumber", required = false) Integer challanNumber,
 			@RequestParam(value = "clientid", required = false) Long clientId,

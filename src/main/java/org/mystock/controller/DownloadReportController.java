@@ -5,12 +5,14 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.mystock.service.ContractorStockReportService;
 import org.mystock.service.DesignStockReportService;
 import org.mystock.vo.ContractorStockReportVo;
 import org.mystock.vo.DesignStockReportVo;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -28,58 +30,22 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/v2/download")
+@RequestMapping("/v1/download")
 @AllArgsConstructor
 @Slf4j
 @Tag(name = "Download", description = "Endpoints for download reports")
+@SecurityRequirement(name = "Bearer Authentication")
 public class DownloadReportController {
 
 	private final DesignStockReportService designStockReportService;
 	private final ContractorStockReportService contractorStockReportService;
-//	private final MetadataGenerator metadataGenerator;
-	
-//	@GetMapping("/designs/colors/stock/report")
-//	@Operation(summary = "Get Design and Color wise Stock balance Report", description = "Get Design and Color wise Stock balance Report")
-//	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Report fetched successfully"),
-//			@ApiResponse(responseCode = "500", description = "Internal server error") })
-//	public ResponseEntity<StreamingResponseBody> getReport(
-//			@Parameter(description = "Filter by design name (partial match)")
-//			@RequestParam(required = false) String designName,
-//			@Parameter(description = "Filter by color name (partial match)")
-//			@RequestParam(required = false) String colorName,
-//			@Parameter(description = "Page Size")
-//			@RequestParam(required = false, defaultValue = "100") Integer recordCount){
-//		log.info("Received download request for design and color wise stock report");
-//		List<DesignStockReportVo> found = designStockReportService.getDesignStockReport(designName, colorName, recordCount);
-//		log.info("Record found :: {}",found.size());
-//		if (!found.isEmpty()) {
-//			StreamingResponseBody stream = outputStream -> {
-//				ObjectMapper mapper = new ObjectMapper();
-//				String response = mapper.writeValueAsString(found);
-//				outputStream.write(response.getBytes(StandardCharsets.UTF_8));
-//				outputStream.flush();
-//			};
-//			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-//			String fileName = "design-color-stock-report-" + LocalDate.now().format(formatter) + ".json";
-//			log.info("fileName :: {}",fileName);
-//			log.info("Headers: Content-Disposition={}, Content-Type={}",
-//					"attachment; filename=\"" + fileName + "\"",
-//					"application/json");
-//			return ResponseEntity
-//					.ok()
-//					.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
-//					.header(HttpHeaders.CONTENT_TYPE, "application/octet-stream")
-//					.body(stream);
-//		}else{
-//			log.info("No records found for filters - designName: {}, colorName: {}", designName, colorName);
-//			return ResponseEntity.noContent().build();
-//		}
-//	}
+
 
 	@GetMapping("/designs/colors/stock/report")
 	@Operation(summary = "Get Design and Color wise Stock balance Report", description = "Get Design and Color wise Stock balance Report")
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Report fetched successfully"),
 			@ApiResponse(responseCode = "500", description = "Internal server error") })
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<StreamingResponseBody> getReport(
 			@Parameter(description = "Filter by design name (partial match)") @RequestParam(required = false) String designName,
 			@Parameter(description = "Filter by color name (partial match)") @RequestParam(required = false) String colorName,
@@ -130,6 +96,7 @@ public class DownloadReportController {
 	@Operation(summary = "Get Design and Color wise Contractor Stock balance Report", description = "Get Design and Color wise Contractor Stock balance Report")
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Report fetched successfully"),
 			@ApiResponse(responseCode = "500", description = "Internal server error") })
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<StreamingResponseBody> getReport(
 			@Parameter(description = "Filter by contractor name (partial match)")
 			@RequestParam(required = false) String contractorName,

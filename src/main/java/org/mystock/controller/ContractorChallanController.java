@@ -5,6 +5,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Set;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.mystock.apiresponse.ApiResponseVo;
 import org.mystock.apiresponse.ApiResponseVoWrapper;
 import org.mystock.exception.BusinessException;
@@ -12,6 +13,7 @@ import org.mystock.service.ContractorChallanService;
 import org.mystock.util.MetadataGenerator;
 import org.mystock.vo.ContractorChallanVo;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,10 +30,12 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/v2/contractorchallans")
+@RequestMapping("/v1/contractorchallans")
 @AllArgsConstructor
 @Tag(name = "Contractor Challan Operations", description = "CRUD Operations for contractor challan record")
 @Slf4j
+@SecurityRequirement(name = "Bearer Authentication")
+@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 public class ContractorChallanController {
 
 	private final ContractorChallanService service;

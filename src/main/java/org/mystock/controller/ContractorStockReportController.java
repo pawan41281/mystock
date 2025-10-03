@@ -3,12 +3,14 @@ package org.mystock.controller;
 import java.util.Collections;
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.mystock.apiresponse.ApiResponseVo;
 import org.mystock.apiresponse.ApiResponseVoWrapper;
 import org.mystock.service.ContractorStockReportService;
 import org.mystock.util.MetadataGenerator;
 import org.mystock.vo.ContractorStockReportVo;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,10 +25,12 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/v2/contractorstockreports")
+@RequestMapping("/v1/contractorstockreports")
 @AllArgsConstructor
 @Slf4j
 @Tag(name = "Report", description = "Endpoints for reports")
+@SecurityRequirement(name = "Bearer Authentication")
+@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 public class ContractorStockReportController {
 
 	private final ContractorStockReportService contractorStockReportService;
