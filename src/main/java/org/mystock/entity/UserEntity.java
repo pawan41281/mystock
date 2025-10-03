@@ -21,7 +21,7 @@ public class UserEntity {
 	@Column(nullable = false)
 	private String name;
 
-	@Column(name = "userId", nullable = false, unique = true)
+	@Column(name = "userid", nullable = false, unique = true)
 	private String userId;
 
 	@Column(nullable = false, unique = true)
