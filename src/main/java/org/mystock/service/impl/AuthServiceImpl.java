@@ -30,168 +30,182 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @AllArgsConstructor
 @Slf4j
 public class AuthServiceImpl implements AuthService {
-	
-	final String ADMIN = "admin";
 
-	private final AuthenticationManager authenticationManager;
+    final String ADMIN = "admin";
 
-	private final JwtTokenProvider jwtTokenProvider;
+    private final AuthenticationManager authenticationManager;
 
-	private final UserRepository userRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
-	private final RoleRepository roleRepository;
+    private final UserRepository userRepository;
 
-	private final PasswordEncoder encoder;
+    private final RoleRepository roleRepository;
 
-	private final UserMapper userMapper;
+    private final PasswordEncoder encoder;
 
-	private final RoleService roleService;
+    private final UserMapper userMapper;
 
-	@Override
-	public String login(LoginVo loginVo) throws InvalidCredentialsException {
-		try {
-			UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
-					loginVo.getUserId(), loginVo.getPassword());
-			Authentication authentication = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
-			SecurityContextHolder.getContext().setAuthentication(authentication);
+    private final RoleService roleService;
+
+    //Token blacklist (thread-safe)
+    private final Set<String> invalidatedTokens = ConcurrentHashMap.newKeySet();
+
+    @Override
+    public String login(LoginVo loginVo) throws InvalidCredentialsException {
+        try {
+            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
+                    loginVo.getUserId(), loginVo.getPassword());
+            Authentication authentication = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
 //			return jwtTokenProvider.generateToken(authentication);
-			return jwtTokenProvider.generateAccessToken(authentication);
-		} catch (BadCredentialsException e) {
-			throw new InvalidCredentialsException("Invalid username or password.");
-		}
-	}
+            return jwtTokenProvider.generateAccessToken(authentication);
+        } catch (BadCredentialsException e) {
+            throw new InvalidCredentialsException("Invalid username or password.");
+        }
+    }
 
-	@Override
-	public JwtAuthResponse refreshToken(String refreshToken) {
-		if (!jwtTokenProvider.validateToken(refreshToken)) {
-			throw new InvalidCredentialsException("Invalid or expired refresh token");
-		}
-		String username = jwtTokenProvider.getUsernameFromToken(refreshToken);
+    @Override
+    public JwtAuthResponse refreshToken(String refreshToken) {
+        if (!jwtTokenProvider.validateToken(refreshToken)) {
+            throw new InvalidCredentialsException("Invalid or expired refresh token");
+        }
+        String username = jwtTokenProvider.getUsernameFromToken(refreshToken);
 
-		// Rebuild authentication object manually (optional, based on your token
-		// content)
-		Authentication authentication = new UsernamePasswordAuthenticationToken(username, null, new ArrayList<>());
+        // Rebuild authentication object manually (optional, based on your token
+        // content)
+        Authentication authentication = new UsernamePasswordAuthenticationToken(username, null, new ArrayList<>());
 
-		String newAccessToken = jwtTokenProvider.generateAccessToken(authentication);
-		String newRefreshToken = jwtTokenProvider.generateRefreshToken(authentication);
+        String newAccessToken = jwtTokenProvider.generateAccessToken(authentication);
+        String newRefreshToken = jwtTokenProvider.generateRefreshToken(authentication);
 
-		JwtAuthResponse jwtAuthResponse = new JwtAuthResponse();
-		jwtAuthResponse.setAccessToken(newAccessToken);
-		jwtAuthResponse.setRefreshToken(newRefreshToken);
-		return jwtAuthResponse;
-	}
+        JwtAuthResponse jwtAuthResponse = new JwtAuthResponse();
+        jwtAuthResponse.setAccessToken(newAccessToken);
+        jwtAuthResponse.setRefreshToken(newRefreshToken);
+        return jwtAuthResponse;
+    }
 
-	@Override
-	public boolean existsByUserId(String userId) throws ResourceNotFoundException {
-		try {
-			return userRepository.existsByUserId(userId);
-		} catch (Exception e) {
-			throw new ResourceNotFoundException("Username not exists");
-		}
-	}
+    @Override
+    public boolean existsByUserId(String userId) throws ResourceNotFoundException {
+        try {
+            return userRepository.existsByUserId(userId);
+        } catch (Exception e) {
+            throw new ResourceNotFoundException("Username not exists");
+        }
+    }
 
-	@Override
-	public boolean existsByEmail(String email) throws ResourceNotFoundException {
-		try {
-			return userRepository.existsByEmail(email);
-		} catch (Exception e) {
-			throw new ResourceNotFoundException("Email not exists");
-		}
-	}
+    @Override
+    public boolean existsByEmail(String email) throws ResourceNotFoundException {
+        try {
+            return userRepository.existsByEmail(email);
+        } catch (Exception e) {
+            throw new ResourceNotFoundException("Email not exists");
+        }
+    }
 
-	@Override
-	public SignupRequestVo save(SignupRequestVo signUpRequestVo)
-			throws UnableToProcessException, ResourceAlreadyExistsException {
+    @Override
+    public SignupRequestVo save(SignupRequestVo signUpRequestVo)
+            throws UnableToProcessException, ResourceAlreadyExistsException {
 
-		if (existsByUserId(signUpRequestVo.getUserId())) {
-			throw new ResourceAlreadyExistsException("UserId is already exists");
-		}
+        if (existsByUserId(signUpRequestVo.getUserId())) {
+            throw new ResourceAlreadyExistsException("UserId is already exists");
+        }
 
-		if (existsByEmail(signUpRequestVo.getEmail())) {
-			throw new ResourceAlreadyExistsException("Email is already exists");
-		}
+        if (existsByEmail(signUpRequestVo.getEmail())) {
+            throw new ResourceAlreadyExistsException("Email is already exists");
+        }
 
-		try {
+        try {
 
-			// Create new user's account
-			UserEntity user = new UserEntity(signUpRequestVo.getName(), signUpRequestVo.getUserId(),
-					signUpRequestVo.getEmail(), signUpRequestVo.getMobile(),
-					encoder.encode(signUpRequestVo.getPassword()), signUpRequestVo.isLocked());
+            // Create new user's account
+            UserEntity user = new UserEntity(signUpRequestVo.getName(), signUpRequestVo.getUserId(),
+                    signUpRequestVo.getEmail(), signUpRequestVo.getMobile(),
+                    encoder.encode(signUpRequestVo.getPassword()), signUpRequestVo.isLocked());
 
-			Set<String> strRoles = signUpRequestVo.getRoles();
-			Set<RoleEntity> roles = resolveRoles(strRoles);
-			user.setRoles(roles);
-			UserEntity saved = userRepository.save(user);
-			return saved.getId() != null ? userMapper.toSignupRequestVo(saved) : signUpRequestVo;
-		} catch (Exception e) {
-			throw new UnableToProcessException(e.getMessage());
-		}
-	}
+            Set<String> strRoles = signUpRequestVo.getRoles();
+            Set<RoleEntity> roles = resolveRoles(strRoles);
+            user.setRoles(roles);
+            UserEntity saved = userRepository.save(user);
+            return saved.getId() != null ? userMapper.toSignupRequestVo(saved) : signUpRequestVo;
+        } catch (Exception e) {
+            throw new UnableToProcessException(e.getMessage());
+        }
+    }
 
-	@EventListener(ApplicationReadyEvent.class)
-	private void save() {
-		roleService.initRoles();
-		
-		if (Boolean.FALSE.equals(userRepository.existsByUserId(ADMIN))) {
-			SignupRequestVo signUpRequestVo = new SignupRequestVo();
-			signUpRequestVo.setEmail("admin@gmail.com");
-			signUpRequestVo.setMobile("1234567890");
-			signUpRequestVo.setName(ADMIN);
-			signUpRequestVo.setPassword(ADMIN);
-			signUpRequestVo.setUserId(ADMIN);
+    @EventListener(ApplicationReadyEvent.class)
+    private void save() {
+        roleService.initRoles();
 
-			// Create new user's account
-			UserEntity user = new UserEntity(signUpRequestVo.getName(), signUpRequestVo.getUserId(),
-					signUpRequestVo.getEmail(), signUpRequestVo.getMobile(),
-					encoder.encode(signUpRequestVo.getPassword()), signUpRequestVo.isLocked());
-			Set<String> adminRole = new HashSet<>();
-			adminRole.add("ROLE_ADMIN");
-			Set<RoleEntity> roles = resolveRoles(adminRole);
-			user.setRoles(roles);
-			userRepository.save(user);
-			log.info("Default user has been created :: {}",signUpRequestVo);
-		}
-	}
+        if (Boolean.FALSE.equals(userRepository.existsByUserId(ADMIN))) {
+            SignupRequestVo signUpRequestVo = new SignupRequestVo();
+            signUpRequestVo.setEmail("admin@gmail.com");
+            signUpRequestVo.setMobile("1234567890");
+            signUpRequestVo.setName(ADMIN);
+            signUpRequestVo.setPassword(ADMIN);
+            signUpRequestVo.setUserId(ADMIN);
 
-	@Override
-	public boolean validateToken(String token) {
-		return jwtTokenProvider.validateToken(token);
-	}
+            // Create new user's account
+            UserEntity user = new UserEntity(signUpRequestVo.getName(), signUpRequestVo.getUserId(),
+                    signUpRequestVo.getEmail(), signUpRequestVo.getMobile(),
+                    encoder.encode(signUpRequestVo.getPassword()), signUpRequestVo.isLocked());
+            Set<String> adminRole = new HashSet<>();
+            adminRole.add("ROLE_ADMIN");
+            Set<RoleEntity> roles = resolveRoles(adminRole);
+            user.setRoles(roles);
+            userRepository.save(user);
+            log.info("Default user has been created :: {}", signUpRequestVo);
+        }
+    }
 
-	private Set<RoleEntity> resolveRoles(Set<String> roleNames) {
-		Set<RoleEntity> roles = new HashSet<>();
-		if (roleNames != null && !roleNames.isEmpty()) {
-			for (String role : roleNames) {
-				RoleEntity userRole = roleRepository.findByNameIgnoreCase(role);
-				if (userRole == null) {
-					throw new ResourceNotFoundException("Role '" + role + "' not found.");
-				}
-				roles.add(userRole);
-			}
-		} else {// Assign default role
-			RoleEntity userRole = roleRepository.findByNameIgnoreCase("ROLE_USER");
-			if (userRole == null) {
-				throw new ResourceNotFoundException("Default role not found.");
-			}
-			roles.add(userRole);
-		}
-		return roles;
-	}
+    @Override
+    public boolean validateToken(String token) {
+        return jwtTokenProvider.validateToken(token);
+    }
 
-	@Override
-	public Authentication authenticate(LoginVo loginVo) throws InvalidCredentialsException {
-		try {
-			UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(
-					loginVo.getUserId(), loginVo.getPassword());
-			return authenticationManager.authenticate(authRequest);
-		} catch (BadCredentialsException e) {
-			throw new InvalidCredentialsException("Invalid username or password.");
-		}
-	}
+    @Override
+    public void invalidateToken(String token) {
+        try {
+            invalidatedTokens.add(token);
+            log.info("Token invalidated successfully: {}", token);
+        } catch (Exception e) {
+            log.error("Failed to invalidate token: {}", e.getMessage());
+        }
+    }
+
+    private Set<RoleEntity> resolveRoles(Set<String> roleNames) {
+        Set<RoleEntity> roles = new HashSet<>();
+        if (roleNames != null && !roleNames.isEmpty()) {
+            for (String role : roleNames) {
+                RoleEntity userRole = roleRepository.findByNameIgnoreCase(role);
+                if (userRole == null) {
+                    throw new ResourceNotFoundException("Role '" + role + "' not found.");
+                }
+                roles.add(userRole);
+            }
+        } else {// Assign default role
+            RoleEntity userRole = roleRepository.findByNameIgnoreCase("ROLE_USER");
+            if (userRole == null) {
+                throw new ResourceNotFoundException("Default role not found.");
+            }
+            roles.add(userRole);
+        }
+        return roles;
+    }
+
+    @Override
+    public Authentication authenticate(LoginVo loginVo) throws InvalidCredentialsException {
+        try {
+            UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(
+                    loginVo.getUserId(), loginVo.getPassword());
+            return authenticationManager.authenticate(authRequest);
+        } catch (BadCredentialsException e) {
+            throw new InvalidCredentialsException("Invalid username or password.");
+        }
+    }
 
 }

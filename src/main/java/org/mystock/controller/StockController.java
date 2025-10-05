@@ -1,9 +1,11 @@
 package org.mystock.controller;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.mystock.apiresponse.ApiResponseVo;
 import org.mystock.apiresponse.ApiResponseVoWrapper;
 import org.mystock.exception.UnableToProcessException;
@@ -13,18 +15,10 @@ import org.mystock.vo.StockBulkVo;
 import org.mystock.vo.StockVo;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/v1/stocks")
@@ -32,7 +26,6 @@ import lombok.extern.slf4j.Slf4j;
 @Tag(name = "Stock Operations", description = "CRUD Operations for stock record")
 @Slf4j
 @SecurityRequirement(name = "Bearer Authentication")
-@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 public class StockController {
 
 	private final StockService stockService;
@@ -40,6 +33,7 @@ public class StockController {
 
 	@GetMapping("/{id}")
 	@Operation(summary = "Get by ID", description = "Get a stock item by ID")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<StockVo>> getById(@PathVariable Long id) {
 		log.info("Received request for find :: id - {}", id);
 		StockVo found = stockService.getById(id);
@@ -56,6 +50,7 @@ public class StockController {
 
 	@GetMapping
 	@Operation(summary = "Get All", description = "Get all stock item balance")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<List<StockVo>>> getAll() {
 		List<StockVo> vos = stockService.getAll();
 		return ResponseEntity
@@ -64,6 +59,7 @@ public class StockController {
 
 	@PostMapping
 	@Operation(summary = "Save Operation", description = "Set opening balance of stock item")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<StockVo>> save(@Valid @RequestBody StockVo vo) {
 		log.info("Received request for save :: {}", vo);
 		if(vo.getId()!=null && vo.getId().equals(0L)) vo.setId(null);
@@ -81,6 +77,7 @@ public class StockController {
 
 	@PostMapping("bulk")
 	@Operation(summary = "Save Operation", description = "Set opening balance of multiple stock items")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<StockBulkVo>> saveAll(@Valid @RequestBody StockBulkVo stockBulkVo) {
 		log.info("Received request for bulk save :: {}", stockBulkVo);
 		

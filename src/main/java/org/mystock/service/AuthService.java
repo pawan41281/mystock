@@ -17,6 +17,8 @@ public interface AuthService {
 
 	public boolean validateToken(String token);
 
+	public void invalidateToken(String token);
+	
 	public boolean existsByUserId(String userId) throws ResourceNotFoundException;
 
 	public boolean existsByEmail(String email) throws ResourceNotFoundException;
