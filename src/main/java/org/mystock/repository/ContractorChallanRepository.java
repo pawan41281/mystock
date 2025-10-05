@@ -1,8 +1,5 @@
 package org.mystock.repository;
 
-import java.time.LocalDate;
-import java.util.List;
-
 import org.mystock.entity.ContractorChallanEntity;
 import org.mystock.vo.DashboardContractorGraphVo;
 import org.mystock.vo.DashboardCurrentMonthContractorCardVo;
@@ -11,6 +8,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @Repository
 public interface ContractorChallanRepository extends JpaRepository<ContractorChallanEntity, Long> {
@@ -39,11 +39,11 @@ public interface ContractorChallanRepository extends JpaRepository<ContractorCha
 	List<ContractorChallanEntity> getRecentChallans(@Param("challanDate") LocalDate challanDate,
 			@Param("challanType") String challanType);
 
-	@Query(value = "SELECT COUNT(*) FROM CONTRACTORCHALLANINFO WHERE CHALLANDATE >= DATE_FORMAT(CURRENT_DATE, '%Y-%m-01') AND CHALLANDATE < DATE_FORMAT(CURRENT_DATE + INTERVAL 1 MONTH, '%Y-%m-01') AND CHALLANTYPE = :challanType", nativeQuery = true)
+	@Query(value = "SELECT COUNT(*) FROM CONTRACTOR_CHALLAN_INFO WHERE CHALLANDATE >= DATE_FORMAT(CURRENT_DATE, '%Y-%m-01') AND CHALLANDATE < DATE_FORMAT(CURRENT_DATE + INTERVAL 1 MONTH, '%Y-%m-01') AND CHALLANTYPE = :challanType", nativeQuery = true)
 	Integer getCurrentMonthChallanCount(@Param("challanType") String challanType);
 
 	@Query(value = """
-			SELECT challantype as ChallanType, count(*) as ChallanCount FROM CONTRACTORCHALLANINFO
+			SELECT challantype as ChallanType, count(*) as ChallanCount FROM CONTRACTOR_CHALLAN_INFO
 			WHERE CHALLANDATE >= DATE_FORMAT(CURRENT_DATE, '%Y-%m-01')
 			AND CHALLANDATE < DATE_FORMAT(CURRENT_DATE + INTERVAL 1 MONTH, '%Y-%m-01')
 			GROUP BY CHALLANTYPE
@@ -51,7 +51,7 @@ public interface ContractorChallanRepository extends JpaRepository<ContractorCha
 	List<DashboardCurrentMonthContractorCardVo> getCurrentMonthChallanCount();
 
 	@Query(value = """
-			SELECT challantype as ChallanType, count(*) as ChallanCount FROM CONTRACTORCHALLANINFO
+			SELECT challantype as ChallanType, count(*) as ChallanCount FROM CONTRACTOR_CHALLAN_INFO
 			WHERE CHALLANDATE = (CURRENT_DATE-1) 
 			GROUP BY CHALLANTYPE
 			""", nativeQuery = true)
@@ -65,16 +65,16 @@ public interface ContractorChallanRepository extends JpaRepository<ContractorCha
 			FROM (
 			    -- CONTRACTOR ISSUED
 			    SELECT DATE(c.challandate) AS challan_day, 'CONTRACTOR_ISSUED' AS movement_type, SUM(i.quantity) AS total_items
-			    FROM contractorchallaninfo c
-			    JOIN contractorchallaniteminfo i ON c.id = i.challan_id
+			    FROM contractor_challan_info c
+			    JOIN contractor_challan_item_info i ON c.id = i.challan_id
 			    WHERE c.challandate >= CURRENT_DATE - INTERVAL 7 DAY AND c.challantype = 'I'
 			    GROUP BY challan_day
 
 			    UNION ALL
 			    -- CONTRACTOR RECEIVED
 			    SELECT DATE(c.challandate), 'CONTRACTOR_RECEIVED', SUM(i.quantity)
-			    FROM contractorchallaninfo c
-			    JOIN contractorchallaniteminfo i ON c.id = i.challan_id
+			    FROM contractor_challan_info c
+			    JOIN contractor_challan_item_info i ON c.id = i.challan_id
 			    WHERE c.challandate >= CURRENT_DATE - INTERVAL 7 DAY AND c.challantype = 'R'
 			    GROUP BY DATE(c.challandate)
 			) src

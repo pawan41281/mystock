@@ -9,7 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "roleinfo")
+@Table(name = "role_info")
 public class RoleEntity {
 
 	@Id

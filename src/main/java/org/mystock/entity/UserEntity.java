@@ -11,7 +11,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "userinfo")
+@Table(name = "user_info")
 public class UserEntity {
 
 	@Id

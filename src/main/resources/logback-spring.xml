@@ -35,6 +35,6 @@
     </root>
 
     <!-- Enable DEBUG for your package -->
-    <logger name="com.example.logbackdemo" level="DEBUG"/>
+    <logger name="org.mystock.*" level="DEBUG"/>
 
 </configuration>

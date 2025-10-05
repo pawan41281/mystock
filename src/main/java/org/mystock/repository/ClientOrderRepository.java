@@ -1,13 +1,13 @@
 package org.mystock.repository;
 
-import java.time.LocalDate;
-import java.util.List;
-
 import org.mystock.entity.ClientOrderEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @Repository
 public interface ClientOrderRepository extends JpaRepository<ClientOrderEntity, Long> {
@@ -32,7 +32,7 @@ public interface ClientOrderRepository extends JpaRepository<ClientOrderEntity, 
 			""")
 	public List<ClientOrderEntity> getRecentOrders(@Param("orderDate") LocalDate orderDate);
 
-	@Query(value = "SELECT COUNT(*) FROM CLIENTORDERINFO WHERE ORDERDATE >= DATE_FORMAT(CURRENT_DATE, '%Y-%m-01') AND ORDERDATE < DATE_FORMAT(CURRENT_DATE + INTERVAL 1 MONTH, '%Y-%m-01')", nativeQuery = true)
+	@Query(value = "SELECT COUNT(*) FROM CLIENT_ORDER_INFO WHERE ORDERDATE >= DATE_FORMAT(CURRENT_DATE, '%Y-%m-01') AND ORDERDATE < DATE_FORMAT(CURRENT_DATE + INTERVAL 1 MONTH, '%Y-%m-01')", nativeQuery = true)
 	Integer getCurrentMonthOrderCount();
 
 }

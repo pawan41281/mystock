@@ -1,7 +1,7 @@
 package org.mystock.repository;
 
-import java.util.List;
-
+import jakarta.persistence.LockModeType;
+import jakarta.transaction.Transactional;
 import org.mystock.entity.StockEntity;
 import org.mystock.vo.DesignStockReportVo;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,8 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import jakarta.persistence.LockModeType;
-import jakarta.transaction.Transactional;
+import java.util.List;
 
 @Repository
 public interface StockRepository extends JpaRepository<StockEntity, Long> {
@@ -51,11 +50,11 @@ public interface StockRepository extends JpaRepository<StockEntity, Long> {
 			    COALESCE(s.obalance, 0) AS openingBalance,
 			    COALESCE(s.balance, 0) AS closingBalance
 			FROM
-			    designinfo d
+			    design_info d
 			CROSS JOIN
-			    colorinfo c
+			    color_info c
 			LEFT JOIN
-			    stockinfo s ON s.design_id = d.id AND s.color_id = c.id
+			    stock_info s ON s.design_id = d.id AND s.color_id = c.id
 			WHERE
 			    d.description LIKE :designName
 			    AND
@@ -71,11 +70,11 @@ public interface StockRepository extends JpaRepository<StockEntity, Long> {
 			    COALESCE(s.obalance, 0) AS openingBalance,
 			    COALESCE(s.balance, 0) AS closingBalance
 			FROM
-			    designinfo d
+			    design_info d
 			CROSS JOIN
-			    colorinfo c
+			    color_info c
 			LEFT JOIN
-			    stockinfo s ON s.design_id = d.id AND s.color_id = c.id
+			    stock_info s ON s.design_id = d.id AND s.color_id = c.id
 			WHERE
 			    d.description LIKE :designName
 			    AND
@@ -88,9 +87,9 @@ public interface StockRepository extends JpaRepository<StockEntity, Long> {
 
 	@Query(value = """
 			SELECT COUNT(*)
-			FROM designinfo d
-			CROSS JOIN colorinfo c
-			LEFT JOIN stockinfo s ON s.design_id = d.id AND s.color_id = c.id
+			FROM design_info d
+			CROSS JOIN color_info c
+			LEFT JOIN stock_info s ON s.design_id = d.id AND s.color_id = c.id
 			WHERE d.description LIKE :designName
 			  AND c.colorname LIKE :colorName
 			""", nativeQuery = true)
@@ -102,11 +101,11 @@ public interface StockRepository extends JpaRepository<StockEntity, Long> {
 			    UPPER(c.colorname) AS colorName,
 			    COALESCE(s.balance, 0) AS stockBalance
 			FROM
-			    designinfo d
+			    design_info d
 			CROSS JOIN
-			    colorinfo c
+			    color_info c
 			LEFT JOIN
-			    stockinfo s ON s.design_id = d.id AND s.color_id = c.id
+			    stock_info s ON s.design_id = d.id AND s.color_id = c.id
 			WHERE
 			    d.description LIKE :designName
 			    AND

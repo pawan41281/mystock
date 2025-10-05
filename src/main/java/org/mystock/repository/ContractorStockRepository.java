@@ -1,7 +1,7 @@
 package org.mystock.repository;
 
-import java.util.List;
-
+import jakarta.persistence.LockModeType;
+import jakarta.transaction.Transactional;
 import org.mystock.entity.ContractorStockEntity;
 import org.mystock.vo.ContractorStockReportVo;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,8 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import jakarta.persistence.LockModeType;
-import jakarta.transaction.Transactional;
+import java.util.List;
 
 @Repository
 public interface ContractorStockRepository extends JpaRepository<ContractorStockEntity, Long> {
@@ -63,13 +62,13 @@ public interface ContractorStockRepository extends JpaRepository<ContractorStock
 			  COALESCE(cs.obalance, 0) AS openingBalance,
 			  COALESCE(cs.balance, 0) AS closingBalance
 			FROM
-			  contractorinfo c
+			  contractor_info c
 			CROSS JOIN
-			  designinfo d
+			  design_info d
 			CROSS JOIN
-			  colorinfo clr
+			  color_info clr
 			LEFT JOIN
-			  contractorstockinfo cs ON cs.contractor_id = c.id AND cs.design_id = d.id AND cs.color_id = clr.id
+			  contractor_stock_info cs ON cs.contractor_id = c.id AND cs.design_id = d.id AND cs.color_id = clr.id
 			WHERE
 			  c.contractorname like :contractorName
 			  AND
@@ -90,13 +89,13 @@ public interface ContractorStockRepository extends JpaRepository<ContractorStock
 			  COALESCE(cs.obalance, 0) AS openingBalance,
 			  COALESCE(cs.balance, 0) AS closingBalance
 			FROM
-			  contractorinfo c
+			  contractor_info c
 			CROSS JOIN
-			  designinfo d
+			  design_info d
 			CROSS JOIN
-			  colorinfo clr
+			  color_info clr
 			LEFT JOIN
-			  contractorstockinfo cs ON cs.contractor_id = c.id AND cs.design_id = d.id AND cs.color_id = clr.id
+			  contractor_stock_info cs ON cs.contractor_id = c.id AND cs.design_id = d.id AND cs.color_id = clr.id
 			WHERE
 			  c.contractorname like :contractorName
 			  AND
@@ -119,13 +118,13 @@ public interface ContractorStockRepository extends JpaRepository<ContractorStock
 			  COALESCE(cs.obalance, 0) AS openingBalance,
 			  COALESCE(cs.balance, 0) AS closingBalance
 			FROM
-			  contractorinfo c
+			  contractor_info c
 			CROSS JOIN
-			  designinfo d
+			  design_info d
 			CROSS JOIN
-			  colorinfo clr
+			  color_info clr
 			LEFT JOIN
-			  contractorstockinfo cs ON cs.contractor_id = c.id AND cs.design_id = d.id AND cs.color_id = clr.id
+			  contractor_stock_info cs ON cs.contractor_id = c.id AND cs.design_id = d.id AND cs.color_id = clr.id
 			WHERE
 			  c.contractorname like :contractorName
 			  AND
@@ -142,13 +141,13 @@ public interface ContractorStockRepository extends JpaRepository<ContractorStock
 			SELECT
 			  count(*)
 			FROM
-			  contractorinfo c
+			  contractor_info c
 			CROSS JOIN
-			  designinfo d
+			  design_info d
 			CROSS JOIN
-			  colorinfo clr
+			  color_info clr
 			LEFT JOIN
-			  contractorstockinfo cs ON cs.contractor_id = c.id AND cs.design_id = d.id AND cs.color_id = clr.id
+			  contractor_stock_info cs ON cs.contractor_id = c.id AND cs.design_id = d.id AND cs.color_id = clr.id
 			WHERE
 			  c.contractorname like :contractorName
 			  AND
