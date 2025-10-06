@@ -49,4 +49,8 @@ public class ContractorEntity {
 
     @Column(name = "createdon", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
     private LocalDateTime createdOn;
+
+	@ManyToOne
+	@JoinColumn(name = "createdby", nullable = false)
+	private UserEntity user;
 }

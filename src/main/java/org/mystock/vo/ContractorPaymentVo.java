@@ -3,6 +3,7 @@ package org.mystock.vo;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -10,20 +11,20 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class DesignVo {
+public class ContractorPaymentVo {
 
 	private Long id;
+	
+	@NotNull
+	private LocalDate paymentDate;
 
 	@NotNull
-	private String designName;
-
-	public String getDesignName() {
-		return designName!=null?designName.toUpperCase():"";
-	}
+	private int paymentAmount;
 	
-	private String description;
+	@NotNull
+	private ContractorVo contractor;
 
-	private Boolean active;
+	private String remarks;
 
 	private LocalDateTime createdOn = LocalDateTime.now();
 

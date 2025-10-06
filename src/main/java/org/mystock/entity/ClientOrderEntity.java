@@ -39,4 +39,8 @@ public class ClientOrderEntity {
 	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
 	private Set<ClientOrderItemEntity> orderItems;
+
+	@ManyToOne
+	@JoinColumn(name = "createdby", nullable = false)
+	private UserEntity user;
 }

@@ -46,4 +46,8 @@ public class ClientChallanEntity {
 	@OneToMany(mappedBy = "challan", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
 	private Set<ClientChallanItemEntity> challanItems;
+
+	@ManyToOne
+	@JoinColumn(name = "createdby", nullable = false)
+	private UserEntity user;
 }

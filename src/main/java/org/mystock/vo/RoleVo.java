@@ -14,4 +14,6 @@ public class RoleVo {
 	private Long id;
 
 	private String name;
+
+	private UserVo user;
 }
