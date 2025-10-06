@@ -94,8 +94,8 @@ public class MenuGroupServiceImpl implements MenuGroupService {
 		menuItem2 = new MenuItemEntity("design", "Design", "item", "nav-item", "/design", "ant-design", true, menuGroup);
 		menuItem3 = new MenuItemEntity("party", "Party", "item", "nav-item", "/party", "ant-design", true, menuGroup);
 		menuItem4 = new MenuItemEntity("contractor", "Contractor", "item", "nav-item", "/contractor", "ant-design", true, menuGroup);
-		MenuItemEntity menuItem5 = new MenuItemEntity("openingStock", "Design Opening Stock", "item", "nav-item", "/opening-stock", "ant-design", true, menuGroup);
-		MenuItemEntity menuItem6 = new MenuItemEntity("contractoropeningstock", "Contractor Opening Stock", "item", "nav-item", "/contractor-opening-stock", "ant-design", true, menuGroup);
+		MenuItemEntity menuItem5 = new MenuItemEntity("openingStock", "Design Opening Stock", "item", "nav-item", "/openingstock", "ant-design", true, menuGroup);
+		MenuItemEntity menuItem6 = new MenuItemEntity("contractoropeningstock", "Contractor Opening Stock", "item", "nav-item", "/contractoropeningstock", "ant-design", true, menuGroup);
 		menuItems = new ArrayList<MenuItemEntity>();
 		menuItems.add(menuItem);
 		menuItems.add(menuItem2);
