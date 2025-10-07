@@ -108,14 +108,21 @@ public class MenuGroupServiceImpl implements MenuGroupService {
 			menuGroupRepository.save(menuGroup);
 
 
-
-
 		menuGroup = new MenuGroupEntity("usermanagement","User Management","group","icon-navigation");
-		menuItem = new MenuItemEntity("newuser", "New User", "item", "nav-item", "/newuser", "dashboard", false, menuGroup);
-		menuItem2 = new MenuItemEntity("searchuser", "Search User", "item", "nav-item", "/searchuser", "dashboard", false, menuGroup);
+		menuItem = new MenuItemEntity("newuser", "New User", "item", "nav-item", "/newuser", "ant-design", false, menuGroup);
+		menuItem2 = new MenuItemEntity("searchuser", "Search User", "item", "nav-item", "/searchuser", "ant-design", false, menuGroup);
 		menuItems = new ArrayList<MenuItemEntity>();
 		menuItems.add(menuItem);
 		menuItems.add(menuItem2);
+		menuGroup.setChildren(menuItems);
+		if(!menuGroupRepository.existsByIdIgnoreCaseAndTitleIgnoreCase(menuGroup.getId(),menuGroup.getTitle()))
+			menuGroupRepository.save(menuGroup);
+
+
+		menuGroup = new MenuGroupEntity("reports","Reports","group","icon-navigation");
+		menuItem = new MenuItemEntity("contractoraccounstatement", "Contractor Account Statement", "item", "nav-item", "/contractoraccountstatement", "ant-design", false, menuGroup);
+		menuItems = new ArrayList<MenuItemEntity>();
+		menuItems.add(menuItem);
 		menuGroup.setChildren(menuItems);
 		if(!menuGroupRepository.existsByIdIgnoreCaseAndTitleIgnoreCase(menuGroup.getId(),menuGroup.getTitle()))
 			menuGroupRepository.save(menuGroup);
