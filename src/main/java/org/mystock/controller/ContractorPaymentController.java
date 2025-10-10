@@ -27,7 +27,6 @@ import java.util.Set;
 @Tag(name = "Contractor Payment Operations", description = "CRUD Operations for contractor payment record")
 @Slf4j
 @SecurityRequirement(name = "Bearer Authentication")
-@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 public class ContractorPaymentController {
 
 	private final ContractorPaymentService service;
@@ -35,6 +34,7 @@ public class ContractorPaymentController {
 
 	@PostMapping
 	@Operation(summary = "Create contractor payment", description = "Save or Update Payment Traction")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<ContractorPaymentVo>> save(@Valid @RequestBody ContractorPaymentVo vo) {
 		log.info("Received request for save");
 		if(vo.getId()!=null && vo.getId().equals(0L)) vo.setId(null);
@@ -52,6 +52,7 @@ public class ContractorPaymentController {
 
 	@PostMapping("/bulk")
 	@Operation(summary = "Create multiple contractor payment", description = "Bulk Save or Update Payment Traction")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<Set<ContractorPaymentVo>>> saveAll(@RequestBody Set<ContractorPaymentVo> vos) {
 		log.info("Received request for bulk save");
 		Set<ContractorPaymentVo> saved = service.saveAll(vos);
@@ -68,6 +69,7 @@ public class ContractorPaymentController {
 
 	@DeleteMapping("/{id}")
 	@Operation(summary = "Delete contractor payment")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<ContractorPaymentVo>> delete(@PathVariable Long id) {
 		log.info("Received request for delete :: paymentId {}", id);
 		ContractorPaymentVo deleted = service.deleteById(id);
@@ -84,6 +86,7 @@ public class ContractorPaymentController {
 
 	@GetMapping("/{id}")
 	@Operation(summary = "Get all payments by Id")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<ContractorPaymentVo>> findById(@PathVariable Long id) {
 		log.info("Received request for find :: id - {}", id);
 		ContractorPaymentVo found = service.findById(id);
@@ -100,6 +103,7 @@ public class ContractorPaymentController {
 
 	@GetMapping
 	@Operation(summary = "Get all payments by payment date range (90 Days max) and payment amount and contractor Id")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<List<ContractorPaymentVo>>> find(
 			@RequestParam(value = "frompaymentdate", required = true) LocalDate fromPaymentDate,
 			@RequestParam(value = "topaymentdate", required = true) LocalDate toPaymentDate,

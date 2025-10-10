@@ -20,16 +20,16 @@ public class ColorEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@Column(name = "colorname", length = 30, nullable = false, unique = true)
+	@Column(name = "color_name", length = 30, nullable = false, unique = true)
 	private String colorName;
 
 	@Column(name = "active", columnDefinition = "BOOLEAN DEFAULT TRUE", nullable = false)
 	private boolean active;
 	
-	@Column(name = "createdon", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
+	@Column(name = "created_on", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
     private LocalDateTime createdOn;
 
 	@ManyToOne
-	@JoinColumn(name = "createdby", nullable = false)
+	@JoinColumn(name = "created_by", nullable = false)
 	private UserEntity user;
 }

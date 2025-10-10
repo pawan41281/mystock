@@ -23,17 +23,17 @@ public class ClientOrderEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "ordernumber", nullable = false)
+	@Column(name = "order_number", nullable = false)
 	private Integer orderNumber;
 
-	@Column(name = "orderdate", nullable = false)
+	@Column(name = "order_date", nullable = false)
 	private LocalDate orderDate;
 
 	@ManyToOne
 	@JoinColumn(name = "client_id", nullable = false)
 	private ClientEntity client;
 
-	@Column(name = "createdon", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
+	@Column(name = "created_on", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
 	private LocalDateTime createdOn;
 
 	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -41,6 +41,6 @@ public class ClientOrderEntity {
 	private Set<ClientOrderItemEntity> orderItems;
 
 	@ManyToOne
-	@JoinColumn(name = "createdby", nullable = false)
+	@JoinColumn(name = "created_by", nullable = false)
 	private UserEntity user;
 }

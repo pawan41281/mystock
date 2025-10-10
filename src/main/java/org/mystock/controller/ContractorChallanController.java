@@ -1,11 +1,11 @@
 package org.mystock.controller;
 
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
-import java.util.List;
-import java.util.Set;
-
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.mystock.apiresponse.ApiResponseVo;
 import org.mystock.apiresponse.ApiResponseVoWrapper;
 import org.mystock.exception.BusinessException;
@@ -14,20 +14,12 @@ import org.mystock.util.MetadataGenerator;
 import org.mystock.vo.ContractorChallanVo;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/v1/contractorchallans")
@@ -35,7 +27,6 @@ import lombok.extern.slf4j.Slf4j;
 @Tag(name = "Contractor Challan Operations", description = "CRUD Operations for contractor challan record")
 @Slf4j
 @SecurityRequirement(name = "Bearer Authentication")
-@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 public class ContractorChallanController {
 
 	private final ContractorChallanService service;
@@ -43,6 +34,7 @@ public class ContractorChallanController {
 
 	@PostMapping
 	@Operation(summary = "Create contractor challan", description = "Challan Type :: I - Issue, R - Received")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<ContractorChallanVo>> save(@Valid @RequestBody ContractorChallanVo vo) {
 		log.info("Received request for save");
 		if(vo.getId()!=null && vo.getId().equals(0L)) vo.setId(null);
@@ -60,6 +52,7 @@ public class ContractorChallanController {
 
 	@PostMapping("/bulk")
 	@Operation(summary = "Create multiple contractor challan", description = "Challan Type :: I - Issue, R - Received")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<Set<ContractorChallanVo>>> saveAll(@RequestBody Set<ContractorChallanVo> vos) {
 		log.info("Received request for bulk save");
 		Set<ContractorChallanVo> saved = service.saveAll(vos);
@@ -76,6 +69,7 @@ public class ContractorChallanController {
 
 	@DeleteMapping("/{id}")
 	@Operation(summary = "Delete contractor challan")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<ContractorChallanVo>> delete(@PathVariable Long id) {
 		log.info("Received request for delete :: challanId {}", id);
 		ContractorChallanVo deleted = service.deleteById(id);
@@ -92,6 +86,7 @@ public class ContractorChallanController {
 
 	@GetMapping("/{id}")
 	@Operation(summary = "Get all challans by Id")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<ContractorChallanVo>> findById(@PathVariable Long id) {
 		log.info("Received request for find :: id - {}", id);
 		ContractorChallanVo found = service.findById(id);
@@ -108,6 +103,7 @@ public class ContractorChallanController {
 
 	@GetMapping
 	@Operation(summary = "Get all challans by challan number and challan date range (90 Days max) and challan type and contractor Id", description = "Challan Type :: I - Issue, R - Received")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<List<ContractorChallanVo>>> find(
 			@RequestParam(value = "challannumber", required = false) Integer challanNumber,
 			@RequestParam(value = "contractorid", required = false) Long contractorId,

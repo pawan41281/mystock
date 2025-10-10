@@ -17,6 +17,7 @@ import org.mystock.service.AuthService;
 import org.mystock.service.RoleService;
 import org.mystock.vo.LoginVo;
 import org.mystock.vo.SignupRequestVo;
+import org.mystock.vo.UserVo;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -207,5 +208,43 @@ public class AuthServiceImpl implements AuthService {
             throw new InvalidCredentialsException("Invalid username or password.");
         }
     }
+
+    public UserVo getUserFromToken(String token) throws ResourceNotFoundException {
+        if (!jwtTokenProvider.validateToken(token)) {
+            throw new ResourceNotFoundException("Invalid or expired token");
+        }
+
+        String username = jwtTokenProvider.getUsernameFromToken(token);
+        UserEntity user = userRepository.findByUserId(username);
+
+        if (user == null) {
+            throw new ResourceNotFoundException("User not found for the given token");
+        }
+
+        return userMapper.convert(user);
+    }
+
+    @Override
+    public UserVo getCurrentUser() throws ResourceNotFoundException {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+            if (authentication == null || !authentication.isAuthenticated()) {
+                throw new ResourceNotFoundException("No authenticated user found");
+            }
+
+            String username = authentication.getName();
+            UserEntity userEntity = userRepository.findByUserId(username);
+
+            if (userEntity == null) {
+                throw new ResourceNotFoundException("User not found: " + username);
+            }
+
+            return userMapper.convert(userEntity);
+        } catch (Exception e) {
+            throw new ResourceNotFoundException("Unable to fetch user: " + e.getMessage());
+        }
+    }
+
 
 }

@@ -21,10 +21,10 @@ public class ContractorPaymentEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "paymentdate", nullable = false)
+	@Column(name = "payment_date", nullable = false)
 	private LocalDate paymentDate;
 
-	@Column(name = "paymentamount", nullable = false)
+	@Column(name = "payment_amount", nullable = false)
 	private int paymentAmount;
 
 	@ManyToOne
@@ -34,10 +34,10 @@ public class ContractorPaymentEntity {
 	@Column(name = "remarks")
 	private String remarks;
 
-	@Column(name = "createdon", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
+	@Column(name = "created_on", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
 	private LocalDateTime createdOn;
 
 	@ManyToOne
-	@JoinColumn(name = "createdby", nullable = false)
+	@JoinColumn(name = "created_by", nullable = false)
 	private UserEntity user;
 }

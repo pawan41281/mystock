@@ -1,9 +1,11 @@
 package org.mystock.controller;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.mystock.apiresponse.ApiResponseVo;
 import org.mystock.apiresponse.ApiResponseVoWrapper;
 import org.mystock.service.ContractorStockService;
@@ -12,18 +14,10 @@ import org.mystock.vo.ContractorStockBulkVo;
 import org.mystock.vo.ContractorStockVo;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/v1/contractorstocks")
@@ -31,7 +25,6 @@ import lombok.extern.slf4j.Slf4j;
 @Tag(name = "Contractor Stock Operations", description = "CRUD Operations for contractor stock record")
 @Slf4j
 @SecurityRequirement(name = "Bearer Authentication")
-@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 public class ContractorStockController {
 
 	private final ContractorStockService contractorStockService;
@@ -39,6 +32,7 @@ public class ContractorStockController {
 
 	@GetMapping("/{id}")
 	@Operation(summary = "Get by ID", description = "Get a contractor stock item by ID")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<ContractorStockVo>> getById(@PathVariable Long id) {
 		log.info("Received request for find :: id - {}", id);
 		ContractorStockVo found = contractorStockService.getById(id);
@@ -55,6 +49,7 @@ public class ContractorStockController {
 
 	@GetMapping
 	@Operation(summary = "Get All", description = "Get all contractor stock item balance")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<List<ContractorStockVo>>> getAll() {
 		List<ContractorStockVo> vos = contractorStockService.getAll();
 		return ResponseEntity
@@ -63,6 +58,7 @@ public class ContractorStockController {
 
 	@PostMapping
 	@Operation(summary = "Save Operation", description = "Set opening balance of contractor stock item")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<ContractorStockVo>> save(@Valid @RequestBody ContractorStockVo vo) {
 		log.info("Received request for save :: {}", vo);
 		if(vo.getId()!=null && vo.getId().equals(0L)) vo.setId(null);
@@ -81,6 +77,7 @@ public class ContractorStockController {
 
 	@PostMapping("/bulk")
 	@Operation(summary = "Save Operation", description = "Set opening balance of multiple contractor stock items")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<ContractorStockBulkVo>> saveAll(
 			@Valid @RequestBody ContractorStockBulkVo bulkVo) {
 		log.info("Received request for bulk save :: {}", bulkVo);

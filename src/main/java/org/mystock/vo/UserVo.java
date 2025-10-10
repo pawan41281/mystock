@@ -10,7 +10,6 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserVo {
-
 	private Long id;
 
 	private String name;
@@ -19,7 +18,11 @@ public class UserVo {
 	private String mobile;
 	private String password;
 
-	private Boolean locked;
+	public String getPassword() {
+		return "********";
+	}
+
+	private Boolean locked = false;
 
 	private Set<RoleVo> roles;
 
@@ -46,7 +49,7 @@ public class UserVo {
 		this.userId = userId;
 		this.email = email;
 		this.password = password;
-		this.locked = locked;
+		this.locked = locked!=null?locked:false;
 	}
 
 	public UserVo(String name, String userId, String email, String mobile, String password, Boolean locked) {
@@ -56,7 +59,7 @@ public class UserVo {
 		this.email = email;
 		this.mobile = mobile;
 		this.password = password;
-		this.locked = locked;
+		this.locked = locked!=null?locked:false;
 	}
 
 }

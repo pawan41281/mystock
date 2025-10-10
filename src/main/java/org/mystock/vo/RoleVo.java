@@ -15,5 +15,6 @@ public class RoleVo {
 
 	private String name;
 
+	@JsonIgnore
 	private UserVo user;
 }

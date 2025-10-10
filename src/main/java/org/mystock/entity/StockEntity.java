@@ -34,9 +34,9 @@ public class StockEntity {
 	@Column(name = "balance", nullable = false)
 	private Integer balance = 0;
 	
-	@Column(name = "updatedon")
+	@Column(name = "updated_on")
 	private LocalDateTime updatedOn = LocalDateTime.now();
 	
-	@Column(name = "createdon", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
+	@Column(name = "created_on", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
 	private LocalDateTime createdOn;
 }

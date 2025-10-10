@@ -122,4 +122,49 @@ public class AuthController {
         }
     }
 
+//    @PostMapping("/user")
+//    @Operation(summary = "Get User", description = "Fetch currently logged-in user details using JWT token")
+//    public ResponseEntity<ApiResponseVo<?>> getUser(@RequestHeader("Authorization") String token) {
+//        try {
+//            // Extract JWT without Bearer prefix
+//            String jwt = token.replace("Bearer ", "").trim();
+//
+//            // Call service to get user info
+//            UserVo userVo = authService.getUserFromToken(jwt);
+//            if (userVo != null)
+//                userVo.setPassword("********");
+//
+//            return ResponseEntity.ok(ApiResponseVoWrapper.success("User details fetched successfully", userVo, null));
+//
+//        } catch (Exception e) {
+//            log.error("Failed to get user from token: {}", e.getMessage());
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+//                    .body(ApiResponseVoWrapper.failure("Invalid or expired token", null, null));
+//        }
+//    }
+
+//    @PostMapping("/currentuser")
+//    @Operation(summary = "Get Current User", description = "Fetch the currently logged-in user details")
+//    public ResponseEntity<ApiResponseVo<?>> getCurrentUser() {
+//        try {
+//            // Retrieve user info directly from Spring Security context
+//            UserVo userVo = authService.getCurrentUser();
+//            if (userVo != null)
+//                userVo.setPassword("********");
+//
+//            return ResponseEntity.ok(ApiResponseVoWrapper.success("User details fetched successfully", userVo, null));
+//
+//        } catch (ResourceNotFoundException e) {
+//            log.error("User not found: {}", e.getMessage());
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+//                    .body(ApiResponseVoWrapper.failure(e.getMessage(), null, null));
+//
+//        } catch (Exception e) {
+//            log.error("Failed to fetch current user: {}", e.getMessage());
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+//                    .body(ApiResponseVoWrapper.failure("Invalid or expired token", null, null));
+//        }
+//    }
+
+
 }

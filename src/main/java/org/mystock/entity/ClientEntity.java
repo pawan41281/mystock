@@ -20,7 +20,7 @@ public class ClientEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@Column(name = "clientname", length = 100, nullable = false)
+	@Column(name = "client_name", length = 100, nullable = false)
 	private String clientName;
 
 	@Column(name = "address", length = 240)
@@ -41,16 +41,16 @@ public class ClientEntity {
 	@Column(name = "mobile", length = 10)
 	private String mobile;
 
-	@Column(name = "gstno", length = 15)
+	@Column(name = "gst_no", length = 15)
 	private String gstNo;
 
 	@Column(name = "active", columnDefinition = "BOOLEAN DEFAULT TRUE", nullable = false)
 	private boolean active;
 
-    @Column(name = "createdon", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
+    @Column(name = "created_on", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
     private LocalDateTime createdOn;
 
 	@ManyToOne
-	@JoinColumn(name = "createdby", nullable = false)
+	@JoinColumn(name = "created_by", nullable = false)
 	private UserEntity user;
 }

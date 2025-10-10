@@ -23,10 +23,10 @@ public class ClientChallanEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "challannumber", nullable = false)
+	@Column(name = "challan_number", nullable = false)
 	private Integer challanNumber;
 
-	@Column(name = "challandate", nullable = false)
+	@Column(name = "challan_date", nullable = false)
 	private LocalDate challanDate;
 
 	@ManyToOne
@@ -37,10 +37,10 @@ public class ClientChallanEntity {
 	@JoinColumn(name = "order_id")
 	private ClientOrderEntity order;
 
-	@Column(name = "challantype", nullable = false) // I - Issue, R - Received
+	@Column(name = "challan_type", nullable = false) // I - Issue, R - Received
 	private String challanType;
 
-	@Column(name = "createdon", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
+	@Column(name = "created_on", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
 	private LocalDateTime createdOn;
 
 	@OneToMany(mappedBy = "challan", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -48,6 +48,6 @@ public class ClientChallanEntity {
 	private Set<ClientChallanItemEntity> challanItems;
 
 	@ManyToOne
-	@JoinColumn(name = "createdby", nullable = false)
+	@JoinColumn(name = "created_by", nullable = false)
 	private UserEntity user;
 }

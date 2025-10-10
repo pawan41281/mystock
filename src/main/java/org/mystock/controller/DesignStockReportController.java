@@ -1,9 +1,11 @@
 package org.mystock.controller;
 
-import java.util.Collections;
-import java.util.List;
-
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.mystock.apiresponse.ApiResponseVo;
 import org.mystock.apiresponse.ApiResponseVoWrapper;
 import org.mystock.service.DesignStockReportService;
@@ -16,11 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.Collections;
+import java.util.List;
 
 @RestController
 @RequestMapping("/v1/designstockreports")
@@ -28,7 +27,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Tag(name = "Report", description = "Endpoints for reports")
 @SecurityRequirement(name = "Bearer Authentication")
-@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 public class DesignStockReportController {
 
 	private final DesignStockReportService designStockReportService;
@@ -36,6 +34,7 @@ public class DesignStockReportController {
 
 	@GetMapping
 	@Operation(summary = "Get Design and Color wise Stock balance", description = "Get Design and Color wise Stock balance")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<List<DesignStockReportVo>>> getBalanceReport(
 			@Parameter(description = "Filter by design name (partial match)") @RequestParam(required = false) String designName,
 			@Parameter(description = "Filter by color name (partial match)") @RequestParam(required = false) String colorName) {

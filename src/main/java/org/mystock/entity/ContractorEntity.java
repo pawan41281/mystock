@@ -20,7 +20,7 @@ public class ContractorEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@Column(name = "contractorname", length = 100, nullable = false)
+	@Column(name = "contractor_name", length = 100, nullable = false)
 	private String contractorName;
 
 	@Column(name = "address", length = 240)
@@ -41,16 +41,16 @@ public class ContractorEntity {
 	@Column(name = "mobile", length = 10)
 	private String mobile;
 
-	@Column(name = "gstno", length = 15)
+	@Column(name = "gst_no", length = 15)
 	private String gstNo;
 
 	@Column(name = "active", columnDefinition = "BOOLEAN DEFAULT TRUE", nullable = false)
 	private boolean active;
 
-    @Column(name = "createdon", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
+    @Column(name = "created_on", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
     private LocalDateTime createdOn;
 
 	@ManyToOne
-	@JoinColumn(name = "createdby", nullable = false)
+	@JoinColumn(name = "created_by", nullable = false)
 	private UserEntity user;
 }

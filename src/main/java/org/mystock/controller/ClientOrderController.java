@@ -1,11 +1,11 @@
 package org.mystock.controller;
 
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
-import java.util.List;
-import java.util.Set;
-
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.mystock.apiresponse.ApiResponseVo;
 import org.mystock.apiresponse.ApiResponseVoWrapper;
 import org.mystock.exception.BusinessException;
@@ -14,20 +14,12 @@ import org.mystock.util.MetadataGenerator;
 import org.mystock.vo.ClientOrderVo;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/v1/clientorders")
@@ -35,7 +27,6 @@ import lombok.extern.slf4j.Slf4j;
 @Tag(name = "Client Order Operations", description = "CRUD Operations for client order record")
 @Slf4j
 @SecurityRequirement(name = "Bearer Authentication")
-@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 public class ClientOrderController {
 
 	private final ClientOrderService service;
@@ -43,6 +34,7 @@ public class ClientOrderController {
 
 	@PostMapping
 	@Operation(summary = "Create client order")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<ClientOrderVo>> save(@Valid @RequestBody ClientOrderVo vo) {
 		log.info("Received request for save :: {}", vo);
 		if (vo.getId() != null && vo.getId().equals(0L))
@@ -61,6 +53,7 @@ public class ClientOrderController {
 
 	@PostMapping("/bulk")
 	@Operation(summary = "Create multiple client order")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<Set<ClientOrderVo>>> saveAll(@RequestBody Set<ClientOrderVo> vos) {
 		log.info("Received request for bulk save :: {}", vos);
 		Set<ClientOrderVo> saved = service.saveAll(vos);
@@ -77,6 +70,7 @@ public class ClientOrderController {
 
 	@DeleteMapping("/{id}")
 	@Operation(summary = "Delete client order")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<ClientOrderVo>> delete(@PathVariable Long id) {
 		log.info("Received request for delete :: orderId {}", id);
 		ClientOrderVo deleted = service.deleteById(id);
@@ -93,6 +87,7 @@ public class ClientOrderController {
 
 	@GetMapping("/{id}")
 	@Operation(summary = "Get all orders by Id")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<ClientOrderVo>> findById(@PathVariable Long id) {
 		log.info("Received request for find :: id - {}", id);
 		ClientOrderVo found = service.findById(id);
@@ -109,6 +104,7 @@ public class ClientOrderController {
 
 	@GetMapping
 	@Operation(summary = "Get all orders by order number and order date range (90 Days max) and client Id")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<List<ClientOrderVo>>> find(
 			@RequestParam(value = "ordernumber", required = false) Integer orderNumber,
 			@RequestParam(value = "clientid", required = false) Long clientId,

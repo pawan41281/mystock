@@ -1,9 +1,11 @@
 package org.mystock.controller;
 
-import java.util.List;
-import java.util.Set;
-
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.mystock.apiresponse.ApiResponseVo;
 import org.mystock.apiresponse.ApiResponseVoWrapper;
 import org.mystock.service.ColorService;
@@ -11,19 +13,10 @@ import org.mystock.util.MetadataGenerator;
 import org.mystock.vo.ColorVo;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/v1/colors")
@@ -31,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 @Tag(name = "Color Operations", description = "CRUD Operations for color record")
 @Slf4j
 @SecurityRequirement(name = "Bearer Authentication")
-@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 public class ColorController {
 
 	private final ColorService colorService;
@@ -39,6 +31,7 @@ public class ColorController {
 
 	@PostMapping
 	@Operation(summary = "Create or update color")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<ColorVo>> save(@RequestBody ColorVo vo) {
 		log.info("Received request for save");
 		if (vo.getId() != null && vo.getId().equals(0L))
@@ -57,6 +50,7 @@ public class ColorController {
 
 	@PostMapping("/bulk")
 	@Operation(summary = "Create or update multiple colors")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<Set<ColorVo>>> saveAll(@RequestBody Set<ColorVo> vos) {
 		log.info("Received request for bulk save");
 		Set<ColorVo> saved = colorService.saveAll(vos);
@@ -73,6 +67,7 @@ public class ColorController {
 
 	@GetMapping("/{id}")
 	@Operation(summary = "Get color by ID")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<ColorVo>> getById(@PathVariable Long id) {
 		log.info("Received request for find :: id - {}", id);
 		ColorVo found = colorService.getById(id);
@@ -89,6 +84,7 @@ public class ColorController {
 
 	@GetMapping
 	@Operation(summary = "Get All", description = "Get all colors")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<List<ColorVo>>> getAll() {
 		log.info("Received request for find all");
 		List<ColorVo> found = colorService.getAll();
@@ -105,6 +101,7 @@ public class ColorController {
 
 	@PatchMapping("/{id}/{status}")
 	@Operation(summary = "Update status by ID", description = "Update design record status by ID")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<ColorVo>> update(@PathVariable Long id, @PathVariable boolean status) {
 		log.info("Received request for status update :: {} - {}", id, status);
 		ColorVo saved = colorService.updateStatus(id, status);
@@ -122,6 +119,7 @@ public class ColorController {
 
 	@GetMapping("/name/{name}")
 	@Operation(summary = "Get All by Name", description = "Get all colors by name")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<List<ColorVo>>> getAll(
 			@Parameter(name = "name", description = "Color Name to Search") @PathVariable String name) {
 		log.info("Received request for find all");
