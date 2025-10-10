@@ -1,6 +1,8 @@
 package org.mystock.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.extensions.Extension;
+import io.swagger.v3.oas.annotations.extensions.ExtensionProperty;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -21,10 +23,25 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Controller for managing Client Orders.
+ * Provides endpoints for creating, retrieving, and deleting client order records.
+ *
+ * All endpoints are secured and require valid Bearer Token authentication.
+ */
 @RestController
 @RequestMapping("/v1/clientorders")
 @AllArgsConstructor
-@Tag(name = "Client Order Operations", description = "CRUD Operations for client order record")
+@Tag(
+		name = "Client Order Operations",
+		description = "Endpoints for performing CRUD operations on Client Orders.",
+		extensions = {
+				@Extension(
+						name = "x-order",
+						properties = { @ExtensionProperty(name = "position", value = "2") }
+				)
+		}
+)
 @Slf4j
 @SecurityRequirement(name = "Bearer Authentication")
 public class ClientOrderController {
@@ -32,8 +49,12 @@ public class ClientOrderController {
 	private final ClientOrderService service;
 	private final MetadataGenerator metadataGenerator;
 
+	@Operation(
+			summary = "Create a client order",
+			description = "Creates a new client order record in the system. Requires ADMIN or USER role.",
+			tags = {"Client Order Operations"}
+	)
 	@PostMapping
-	@Operation(summary = "Create client order")
 	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<ClientOrderVo>> save(@Valid @RequestBody ClientOrderVo vo) {
 		log.info("Received request for save :: {}", vo);
@@ -51,8 +72,12 @@ public class ClientOrderController {
 		}
 	}
 
+	@Operation(
+			summary = "Create multiple client orders (Bulk Save)",
+			description = "Allows batch creation of multiple client orders. Requires ADMIN or USER role.",
+			tags = {"Client Order Operations"}
+	)
 	@PostMapping("/bulk")
-	@Operation(summary = "Create multiple client order")
 	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<Set<ClientOrderVo>>> saveAll(@RequestBody Set<ClientOrderVo> vos) {
 		log.info("Received request for bulk save :: {}", vos);
@@ -68,8 +93,12 @@ public class ClientOrderController {
 		}
 	}
 
+	@Operation(
+			summary = "Delete client order by ID",
+			description = "Deletes the specified client order by its unique ID. Requires ADMIN or USER role.",
+			tags = {"Client Order Operations"}
+	)
 	@DeleteMapping("/{id}")
-	@Operation(summary = "Delete client order")
 	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<ClientOrderVo>> delete(@PathVariable Long id) {
 		log.info("Received request for delete :: orderId {}", id);
@@ -85,8 +114,12 @@ public class ClientOrderController {
 		}
 	}
 
+	@Operation(
+			summary = "Get client order by ID",
+			description = "Fetches the client order details for the specified order ID. Requires ADMIN or USER role.",
+			tags = {"Client Order Operations"}
+	)
 	@GetMapping("/{id}")
-	@Operation(summary = "Get all orders by Id")
 	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<ClientOrderVo>> findById(@PathVariable Long id) {
 		log.info("Received request for find :: id - {}", id);
@@ -102,8 +135,19 @@ public class ClientOrderController {
 		}
 	}
 
+	@Operation(
+			summary = "Search client orders",
+			description = """
+			Retrieves client orders by applying optional filters:
+			- `ordernumber`: Filter by order number
+			- `clientid`: Filter by client ID
+			- `fromorderdate` and `toorderdate`: Filter by date range (maximum 90 days)
+			
+			Requires ADMIN or USER role.
+			""",
+			tags = {"Client Order Operations"}
+	)
 	@GetMapping
-	@Operation(summary = "Get all orders by order number and order date range (90 Days max) and client Id")
 	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<List<ClientOrderVo>>> find(
 			@RequestParam(value = "ordernumber", required = false) Integer orderNumber,
@@ -128,11 +172,9 @@ public class ClientOrderController {
 		}
 
 		List<ClientOrderVo> found = service.findAll(orderNumber, clientId, fromOrderDate, toOrderDate);
-
 		log.info("Record {}", found != null && !found.isEmpty() ? "found" : "not found");
 
 		return ResponseEntity
 				.ok(ApiResponseVoWrapper.success("Record fetched", found, metadataGenerator.getMetadata(found)));
 	}
-
 }

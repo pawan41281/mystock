@@ -1,6 +1,10 @@
 package org.mystock.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
@@ -22,17 +26,40 @@ import org.springframework.web.bind.annotation.*;
 @AllArgsConstructor
 @RestController
 @RequestMapping("/v1/auth")
-@Tag(name = "Auth Management", description = "Authority operations")
+@Tag(name = "Authentication Management", description = "Handles user login, token management, validation, and logout operations.")
 @Slf4j
 public class AuthController {
 
     private final AuthService authService;
     private final JwtTokenProvider jwtTokenProvider;
 
-
+    // ------------------------------------------------------------
+    // LOGIN
+    // ------------------------------------------------------------
+    @Operation(
+            summary = "User Login",
+            description = "Authenticate user using credentials and generate JWT access & refresh tokens.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Login successful and tokens generated",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = JwtAuthResponse.class))),
+                    @ApiResponse(responseCode = "401", description = "Invalid credentials",
+                            content = @Content(mediaType = "application/json")),
+                    @ApiResponse(responseCode = "500", description = "Internal server error",
+                            content = @Content(mediaType = "application/json"))
+            }
+    )
     @PostMapping("/login")
-    public ResponseEntity<ApiResponseVo<?>> login(@RequestBody LoginVo loginVo, HttpServletResponse response)
-            throws ResourceNotFoundException {
+    public ResponseEntity<ApiResponseVo<?>> login(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "User credentials for login",
+                    required = true,
+                    content = @Content(schema = @Schema(implementation = LoginVo.class))
+            )
+            @RequestBody LoginVo loginVo,
+            HttpServletResponse response
+    ) throws ResourceNotFoundException {
+
         log.info("Received request for login :: {}", loginVo.getUserId());
         try {
             Authentication authentication = authService.authenticate(loginVo);
@@ -41,11 +68,13 @@ public class AuthController {
             String refreshToken = jwtTokenProvider.generateRefreshToken(authentication);
 
             // Set HttpOnly cookie for refresh token
-            ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refreshToken).httpOnly(true)
-//	                .secure(true) // only over HTTPS
-                    .path("/v1/auth") // limit scope
+            ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refreshToken)
+                    .httpOnly(true)
+                    //.secure(true) // enable for HTTPS
+                    .path("/v1/auth")
                     .maxAge(7 * 24 * 60 * 60) // 7 days
-                    .sameSite("Strict").build();
+                    .sameSite("Strict")
+                    .build();
 
             response.addHeader("Set-Cookie", refreshCookie.toString());
 
@@ -53,17 +82,36 @@ public class AuthController {
             jwtAuthResponse.setAccessToken(accessToken);
             jwtAuthResponse.setRefreshToken("Set in HttpOnly Cookie");
 
-            return ResponseEntity.ok(ApiResponseVoWrapper.success(null, jwtAuthResponse, null));
+            return ResponseEntity.ok(ApiResponseVoWrapper.success("Login successful", jwtAuthResponse, null));
         } catch (Exception e) {
             log.error("Token not generated :: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(ApiResponseVoWrapper.failure(e.getMessage(), loginVo, null));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponseVoWrapper.failure("Login failed: " + e.getMessage(), loginVo, null));
         }
     }
 
+    // ------------------------------------------------------------
+    // REFRESH TOKEN
+    // ------------------------------------------------------------
+    @Operation(
+            summary = "Refresh Access Token",
+            description = "Generate a new access token using a valid refresh token.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Token refreshed successfully",
+                            content = @Content(schema = @Schema(implementation = JwtAuthResponse.class))),
+                    @ApiResponse(responseCode = "401", description = "Invalid or expired refresh token"),
+                    @ApiResponse(responseCode = "500", description = "Internal server error")
+            }
+    )
     @PostMapping("/refresh-token")
-    @Operation(summary = "Refresh Token", description = "Generate new access token using refresh token")
-    public ResponseEntity<ApiResponseVo<JwtAuthResponse>> refreshToken(@RequestBody RefreshTokenRequestVo request) {
+    public ResponseEntity<ApiResponseVo<JwtAuthResponse>> refreshToken(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Refresh token request",
+                    required = true,
+                    content = @Content(schema = @Schema(implementation = RefreshTokenRequestVo.class))
+            )
+            @RequestBody RefreshTokenRequestVo request) {
+
         log.info("Received request for refresh token");
         try {
             JwtAuthResponse jwtAuthResponse = authService.refreshToken(request.getRefreshToken());
@@ -71,44 +119,74 @@ public class AuthController {
                     .body(ApiResponseVoWrapper.success("Token refreshed", jwtAuthResponse, null));
         } catch (Exception e) {
             log.error("Refresh failed: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.OK).body(ApiResponseVoWrapper.failure(e.getMessage(), null, null));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponseVoWrapper.failure("Refresh failed: " + e.getMessage(), null, null));
         }
     }
 
+    // ------------------------------------------------------------
+    // VALIDATE TOKEN
+    // ------------------------------------------------------------
+    @Operation(
+            summary = "Validate JWT Token",
+            description = "Validate a JWT access token to check its authenticity and expiry.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Token validation result",
+                            content = @Content(schema = @Schema(implementation = String.class))),
+                    @ApiResponse(responseCode = "401", description = "Invalid or expired token")
+            }
+    )
     @PostMapping("/validate")
-    @Operation(summary = "Validate Operation", description = "Validate the access token")
-    public ResponseEntity<ApiResponseVo<String>> validate(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<ApiResponseVo<String>> validate(
+            @Parameter(description = "Authorization header containing Bearer token", required = true,
+                    example = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...")
+            @RequestHeader("Authorization") String token) {
+
         log.info("Received request for token validation :: {}", token);
-        boolean isvalidtoken = authService.validateToken(token.replace("Bearer ", ""));
-        if (isvalidtoken) {
+        boolean isValidToken = authService.validateToken(token.replace("Bearer ", ""));
+        if (isValidToken) {
             log.info("Token is valid");
-            return ResponseEntity.status(HttpStatus.OK).body(ApiResponseVoWrapper.success("Valid token", token, null));
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(ApiResponseVoWrapper.success("Valid token", token, null));
         } else {
             log.info("Token is invalid");
-            return ResponseEntity.status(HttpStatus.OK)
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(ApiResponseVoWrapper.failure("Invalid token", token, null));
         }
     }
 
+    // ------------------------------------------------------------
+    // LOGOUT
+    // ------------------------------------------------------------
+    @Operation(
+            summary = "Logout User",
+            description = "Invalidate tokens and clear refresh token cookie.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Logout successful"),
+                    @ApiResponse(responseCode = "500", description = "Logout failed due to server error")
+            }
+    )
     @PostMapping("/logout")
-    @Operation(summary = "Logout Operation", description = "Invalidate tokens and clear refresh token cookie")
-    public ResponseEntity<ApiResponseVo<String>> logout(@RequestHeader(value = "Authorization", required = false) String token,
-                                                        HttpServletResponse response) {
+    public ResponseEntity<ApiResponseVo<String>> logout(
+            @Parameter(description = "Authorization header with Bearer token", required = false)
+            @RequestHeader(value = "Authorization", required = false) String token,
+            HttpServletResponse response) {
+
         log.info("Received logout request");
 
         try {
-            // ✅ Optionally blacklist access token (if implemented in AuthService)
+            // Optionally blacklist access token (if implemented in AuthService)
             if (token != null && token.startsWith("Bearer ")) {
                 String jwt = token.substring(7);
                 authService.invalidateToken(jwt);
             }
 
-            // ✅ Clear the refresh token cookie
+            // Clear the refresh token cookie
             ResponseCookie clearCookie = ResponseCookie.from("refreshToken", "")
                     .httpOnly(true)
                     //.secure(true)
                     .path("/v1/auth")
-                    .maxAge(0) // expire immediately
+                    .maxAge(0)
                     .sameSite("Strict")
                     .build();
 
@@ -121,50 +199,4 @@ public class AuthController {
                     .body(ApiResponseVoWrapper.failure("Logout failed: " + e.getMessage(), null, null));
         }
     }
-
-//    @PostMapping("/user")
-//    @Operation(summary = "Get User", description = "Fetch currently logged-in user details using JWT token")
-//    public ResponseEntity<ApiResponseVo<?>> getUser(@RequestHeader("Authorization") String token) {
-//        try {
-//            // Extract JWT without Bearer prefix
-//            String jwt = token.replace("Bearer ", "").trim();
-//
-//            // Call service to get user info
-//            UserVo userVo = authService.getUserFromToken(jwt);
-//            if (userVo != null)
-//                userVo.setPassword("********");
-//
-//            return ResponseEntity.ok(ApiResponseVoWrapper.success("User details fetched successfully", userVo, null));
-//
-//        } catch (Exception e) {
-//            log.error("Failed to get user from token: {}", e.getMessage());
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-//                    .body(ApiResponseVoWrapper.failure("Invalid or expired token", null, null));
-//        }
-//    }
-
-//    @PostMapping("/currentuser")
-//    @Operation(summary = "Get Current User", description = "Fetch the currently logged-in user details")
-//    public ResponseEntity<ApiResponseVo<?>> getCurrentUser() {
-//        try {
-//            // Retrieve user info directly from Spring Security context
-//            UserVo userVo = authService.getCurrentUser();
-//            if (userVo != null)
-//                userVo.setPassword("********");
-//
-//            return ResponseEntity.ok(ApiResponseVoWrapper.success("User details fetched successfully", userVo, null));
-//
-//        } catch (ResourceNotFoundException e) {
-//            log.error("User not found: {}", e.getMessage());
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-//                    .body(ApiResponseVoWrapper.failure(e.getMessage(), null, null));
-//
-//        } catch (Exception e) {
-//            log.error("Failed to fetch current user: {}", e.getMessage());
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-//                    .body(ApiResponseVoWrapper.failure("Invalid or expired token", null, null));
-//        }
-//    }
-
-
 }

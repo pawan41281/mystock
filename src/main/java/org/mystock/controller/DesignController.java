@@ -1,6 +1,9 @@
 package org.mystock.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
@@ -21,7 +24,7 @@ import java.util.Set;
 @RestController
 @RequestMapping("/v1/designs")
 @AllArgsConstructor
-@Tag(name = "Design Operations", description = "CRUD Operations for design record")
+@Tag(name = "Design", description = "CRUD operations for design management")
 @Slf4j
 @SecurityRequirement(name = "Bearer Authentication")
 public class DesignController {
@@ -30,112 +33,131 @@ public class DesignController {
 	private final MetadataGenerator metadataGenerator;
 
 	@PostMapping
-	@Operation(summary = "Save operation", description = "Save design record")
+	@Operation(
+			summary = "Create or update a design",
+			description = "Creates a new design or updates an existing design if ID is provided."
+	)
+	@ApiResponses({
+			@ApiResponse(responseCode = "200", description = "Design saved successfully"),
+			@ApiResponse(responseCode = "400", description = "Invalid design data provided"),
+			@ApiResponse(responseCode = "500", description = "Internal server error")
+	})
 	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
-	public ResponseEntity<ApiResponseVo<DesignVo>> save(@Validated @RequestBody DesignVo vo) {
-		log.info("Received request for save :: {}", vo);
-		if(vo.getId()!=null && vo.getId().equals(0L)) vo.setId(null);
+	public ResponseEntity<ApiResponseVo<DesignVo>> save(
+			@Validated @RequestBody @Parameter(description = "Design data to save or update") DesignVo vo) {
+		log.info("Received request to save design :: {}", vo);
+		if (vo.getId() != null && vo.getId().equals(0L)) vo.setId(null);
+
 		DesignVo saved = designService.save(vo);
-		if (saved != null && saved.getId() != null) {
-			log.info("Record saved");
-			return ResponseEntity
-					.ok(ApiResponseVoWrapper.success("Record saved", saved, metadataGenerator.getMetadata(saved)));
-		} else {
-			log.error("Record not saved");
-			return ResponseEntity
-					.ok(ApiResponseVoWrapper.success("Record not saved", vo, metadataGenerator.getMetadata(saved)));
-		}
+		String message = (saved != null && saved.getId() != null) ? "Record saved" : "Record not saved";
+		log.info(message);
+
+		return ResponseEntity.ok(ApiResponseVoWrapper.success(message, saved, metadataGenerator.getMetadata(saved)));
 	}
 
 	@PostMapping("/bulk")
-	@Operation(summary = "Bulk Save operation", description = "Save design record")
+	@Operation(
+			summary = "Bulk save designs",
+			description = "Creates or updates multiple design records in a single request."
+	)
+	@ApiResponses({
+			@ApiResponse(responseCode = "200", description = "Bulk design records saved successfully"),
+			@ApiResponse(responseCode = "400", description = "Invalid bulk data provided"),
+			@ApiResponse(responseCode = "500", description = "Internal server error")
+	})
 	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
-	public ResponseEntity<ApiResponseVo<Set<DesignVo>>> save(@RequestBody Set<DesignVo> vos) {
+	public ResponseEntity<ApiResponseVo<Set<DesignVo>>> saveBulk(
+			@RequestBody @Parameter(description = "Set of design records to be saved") Set<DesignVo> vos) {
 		log.info("Received request for bulk save :: {}", vos);
 		Set<DesignVo> saved = designService.saveAll(vos);
-		if (saved != null && !saved.isEmpty()) {
-			log.info("Record saved");
-			return ResponseEntity
-					.ok(ApiResponseVoWrapper.success("Record saved", saved, metadataGenerator.getMetadata(saved)));
-		} else {
-			log.error("Record not saved");
-			return ResponseEntity
-					.ok(ApiResponseVoWrapper.success("Record not saved", vos, metadataGenerator.getMetadata(saved)));
-		}
+		String message = (saved != null && !saved.isEmpty()) ? "Record saved" : "Record not saved";
+		log.info(message);
+
+		return ResponseEntity.ok(ApiResponseVoWrapper.success(message, saved, metadataGenerator.getMetadata(saved)));
 	}
 
 	@GetMapping("/{id}")
-	@Operation(summary = "Get by ID", description = "Get a design by its ID")
+	@Operation(
+			summary = "Fetch design by ID",
+			description = "Retrieve details of a specific design using its unique ID."
+	)
+	@ApiResponses({
+			@ApiResponse(responseCode = "200", description = "Design record fetched successfully"),
+			@ApiResponse(responseCode = "404", description = "Design record not found"),
+			@ApiResponse(responseCode = "500", description = "Internal server error")
+	})
 	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
-	public ResponseEntity<ApiResponseVo<DesignVo>> getById(@PathVariable Long id) {
-		log.info("Received request for find :: id - {}", id);
+	public ResponseEntity<ApiResponseVo<DesignVo>> getById(
+			@Parameter(description = "Unique ID of the design") @PathVariable Long id) {
+		log.info("Received request to fetch design by ID :: {}", id);
 		DesignVo found = designService.getById(id);
-		if (found != null) {
-			log.info("Record found");
-			return ResponseEntity
-					.ok(ApiResponseVoWrapper.success("Record found", found, metadataGenerator.getMetadata(found)));
-		} else {
-			log.info("Record not found");
-			return ResponseEntity
-					.ok(ApiResponseVoWrapper.success("Record not found", found, metadataGenerator.getMetadata(found)));
-		}
+		String message = (found != null) ? "Record found" : "Record not found";
+		log.info(message);
 
+		return ResponseEntity.ok(ApiResponseVoWrapper.success(message, found, metadataGenerator.getMetadata(found)));
 	}
-	
-
 
 	@GetMapping("/name/{name}")
-	@Operation(summary = "Get by name", description = "Get a design by its name")
+	@Operation(
+			summary = "Fetch designs by name",
+			description = "Retrieve one or more designs based on a partial or full name match."
+	)
+	@ApiResponses({
+			@ApiResponse(responseCode = "200", description = "Design records fetched successfully"),
+			@ApiResponse(responseCode = "404", description = "No matching records found"),
+			@ApiResponse(responseCode = "500", description = "Internal server error")
+	})
 	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
-	public ResponseEntity<ApiResponseVo<List<DesignVo>>> getByName(@PathVariable(required = false) String name) {
-		log.info("Received request for find :: name - {}", name);
-		if(name==null) name="";
+	public ResponseEntity<ApiResponseVo<List<DesignVo>>> getByName(
+			@Parameter(description = "Name (or part of the name) to search") @PathVariable(required = false) String name) {
+		log.info("Received request to fetch designs by name :: {}", name);
+		if (name == null) name = "";
 		List<DesignVo> found = designService.getAllByName(name.trim());
-		if (found != null) {
-			log.info("Record found");
-			return ResponseEntity
-					.ok(ApiResponseVoWrapper.success("Record found", found, metadataGenerator.getMetadata(found)));
-		} else {
-			log.info("Record not found");
-			return ResponseEntity
-					.ok(ApiResponseVoWrapper.success("Record not found", found, metadataGenerator.getMetadata(found)));
-		}
+		String message = (found != null && !found.isEmpty()) ? "Record found" : "Record not found";
+		log.info(message);
 
+		return ResponseEntity.ok(ApiResponseVoWrapper.success(message, found, metadataGenerator.getMetadata(found)));
 	}
 
 	@GetMapping
-	@Operation(summary = "Get All", description = "Get all designs")
+	@Operation(
+			summary = "Fetch all designs",
+			description = "Retrieve a list of all available designs in the system."
+	)
+	@ApiResponses({
+			@ApiResponse(responseCode = "200", description = "Design records fetched successfully"),
+			@ApiResponse(responseCode = "500", description = "Internal server error")
+	})
 	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<List<DesignVo>>> getAll() {
-		log.info("Received request for find all");
+		log.info("Received request to fetch all designs");
 		List<DesignVo> found = designService.getAll();
-		if (found != null && !found.isEmpty()) {
-			log.info("Record found");
-			return ResponseEntity
-					.ok(ApiResponseVoWrapper.success("Record found", found, metadataGenerator.getMetadata(found)));
-		} else {
-			log.error("Record not found");
-			return ResponseEntity
-					.ok(ApiResponseVoWrapper.success("Record not found", found, metadataGenerator.getMetadata(found)));
-		}
+		String message = (found != null && !found.isEmpty()) ? "Record found" : "Record not found";
+		log.info(message);
+
+		return ResponseEntity.ok(ApiResponseVoWrapper.success(message, found, metadataGenerator.getMetadata(found)));
 	}
 
 	@PatchMapping("/{id}/{status}")
-	@Operation(summary = "Update status by ID", description = "Update design record status by ID")
+	@Operation(
+			summary = "Update design status",
+			description = "Enable or disable a design by updating its status (true = active, false = inactive)."
+	)
+	@ApiResponses({
+			@ApiResponse(responseCode = "200", description = "Design status updated successfully"),
+			@ApiResponse(responseCode = "400", description = "Invalid input provided"),
+			@ApiResponse(responseCode = "404", description = "Design not found"),
+			@ApiResponse(responseCode = "500", description = "Internal server error")
+	})
 	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
-	public ResponseEntity<ApiResponseVo<DesignVo>> update(@PathVariable Long id, @PathVariable boolean status) {
-		log.info("Received request for status update :: {} - {}", id, status);
-		DesignVo saved = designService.updateStatus(id, status);
-		if (saved != null && saved.getId() != null) {
-			log.info("Record updated");
-			return ResponseEntity
-					.ok(ApiResponseVoWrapper.success("Record updated", saved, metadataGenerator.getMetadata(saved)));
-		} else {
-			log.error("Record not saved");
-			return ResponseEntity.ok(
-					ApiResponseVoWrapper.success("Record not updated", saved, metadataGenerator.getMetadata(saved)));
-		}
+	public ResponseEntity<ApiResponseVo<DesignVo>> updateStatus(
+			@Parameter(description = "Unique ID of the design") @PathVariable Long id,
+			@Parameter(description = "New status value (true or false)") @PathVariable boolean status) {
+		log.info("Received request to update design status :: ID={}, status={}", id, status);
+		DesignVo updated = designService.updateStatus(id, status);
+		String message = (updated != null && updated.getId() != null) ? "Record updated" : "Record not updated";
+		log.info(message);
 
+		return ResponseEntity.ok(ApiResponseVoWrapper.success(message, updated, metadataGenerator.getMetadata(updated)));
 	}
-
 }
