@@ -61,7 +61,11 @@ public class UserController {
                                       "email": "john@example.com",
                                       "mobile": "9876543210",
                                       "password": "Test@123",
-                                      "role": "USER"
+                                      "roles": [
+									                        {
+									                          "name": "ROLE_USER"
+									                        }
+									                      ]
                                     }
                                     """)
 					)
@@ -80,7 +84,11 @@ public class UserController {
                                         "name": "John Doe",
                                         "email": "john@example.com",
                                         "mobile": "9876543210",
-                                        "role": "USER"
+                                        "roles": [
+									                          {
+									                            "name": "ROLE_USER"
+									                          }
+									                        ]
                                       }
                                     }
                                     """))),
@@ -100,7 +108,7 @@ public class UserController {
 			return ResponseEntity.status(201)
 					.body(ApiResponseVoWrapper.success("User created successfully", userVo, null));
 		} catch (Exception e) {
-			return ResponseEntity.status(500).body(ApiResponseVoWrapper.failure(e.getMessage(), userVo, null));
+			return ResponseEntity.status(200).body(ApiResponseVoWrapper.failure(e.getMessage(), userVo, null));
 		}
 	}
 
@@ -122,7 +130,11 @@ public class UserController {
                                       "name": "John Doe Updated",
                                       "email": "john.updated@example.com",
                                       "mobile": "9876543211",
-                                      "role": "USER"
+                                      "roles": [
+									                        {
+									                          "name": "ROLE_USER"
+									                        }
+									                      ]
                                     }
                                     """)
 					)
@@ -168,7 +180,11 @@ public class UserController {
                                         "name": "John Doe",
                                         "email": "john@example.com",
                                         "mobile": "9876543210",
-                                        "role": "USER"
+                                        "roles": [
+									                          {
+									                            "name": "ROLE_USER"
+									                          }
+									                        ]
                                       }
                                     }
                                     """))),
@@ -211,7 +227,11 @@ public class UserController {
                                           "name": "John Doe",
                                           "email": "john@example.com",
                                           "mobile": "9876543210",
-                                          "role": "USER"
+                                          "roles": [
+									                            {
+									                              "name": "ROLE_USER"
+									                            }
+									                          ]
                                         },
                                         {
                                           "id": 2,
@@ -219,7 +239,11 @@ public class UserController {
                                           "name": "Jane Smith",
                                           "email": "jane@example.com",
                                           "mobile": "9876501234",
-                                          "role": "ADMIN"
+                                          "roles": [
+									                              {
+									                                "name": "ROLE_USER"
+									                              }
+									                            ]
                                         }
                                       ],
                                       "metadata": { "recordCount": "2" }

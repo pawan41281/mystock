@@ -46,7 +46,7 @@ public interface StockRepository extends JpaRepository<StockEntity, Long> {
 	@Query(value = """
 			SELECT
 			    UPPER(d.design) AS designName,
-			    UPPER(c.colorname) AS colorName,
+			    UPPER(c.color_name) AS colorName,
 			    COALESCE(s.obalance, 0) AS openingBalance,
 			    COALESCE(s.balance, 0) AS closingBalance
 			FROM
@@ -58,7 +58,7 @@ public interface StockRepository extends JpaRepository<StockEntity, Long> {
 			WHERE
 			    d.description LIKE :designName
 			    AND
-			    c.colorname LIKE :colorName
+			    c.color_name LIKE :colorName
 			""", nativeQuery = true)
 	public List<DesignStockReportVo> getDesignStockReport(@Param("designName") String designName,
 			@Param("colorName") String colorName);
@@ -66,7 +66,7 @@ public interface StockRepository extends JpaRepository<StockEntity, Long> {
 	@Query(value = """
 			SELECT
 			    UPPER(d.design) AS designName,
-			    UPPER(c.colorname) AS colorName,
+			    UPPER(c.color_name) AS colorName,
 			    COALESCE(s.obalance, 0) AS openingBalance,
 			    COALESCE(s.balance, 0) AS closingBalance
 			FROM
@@ -78,7 +78,7 @@ public interface StockRepository extends JpaRepository<StockEntity, Long> {
 			WHERE
 			    d.description LIKE :designName
 			    AND
-			    c.colorname LIKE :colorName
+			    c.color_name LIKE :colorName
 			    AND
 			    s.balance<>0
 			""", nativeQuery = true)
@@ -91,14 +91,14 @@ public interface StockRepository extends JpaRepository<StockEntity, Long> {
 			CROSS JOIN color_info c
 			LEFT JOIN stock_info s ON s.design_id = d.id AND s.color_id = c.id
 			WHERE d.description LIKE :designName
-			  AND c.colorname LIKE :colorName
+			  AND c.color_name LIKE :colorName
 			""", nativeQuery = true)
 	public int getDesignStockCount(@Param("designName") String designName, @Param("colorName") String colorName);
 
 	@Query(value = """
 			SELECT
 			    UPPER(d.design) AS designName,
-			    UPPER(c.colorname) AS colorName,
+			    UPPER(c.color_name) AS colorName,
 			    COALESCE(s.balance, 0) AS stockBalance
 			FROM
 			    design_info d
@@ -109,7 +109,7 @@ public interface StockRepository extends JpaRepository<StockEntity, Long> {
 			WHERE
 			    d.description LIKE :designName
 			    AND
-			    c.colorname LIKE :colorName
+			    c.color_name LIKE :colorName
 			LIMIT :pageSize OFFSET :pageCount
 			""", nativeQuery = true)
 	public List<DesignStockReportVo> getDesignStockReport(@Param("designName") String designName,

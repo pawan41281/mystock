@@ -55,10 +55,10 @@ public interface ContractorStockRepository extends JpaRepository<ContractorStock
 	@Query(value = """
 			SELECT
 			  c.id AS contractorId,
-			  UPPER(c.contractorname) AS contractorName,
+			  UPPER(c.contractor_name) AS contractorName,
 			  d.id AS designId,
 			  UPPER(d.design) AS designName,
-			  UPPER(clr.colorname) AS colorName,
+			  UPPER(clr.color_name) AS colorName,
 			  COALESCE(cs.obalance, 0) AS openingBalance,
 			  COALESCE(cs.balance, 0) AS closingBalance
 			FROM
@@ -70,11 +70,11 @@ public interface ContractorStockRepository extends JpaRepository<ContractorStock
 			LEFT JOIN
 			  contractor_stock_info cs ON cs.contractor_id = c.id AND cs.design_id = d.id AND cs.color_id = clr.id
 			WHERE
-			  c.contractorname like :contractorName
+			  c.contractor_name like :contractorName
 			  AND
 			  d.description LIKE :designName
 			  AND
-			  clr.colorname LIKE :colorName
+			  clr.color_name LIKE :colorName
 			""", nativeQuery = true)
 	public List<ContractorStockReportVo> getContractorStockReport(String contractorName, String designName,
 			String colorName);
@@ -82,10 +82,10 @@ public interface ContractorStockRepository extends JpaRepository<ContractorStock
 	@Query(value = """
 			SELECT
 			  c.id AS contractorId,
-			  UPPER(c.contractorname) AS contractorName,
+			  UPPER(c.contractor_name) AS contractorName,
 			  d.id AS designId,
 			  UPPER(d.design) AS designName,
-			  UPPER(clr.colorname) AS colorName,
+			  UPPER(clr.color_name) AS colorName,
 			  COALESCE(cs.obalance, 0) AS openingBalance,
 			  COALESCE(cs.balance, 0) AS closingBalance
 			FROM
@@ -97,11 +97,11 @@ public interface ContractorStockRepository extends JpaRepository<ContractorStock
 			LEFT JOIN
 			  contractor_stock_info cs ON cs.contractor_id = c.id AND cs.design_id = d.id AND cs.color_id = clr.id
 			WHERE
-			  c.contractorname like :contractorName
+			  c.contractor_name like :contractorName
 			  AND
 			  d.description LIKE :designName
 			  AND
-			  clr.colorname LIKE :colorName
+			  clr.color_name LIKE :colorName
 			  AND
 			  cs.balance<>0
 			""", nativeQuery = true)
@@ -111,10 +111,10 @@ public interface ContractorStockRepository extends JpaRepository<ContractorStock
 	@Query(value = """
 			SELECT
 			  c.id AS contractorId,
-			  UPPER(c.contractorname) AS contractorName,
+			  UPPER(c.contractor_name) AS contractorName,
 			  d.id AS designId,
 			  UPPER(d.design) AS designName,
-			  UPPER(clr.colorname) AS colorName,
+			  UPPER(clr.color_name) AS colorName,
 			  COALESCE(cs.obalance, 0) AS openingBalance,
 			  COALESCE(cs.balance, 0) AS closingBalance
 			FROM
@@ -126,11 +126,11 @@ public interface ContractorStockRepository extends JpaRepository<ContractorStock
 			LEFT JOIN
 			  contractor_stock_info cs ON cs.contractor_id = c.id AND cs.design_id = d.id AND cs.color_id = clr.id
 			WHERE
-			  c.contractorname like :contractorName
+			  c.contractor_name like :contractorName
 			  AND
 			  d.description LIKE :designName
 			  AND
-			  clr.colorname LIKE :colorName
+			  clr.color_name LIKE :colorName
 			LIMIT :pageSize OFFSET :pageCount
 			""", nativeQuery = true)
 	public List<ContractorStockReportVo> getContractorStockReport(@Param("contractorName") String contractorName,
@@ -149,11 +149,11 @@ public interface ContractorStockRepository extends JpaRepository<ContractorStock
 			LEFT JOIN
 			  contractor_stock_info cs ON cs.contractor_id = c.id AND cs.design_id = d.id AND cs.color_id = clr.id
 			WHERE
-			  c.contractorname like :contractorName
+			  c.contractor_name like :contractorName
 			  AND
 			  d.description LIKE :designName
 			  AND
-			  clr.colorname LIKE :colorName
+			  clr.color_name LIKE :colorName
 			""", nativeQuery = true)
 	public int getContractorStockCount(String contractorName, String designName, String colorName);
 

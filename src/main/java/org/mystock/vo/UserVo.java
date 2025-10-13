@@ -22,7 +22,7 @@ public class UserVo {
 	@Schema(description = "Unique user identifier used for login or internal mapping", example = "USR001")
 	private String userId;
 
-	@Schema(description = "Email address of the user", example = "john.doe@example.com")
+	@Schema(description = "Email address of the user", example = "pawankumar@ymail.com")
 	private String email;
 
 	@Schema(description = "Mobile number of the user", example = "9876543210")
@@ -40,11 +40,6 @@ public class UserVo {
 
 	@Schema(description = "Roles assigned to the user")
 	private Set<RoleVo> roles;
-
-	public String getPassword() {
-		// Hide actual password when serializing
-		return "********";
-	}
 
 	public UserVo(String name, String userId, String email, String password) {
 		this.name = name;

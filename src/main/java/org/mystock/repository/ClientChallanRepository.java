@@ -41,24 +41,24 @@ public interface ClientChallanRepository extends JpaRepository<ClientChallanEnti
 	public List<ClientChallanEntity> getRecentChallans(@Param("challanDate") LocalDate challanDate,
 			@Param("challanType") String challanType);
 
-	@Query(value = "SELECT COUNT(*) FROM CLIENT_CHALLAN_INFO WHERE CHALLANDATE >= DATE_FORMAT(CURRENT_DATE, '%Y-%m-01') AND CHALLANDATE < DATE_FORMAT(CURRENT_DATE + INTERVAL 1 MONTH, '%Y-%m-01') AND CHALLANTYPE = :challanType", nativeQuery = true)
+	@Query(value = "SELECT COUNT(*) FROM CLIENT_CHALLAN_INFO WHERE CHALLAN_DATE >= DATE_FORMAT(CURRENT_DATE, '%Y-%m-01') AND CHALLAN_DATE < DATE_FORMAT(CURRENT_DATE + INTERVAL 1 MONTH, '%Y-%m-01') AND CHALLANTYPE = :challanType", nativeQuery = true)
 	Integer getCurrentMonthChallanCount(@Param("challanType") String challanType);
 
 	@Query(value = """
-			SELECT challantype as challanType,
+			SELECT challan_type as challanType,
 			count(*) as ChallanCount
 			FROM CLIENT_CHALLAN_INFO
-			WHERE CHALLANDATE >= DATE_FORMAT(CURRENT_DATE, '%Y-%m-01')
-			AND CHALLANDATE < DATE_FORMAT(CURRENT_DATE + INTERVAL 1 MONTH, '%Y-%m-01')
+			WHERE CHALLAN_DATE >= DATE_FORMAT(CURRENT_DATE, '%Y-%m-01')
+			AND CHALLAN_DATE < DATE_FORMAT(CURRENT_DATE + INTERVAL 1 MONTH, '%Y-%m-01')
 			GROUP BY CHALLANTYPE
 			""", nativeQuery = true)
 	public List<DashboardCurrentMonthClientCardVo> getCurrentMonthChallanCount();
 
 	@Query(value = """
-			SELECT challantype as challanType,
+			SELECT challan_type as challanType,
 			count(*) as ChallanCount
 			FROM CLIENT_CHALLAN_INFO
-			WHERE CHALLANDATE = (CURRENT_DATE-1)
+			WHERE CHALLAN_DATE = (CURRENT_DATE-1)
 			GROUP BY CHALLANTYPE
 			""", nativeQuery = true)
 	public List<DashboardPreviousDayClientCardVo> getPreviousDayChallanCount();
@@ -70,19 +70,19 @@ public interface ClientChallanRepository extends JpaRepository<ClientChallanEnti
 			    COALESCE(SUM(CASE WHEN src.movement_type = 'CLIENT_RECEIVED' THEN src.total_items END), 0) AS ReceivedQuantity
 			FROM (
 			    -- CLIENT ISSUED
-			    SELECT DATE(c.challandate) AS challan_day, 'CLIENT_ISSUED' AS movement_type, SUM(i.quantity) AS total_items
+			    SELECT DATE(c.challan_date) AS challan_day, 'CLIENT_ISSUED' AS movement_type, SUM(i.quantity) AS total_items
 			    FROM client_challan_info c
 			    JOIN client_challan_item_info i ON c.id = i.challan_id
-			    WHERE c.challandate >= CURRENT_DATE - INTERVAL 7 DAY AND c.challantype = 'I'
+			    WHERE c.challan_date >= CURRENT_DATE - INTERVAL 7 DAY AND c.challan_type = 'I'
 			    GROUP BY challan_day
 
 			    UNION ALL
 			    -- CLIENT RECEIVED
-			    SELECT DATE(c.challandate), 'CLIENT_RECEIVED', SUM(i.quantity)
+			    SELECT DATE(c.challan_date), 'CLIENT_RECEIVED', SUM(i.quantity)
 			    FROM client_challan_info c
 			    JOIN client_challan_item_info i ON c.id = i.challan_id
-			    WHERE c.challandate >= CURRENT_DATE - INTERVAL 7 DAY AND c.challantype = 'R'
-			    GROUP BY DATE(c.challandate)
+			    WHERE c.challan_date >= CURRENT_DATE - INTERVAL 7 DAY AND c.challan_type = 'R'
+			    GROUP BY DATE(c.challan_date)
 			) src
 			RIGHT JOIN (
 			    -- generate last 7 days (so days with 0 items still appear)

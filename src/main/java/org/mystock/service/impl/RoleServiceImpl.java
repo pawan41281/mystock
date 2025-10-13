@@ -26,19 +26,19 @@ public class RoleServiceImpl implements RoleService {
 		log.info("Initializing default roles...");
 
 		RoleEntity admin = repository.findByNameIgnoreCase("ROLE_ADMIN");
-		log.info("Admin Role Found :: {}", admin != null ? admin : "Not exist");
+		//log.info("Admin Role Found :: {}", admin != null ? admin : "Not exist");
 
 		RoleEntity user = repository.findByNameIgnoreCase("ROLE_USER");
-		log.info("User Role Found :: {}", user != null ? user : "Not exist");
+		//log.info("User Role Found :: {}", user != null ? user : "Not exist");
 
 		if (admin == null) {
 			admin = repository.save(new RoleEntity(null, "ROLE_ADMIN"));
-			log.info("Role Created :: {}", admin);
+			//log.info("Role Created :: {}", admin);
 		}
 
 		if (user == null) {
 			user = repository.save(new RoleEntity(null, "ROLE_USER"));
-			log.info("Role Created :: {}", user);
+			//log.info("Role Created :: {}", user);
 		}
 	}
 

@@ -32,7 +32,7 @@ public interface ClientOrderRepository extends JpaRepository<ClientOrderEntity, 
 			""")
 	public List<ClientOrderEntity> getRecentOrders(@Param("orderDate") LocalDate orderDate);
 
-	@Query(value = "SELECT COUNT(*) FROM CLIENT_ORDER_INFO WHERE ORDERDATE >= DATE_FORMAT(CURRENT_DATE, '%Y-%m-01') AND ORDERDATE < DATE_FORMAT(CURRENT_DATE + INTERVAL 1 MONTH, '%Y-%m-01')", nativeQuery = true)
+	@Query(value = "SELECT COUNT(*) FROM CLIENT_ORDER_INFO WHERE ORDER_DATE >= DATE_FORMAT(CURRENT_DATE, '%Y-%m-01') AND ORDER_DATE < DATE_FORMAT(CURRENT_DATE + INTERVAL 1 MONTH, '%Y-%m-01')", nativeQuery = true)
 	Integer getCurrentMonthOrderCount();
 
 }
