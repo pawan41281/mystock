@@ -72,4 +72,5 @@ public class UserVo {
 		this.password = password;
 		this.locked = locked != null ? locked : false;
 	}
+
 }

@@ -110,10 +110,10 @@ public class MenuGroupServiceImpl implements MenuGroupService {
 
 		menuGroup = new MenuGroupEntity("usermanagement","User Management","group","icon-navigation");
 		menuItem = new MenuItemEntity("newuser", "New User", "item", "nav-item", "/newuser", "ant-design", false, menuGroup);
-		menuItem2 = new MenuItemEntity("searchuser", "Search User", "item", "nav-item", "/searchuser", "ant-design", false, menuGroup);
+		//menuItem2 = new MenuItemEntity("searchuser", "Search User", "item", "nav-item", "/searchuser", "ant-design", false, menuGroup);
 		menuItems = new ArrayList<MenuItemEntity>();
 		menuItems.add(menuItem);
-		menuItems.add(menuItem2);
+		//menuItems.add(menuItem2);
 		menuGroup.setChildren(menuItems);
 		if(!menuGroupRepository.existsByIdIgnoreCaseAndTitleIgnoreCase(menuGroup.getId(),menuGroup.getTitle()))
 			menuGroupRepository.save(menuGroup);

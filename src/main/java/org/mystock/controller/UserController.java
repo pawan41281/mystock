@@ -27,6 +27,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -260,6 +261,15 @@ public class UserController {
 
 		try {
 			List<UserVo> list = userService.find(userId, email, mobile);
+			if(!list.isEmpty()){
+				List<UserVo> tmpList = new ArrayList<>();
+				list.stream().forEach(obj -> {
+					obj.setPassword("********");
+					tmpList.add(obj);
+				});
+				list.clear();
+				list.addAll(tmpList);
+			}
 			String message = !list.isEmpty() ? "Users exist" : "No users found";
 			Map<String, String> metadata = new HashMap<>();
 			metadata.put("recordCount", String.valueOf(list.size()));
