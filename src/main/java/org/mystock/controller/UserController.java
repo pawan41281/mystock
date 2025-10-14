@@ -268,7 +268,7 @@ public class UserController {
 					tmpList.add(obj);
 				});
 				list.clear();
-				list.addAll(tmpList);
+				boolean b = list.addAll(tmpList);
 			}
 			String message = !list.isEmpty() ? "Users exist" : "No users found";
 			Map<String, String> metadata = new HashMap<>();
