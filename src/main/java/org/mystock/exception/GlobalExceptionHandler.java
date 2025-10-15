@@ -19,7 +19,7 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(ResourceAlreadyExistsException.class)
 	public ResponseEntity<ApiResponseVo<?>> handleRecordAlreadyExistsException(ResourceAlreadyExistsException ex) {
-		ApiResponseVo<Object> apiResponseVo = new ApiResponseVo<Object>("error", ex.getMessage(), null, null);
+		ApiResponseVo<Object> apiResponseVo = new ApiResponseVo<Object>("error", ex.getMessage(), ex.getObject(), null);
 		return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponseVo);
 	}
 

@@ -9,6 +9,8 @@ import java.util.List;
 
 public interface UserService {
 
+	public UserVo findById(Long id) throws ResourceNotFoundException;
+
 	public UserVo findByUserId(String userName) throws ResourceNotFoundException;
 
 	public UserVo findByEmail(String email) throws ResourceNotFoundException;
@@ -18,6 +20,8 @@ public interface UserService {
 	public UserVo save(UserVo UserVo) throws UnableToProcessException, ResourceAlreadyExistsException;
 
 	public UserVo update(UserVo UserVo) throws UnableToProcessException, ResourceNotFoundException;
+
+	public boolean updateStatus(Long id, boolean status) throws UnableToProcessException, ResourceNotFoundException;
 
 	public boolean existsByUserId(String userName) throws ResourceNotFoundException;
 

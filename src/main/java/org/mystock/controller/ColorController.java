@@ -2,8 +2,6 @@ package org.mystock.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.extensions.Extension;
-import io.swagger.v3.oas.annotations.extensions.ExtensionProperty;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
@@ -32,13 +30,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Tag(
 		name = "Color Operations",
-		description = "Endpoints for performing CRUD operations on Color records.",
-		extensions = {
-				@Extension(
-						name = "x-order",
-						properties = { @ExtensionProperty(name = "position", value = "3") }
-				)
-		}
+		description = "Endpoints for performing CRUD operations on Color records."
 )
 @Slf4j
 @SecurityRequirement(name = "Bearer Authentication")
@@ -55,8 +47,6 @@ public class ColorController {
 	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<ColorVo>> save(@RequestBody ColorVo vo) {
 		log.info("Received request for save :: {}", vo);
-		if (vo.getId() != null && vo.getId().equals(0L))
-			vo.setId(null);
 		ColorVo saved = colorService.save(vo);
 		if (saved != null && saved.getId() != null) {
 			log.info("Record saved");

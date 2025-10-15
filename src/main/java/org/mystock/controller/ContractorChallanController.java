@@ -3,7 +3,6 @@ package org.mystock.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -49,16 +48,7 @@ public class ContractorChallanController {
 	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<ContractorChallanVo>> save(
 			@Valid @RequestBody
-			@Parameter(description = "Contractor challan request object", required = true,
-					examples = @ExampleObject(value = """
-							{
-							  "challanNumber": 101,
-							  "challanType": "I",
-							  "contractorId": 5,
-							  "challanDate": "2025-10-05",
-							  "remarks": "Issue material for project A"
-							}
-							""")) ContractorChallanVo vo) {
+			@Parameter(description = "Contractor challan request object", required = true) ContractorChallanVo vo) {
 
 		log.info("Received request for save");
 		if (vo.getId() != null && vo.getId().equals(0L)) vo.setId(null);
@@ -104,9 +94,6 @@ public class ContractorChallanController {
 	@Operation(
 			summary = "Delete contractor challan",
 			description = "Deletes a contractor challan by its ID.",
-			parameters = {
-					@Parameter(name = "id", description = "Challan ID to delete", example = "10")
-			},
 			responses = {
 					@ApiResponse(responseCode = "200", description = "Record deleted successfully"),
 					@ApiResponse(responseCode = "404", description = "Record not found", content = @Content)
@@ -129,9 +116,6 @@ public class ContractorChallanController {
 	@Operation(
 			summary = "Get contractor challan by ID",
 			description = "Fetches a contractor challan record using its ID.",
-			parameters = {
-					@Parameter(name = "id", description = "Challan ID to fetch", example = "101")
-			},
 			responses = {
 					@ApiResponse(responseCode = "200", description = "Record found successfully"),
 					@ApiResponse(responseCode = "404", description = "Record not found", content = @Content)
@@ -157,13 +141,6 @@ public class ContractorChallanController {
 					Fetches contractor challan records filtered by challan number, contractor ID, 
 					challan date range (max 90 days), and challan type (I/R).
 					""",
-			parameters = {
-					@Parameter(name = "challannumber", description = "Challan number", example = "105"),
-					@Parameter(name = "contractorid", description = "Contractor ID", example = "5"),
-					@Parameter(name = "fromchallandate", description = "Start challan date (YYYY-MM-DD)", example = "2025-09-01"),
-					@Parameter(name = "tochallandate", description = "End challan date (YYYY-MM-DD)", example = "2025-10-01"),
-					@Parameter(name = "challantype", description = "Type of challan (I - Issue, R - Received)", example = "I")
-			},
 			responses = {
 					@ApiResponse(responseCode = "200", description = "Records fetched successfully"),
 					@ApiResponse(responseCode = "400", description = "Invalid date range or parameters", content = @Content)

@@ -17,4 +17,9 @@ public class RoleVo {
 
 	@JsonIgnore
 	private UserVo user;
+
+	public RoleVo(Long id, String name){
+		this.id=id;
+		this.name=name;
+	}
 }

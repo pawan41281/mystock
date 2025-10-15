@@ -1,5 +1,6 @@
 package org.mystock.vo;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -32,12 +33,16 @@ public class ContractorChallanVo {
 	@NotBlank
 	@Pattern(regexp = "I|R")
 	private String challanType;//I - Issue  R - Received
-	
+
+	//This allows input but hides it in responses
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private LocalDateTime createdOn = LocalDateTime.now();
 	
 	@ToString.Exclude
 	@EqualsAndHashCode.Exclude
 	private Set<ContractorChallanItemVo> challanItems;
 
+	//This allows input but hides it in responses
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private UserVo user;
 }

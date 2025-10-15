@@ -114,11 +114,11 @@ public class AuthServiceImpl implements AuthService {
             throws UnableToProcessException, ResourceAlreadyExistsException {
 
         if (existsByUserId(signUpRequestVo.getUserId())) {
-            throw new ResourceAlreadyExistsException("UserId is already exists");
+            throw new ResourceAlreadyExistsException("UserId is already exists",signUpRequestVo);
         }
 
         if (existsByEmail(signUpRequestVo.getEmail())) {
-            throw new ResourceAlreadyExistsException("Email is already exists");
+            throw new ResourceAlreadyExistsException("Email is already exists",signUpRequestVo);
         }
 
         try {

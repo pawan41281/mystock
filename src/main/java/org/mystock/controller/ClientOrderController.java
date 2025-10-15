@@ -1,8 +1,6 @@
 package org.mystock.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.extensions.Extension;
-import io.swagger.v3.oas.annotations.extensions.ExtensionProperty;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -34,13 +32,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Tag(
 		name = "Client Order Operations",
-		description = "Endpoints for performing CRUD operations on Client Orders.",
-		extensions = {
-				@Extension(
-						name = "x-order",
-						properties = { @ExtensionProperty(name = "position", value = "2") }
-				)
-		}
+		description = "Endpoints for performing CRUD operations on Client Orders."
 )
 @Slf4j
 @SecurityRequirement(name = "Bearer Authentication")

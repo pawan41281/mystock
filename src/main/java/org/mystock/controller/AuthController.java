@@ -63,7 +63,7 @@ public class AuthController {
         log.info("Received request for login :: {}", loginVo.getUserId());
         try {
             Authentication authentication = authService.authenticate(loginVo);
-
+            log.info("authentication.isAuthenticated()::{}",authentication.isAuthenticated());
             String accessToken = jwtTokenProvider.generateAccessToken(authentication);
             String refreshToken = jwtTokenProvider.generateRefreshToken(authentication);
 

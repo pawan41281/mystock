@@ -16,8 +16,8 @@ public class UserMapper {
 
 	private final ModelMapper modelMapper;
 
-	public UserVo convert(UserEntity user) {
-		return modelMapper.map(user, UserVo.class);
+	public UserVo convert(UserEntity userEntity) {
+		return modelMapper.map(userEntity, UserVo.class);
 	}
 
 	public SignupRequestVo toSignupRequestVo(UserEntity user) {

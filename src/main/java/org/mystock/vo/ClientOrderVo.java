@@ -1,5 +1,6 @@
 package org.mystock.vo;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -27,11 +28,15 @@ public class ClientOrderVo {
 	@NotNull
 	private ClientVo client;
 
+	//This allows input but hides it in responses
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private LocalDateTime createdOn;
 	
 	@ToString.Exclude
 	@EqualsAndHashCode.Exclude
 	private Set<ClientOrderItemVo> orderItems;
 
+	//This allows input but hides it in responses
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private UserVo user;
 }

@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -36,11 +37,11 @@ public class UserServiceImpl implements UserService {
 	public UserVo save(UserVo userVo) throws UnableToProcessException, ResourceAlreadyExistsException {
 
 		if (existsByUserId(userVo.getUserId())) {
-			throw new ResourceAlreadyExistsException("UserId is already exists");
+			throw new ResourceAlreadyExistsException("UserId is already exists",userVo);
 		}
 
 		if (existsByEmail(userVo.getEmail())) {
-			throw new ResourceAlreadyExistsException("Email is already exists");
+			throw new ResourceAlreadyExistsException("Email is already exists",userVo);
 		}
 
 		try {
@@ -91,7 +92,7 @@ public class UserServiceImpl implements UserService {
 		// Update existing user's account
 		UserEntity existingUser = null;
 		UserEntity user = userMapper.convert(userVo);
-		existingUser = userRepository.findByUserId(userVo.getUserId());
+		existingUser = userRepository.findById(userVo.getId()).get();
 
 		if (existingUser == null) {
 			throw new ResourceNotFoundException("UserId not exists");
@@ -112,7 +113,10 @@ public class UserServiceImpl implements UserService {
 		existingUser.setLocked(user.isLocked());
 
 		if (user.getRoles() != null && !user.getRoles().isEmpty()) {
-			existingUser.setRoles(user.getRoles());
+			RoleEntity roleEntity = roleRepository.findByNameIgnoreCase(userVo.getRoles().stream().findFirst().orElseThrow().getName());
+			Set<RoleEntity> roles = new HashSet<>();
+			roles.add(roleEntity);
+			existingUser.setRoles(roles);
 		}
 
 		try {
@@ -122,6 +126,17 @@ public class UserServiceImpl implements UserService {
 		} catch (Exception e) {
 			throw new UnableToProcessException("User not updated");
 		}
+	}
+
+	@Override
+	public boolean updateStatus(Long id, boolean status) throws UnableToProcessException, ResourceNotFoundException {
+		// check existing user's account
+		if(userRepository.existsById(id)){
+			userRepository.updateStatus(id,status);
+		}else{
+			throw new ResourceNotFoundException("User not exists");
+		}
+		return true;
 	}
 
 	@Override
@@ -151,6 +166,15 @@ public class UserServiceImpl implements UserService {
 			return list.stream().map(userMapper::convert).collect(Collectors.toList());
 		else
 			throw new ResourceNotFoundException("Record not exists");
+	}
+
+	@Override
+	public UserVo findById(Long id) throws ResourceNotFoundException {
+		Optional<UserEntity> user = userRepository.findById(id);
+		if (user.isPresent())
+			return userMapper.convert(user.get());
+		else
+			throw new ResourceNotFoundException("UserId not exists");
 	}
 
 	@Override

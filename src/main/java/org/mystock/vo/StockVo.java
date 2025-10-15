@@ -1,12 +1,9 @@
 package org.mystock.vo;
 
-import java.time.LocalDateTime;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.*;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -20,6 +17,10 @@ public class StockVo {
 	private ColorVo color;
 	private Integer openingBalance=0;
 	private Integer balance=0;
+	//This allows input but hides it in responses
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private LocalDateTime updatedOn = LocalDateTime.now();
+	//This allows input but hides it in responses
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private LocalDateTime createdOn = LocalDateTime.now();
 }

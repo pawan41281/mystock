@@ -1,12 +1,6 @@
 package org.mystock.service.impl;
 
-import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
+import lombok.AllArgsConstructor;
 import org.mystock.entity.ColorEntity;
 import org.mystock.exception.BusinessException;
 import org.mystock.exception.ResourceNotFoundException;
@@ -16,7 +10,12 @@ import org.mystock.service.ColorService;
 import org.mystock.vo.ColorVo;
 import org.springframework.stereotype.Service;
 
-import lombok.AllArgsConstructor;
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -27,37 +26,40 @@ public class ColorServiceImpl implements ColorService {
 
 	@Override
 	public ColorVo save(ColorVo colorVo) {
-		if (colorVo.getId() != null) {// update request
-			ColorVo existingVo = getById(colorVo.getId());
-			if (existingVo == null)
+
+		if (colorVo.getId() != null && !colorVo.getId().equals(0L)) {// update request
+			ColorVo existingVoById = getById(colorVo.getId());
+			if (existingVoById == null)
 				throw new ResourceNotFoundException("Invalid ID :: ".concat(String.valueOf(colorVo.getId())));
 			if (colorVo.getColorName() == null)
-				colorVo.setColorName(existingVo.getColorName());
+				colorVo.setColorName(existingVoById.getColorName());
 			if (colorVo.getActive() == null)
-				colorVo.setActive(existingVo.getActive());
-			colorVo.setCreatedOn(existingVo.getCreatedOn());
-		} else if (colorVo.getId() == null && colorVo.getColorName()!=null) {// update request where name already exist in DB
-			ColorVo existingVo = findByNameIgnoreCase(colorVo.getColorName());
-			if (existingVo != null) {
-				//Update Request
-				colorVo.setId(existingVo.getId());
-				if (colorVo.getActive() == null)
-					colorVo.setActive(existingVo.getActive());
-				colorVo.setCreatedOn(existingVo.getCreatedOn());
-			} else {
-				//New Request
-				colorVo.setId(null);
-				colorVo.setActive(Boolean.TRUE);
-				colorVo.setCreatedOn(LocalDateTime.now());
-			}
-		} else {// new request
-			colorVo.setId(null);
-			colorVo.setActive(Boolean.TRUE);
-			colorVo.setCreatedOn(LocalDateTime.now());
-			
+				colorVo.setActive(existingVoById.getActive());
+			colorVo.setCreatedOn(existingVoById.getCreatedOn());
+			colorVo.setUser(existingVoById.getUser());
+			ColorEntity colorEntity = colorMapper.toEntity(colorVo);
+			ColorEntity saved = colorRepository.save(colorEntity);
+			colorVo = colorMapper.toVo(saved);
+			return colorVo;
 		}
-		ColorEntity saved = colorRepository.save(colorMapper.toEntity(colorVo));
-		return colorMapper.toVo(saved);
+
+		ColorVo existingVoByName = findByNameIgnoreCase(colorVo.getColorName());
+		if (existingVoByName != null) {
+			existingVoByName.setActive(colorVo.getActive());
+			ColorEntity colorEntity = colorMapper.toEntity(existingVoByName);
+			ColorEntity saved = colorRepository.save(colorEntity);
+			colorVo = colorMapper.toVo(saved);
+			return colorVo;
+		}
+
+		//New Request
+		colorVo.setId(null);
+		colorVo.setActive(Boolean.TRUE);
+		colorVo.setCreatedOn(LocalDateTime.now());
+		ColorEntity colorEntity = colorMapper.toEntity(colorVo);
+		ColorEntity saved = colorRepository.save(colorEntity);
+		colorVo = colorMapper.toVo(saved);
+		return colorVo;
 	}
 
 	@Override

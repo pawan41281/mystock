@@ -3,9 +3,6 @@ package org.mystock.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.ExampleObject;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -49,50 +46,10 @@ public class UserController {
 	// ----------------------------
 	@Operation(
 			summary = "Create a new user",
-			description = "Creates a new user record. Only accessible to users with ADMIN role.",
-			requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-					required = true,
-					description = "User details to be created",
-					content = @Content(
-							schema = @Schema(implementation = UserVo.class),
-							examples = @ExampleObject(value = """
-                                    {
-                                      "userId": "USR001",
-                                      "name": "John Doe",
-                                      "email": "john@example.com",
-                                      "mobile": "9876543210",
-                                      "password": "Test@123",
-                                      "roles": [
-									                        {
-									                          "name": "ROLE_USER"
-									                        }
-									                      ]
-                                    }
-                                    """)
-					)
-			)
+			description = "Creates a new user record. Only accessible to users with ADMIN role."
 	)
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = "201", description = "User created successfully",
-					content = @Content(schema = @Schema(implementation = UserVo.class),
-							examples = @ExampleObject(value = """
-                                    {
-                                      "status": "success",
-                                      "message": "User created successfully",
-                                      "data": {
-                                        "id": 1,
-                                        "userId": "USR001",
-                                        "name": "John Doe",
-                                        "email": "john@example.com",
-                                        "mobile": "9876543210",
-                                        "roles": [
-									                          {
-									                            "name": "ROLE_USER"
-									                          }
-									                        ]
-                                      }
-                                    }
-                                    """))),
+			@ApiResponse(responseCode = "201", description = "User created successfully"),
 			@ApiResponse(responseCode = "400", description = "Invalid input data"),
 			@ApiResponse(responseCode = "409", description = "User already exists"),
 			@ApiResponse(responseCode = "500", description = "Internal server error")
@@ -103,11 +60,18 @@ public class UserController {
 			throws UnableToProcessException, ResourceAlreadyExistsException {
 
 		try {
-			if (userVo.getId() != null && userVo.getId().equals(0L)) userVo.setId(null);
-			userVo = userService.save(userVo);
-			if (userVo != null) userVo.setPassword("********");
-			return ResponseEntity.status(201)
-					.body(ApiResponseVoWrapper.success("User created successfully", userVo, null));
+			if (userVo.getId() != null && !userVo.getId().equals(0L)){
+				userVo = userService.update(userVo);
+				if (userVo != null) userVo.setPassword("********");
+				return ResponseEntity.ok(ApiResponseVoWrapper.success("User updated successfully", userVo, null));
+			}
+			else{
+				userVo.setId(null);
+				userVo = userService.save(userVo);
+				if (userVo != null) userVo.setPassword("********");
+				return ResponseEntity.status(201)
+						.body(ApiResponseVoWrapper.success("User created successfully", userVo, null));
+			}
 		} catch (Exception e) {
 			return ResponseEntity.status(200).body(ApiResponseVoWrapper.failure(e.getMessage(), userVo, null));
 		}
@@ -118,32 +82,10 @@ public class UserController {
 	// ----------------------------
 	@Operation(
 			summary = "Update an existing user",
-			description = "Updates an existing user’s details. Accessible to ADMIN or USER roles.",
-			requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-					required = true,
-					description = "User details to update",
-					content = @Content(
-							schema = @Schema(implementation = UserVo.class),
-							examples = @ExampleObject(value = """
-                                    {
-                                      "id": 1,
-                                      "userId": "USR001",
-                                      "name": "John Doe Updated",
-                                      "email": "john.updated@example.com",
-                                      "mobile": "9876543211",
-                                      "roles": [
-									                        {
-									                          "name": "ROLE_USER"
-									                        }
-									                      ]
-                                    }
-                                    """)
-					)
-			)
+			description = "Updates an existing user’s details. Accessible to ADMIN or USER roles."
 	)
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = "200", description = "User updated successfully",
-					content = @Content(schema = @Schema(implementation = UserVo.class))),
+			@ApiResponse(responseCode = "200", description = "User updated successfully"),
 			@ApiResponse(responseCode = "404", description = "User not found"),
 			@ApiResponse(responseCode = "500", description = "Internal server error")
 	})
@@ -169,26 +111,7 @@ public class UserController {
 			description = "Fetches user details using their unique userId. Accessible only to ADMIN role."
 	)
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = "200", description = "User found",
-					content = @Content(schema = @Schema(implementation = UserVo.class),
-							examples = @ExampleObject(value = """
-                                    {
-                                      "status": "success",
-                                      "message": "User exists",
-                                      "data": {
-                                        "id": 1,
-                                        "userId": "USR001",
-                                        "name": "John Doe",
-                                        "email": "john@example.com",
-                                        "mobile": "9876543210",
-                                        "roles": [
-									                          {
-									                            "name": "ROLE_USER"
-									                          }
-									                        ]
-                                      }
-                                    }
-                                    """))),
+			@ApiResponse(responseCode = "200", description = "User found"),
 			@ApiResponse(responseCode = "404", description = "User not found")
 	})
 	@GetMapping("/userid/")
@@ -208,6 +131,33 @@ public class UserController {
 	}
 
 	// ----------------------------
+	// UPDATE STATUS BY USER ID
+	// ----------------------------
+	@Operation(
+			summary = "Update status of exiting user",
+			description = "Update user status. Only accessible to users with ADMIN role."
+	)
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "201", description = "Status updated successfully"),
+			@ApiResponse(responseCode = "400", description = "Invalid input data"),
+			@ApiResponse(responseCode = "500", description = "Internal server error")
+	})
+	@PatchMapping("/{userid}/{status}")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<ApiResponseVo<UserVo>> updateStatus(@PathVariable(name = "userid") Long id, @PathVariable(name="status") boolean status)
+			throws UnableToProcessException, ResourceNotFoundException {
+		try {
+			UserVo userVo = userService.findById(id);
+			userVo.setLocked(status);
+			userService.updateStatus(id,status);
+			return ResponseEntity.status(201)
+					.body(ApiResponseVoWrapper.success("User status updated successfully", userVo, null));
+		} catch (Exception e) {
+			return ResponseEntity.status(200).body(ApiResponseVoWrapper.failure(e.getMessage(), null, null));
+		}
+	}
+
+	// ----------------------------
 	// FIND USERS BY FILTERS
 	// ----------------------------
 	@Operation(
@@ -215,41 +165,7 @@ public class UserController {
 			description = "Fetches all users matching optional parameters like userId, email, or mobile. Accessible only to ADMIN role."
 	)
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = "200", description = "Users fetched successfully",
-					content = @Content(schema = @Schema(implementation = UserVo.class),
-							examples = @ExampleObject(value = """
-                                    {
-                                      "status": "success",
-                                      "message": "Users exist",
-                                      "data": [
-                                        {
-                                          "id": 1,
-                                          "userId": "USR001",
-                                          "name": "John Doe",
-                                          "email": "john@example.com",
-                                          "mobile": "9876543210",
-                                          "roles": [
-									                            {
-									                              "name": "ROLE_USER"
-									                            }
-									                          ]
-                                        },
-                                        {
-                                          "id": 2,
-                                          "userId": "USR002",
-                                          "name": "Jane Smith",
-                                          "email": "jane@example.com",
-                                          "mobile": "9876501234",
-                                          "roles": [
-									                              {
-									                                "name": "ROLE_USER"
-									                              }
-									                            ]
-                                        }
-                                      ],
-                                      "metadata": { "recordCount": "2" }
-                                    }
-                                    """)))
+			@ApiResponse(responseCode = "200", description = "Users fetched successfully")
 	})
 	@GetMapping
 	@PreAuthorize("hasRole('ADMIN')")

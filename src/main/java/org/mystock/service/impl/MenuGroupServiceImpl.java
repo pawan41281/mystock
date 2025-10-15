@@ -120,7 +120,7 @@ public class MenuGroupServiceImpl implements MenuGroupService {
 
 
 		menuGroup = new MenuGroupEntity("reports","Reports","group","icon-navigation");
-		menuItem = new MenuItemEntity("contractoraccounstatement", "Contractor Account Statement", "item", "nav-item", "/contractoraccountstatement", "ant-design", false, menuGroup);
+		menuItem = new MenuItemEntity("contractoraccounstatement", "Account Statement", "item", "nav-item", "/contractoraccountstatement", "ant-design", false, menuGroup);
 		menuItems = new ArrayList<MenuItemEntity>();
 		menuItems.add(menuItem);
 		menuGroup.setChildren(menuItems);
