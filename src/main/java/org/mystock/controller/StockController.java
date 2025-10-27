@@ -78,7 +78,7 @@ public class StockController {
 	public ResponseEntity<ApiResponseVo<StockVo>> save(@Valid @RequestBody StockVo vo) {
 		log.info("Received request to save stock: {}", vo);
 		if (vo.getId() != null && vo.getId().equals(0L)) vo.setId(null);
-		StockVo saved = stockService.addOpenningBalance(vo.getDesign().getId(), vo.getColor().getId(), vo.getOpeningBalance());
+		StockVo saved = stockService.addOpenningBalance(vo.getDesign().getId(), vo.getColor().getId(), vo.getQuality().getId(), vo.getOpeningBalance());
 
 		if (saved != null && saved.getId() != null) {
 			log.info("Record saved");

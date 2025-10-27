@@ -19,7 +19,7 @@ public interface StockRepository extends JpaRepository<StockEntity, Long> {
 	public List<StockEntity> findByDesign_Id(Long designId);
 
 	@Lock(LockModeType.PESSIMISTIC_WRITE)
-	public StockEntity findByDesign_IdAndColor_Id(Long designId, Long colorId);
+	public StockEntity findByDesign_IdAndColor_IdAndQuality_Id(Long designId, Long colorId, Long qualityId);
 
 	@Modifying
 	@Transactional
@@ -28,9 +28,10 @@ public interface StockRepository extends JpaRepository<StockEntity, Long> {
 			SET d.balance = d.balance + :quantity,
 			d.updatedOn = CURRENT_TIMESTAMP
 			WHERE d.design.id = :designId
-			AND d.color.id = :colorId
+			AND d.color.id = :colorId 
+			AND d.quality.id = :qualityId
 			""")
-	public int increaseBalance(Long designId, Long colorId, Integer quantity);
+	public int increaseBalance(Long designId, Long colorId, Long qualityId, Integer quantity);
 
 	@Modifying
 	@Transactional
@@ -39,20 +40,24 @@ public interface StockRepository extends JpaRepository<StockEntity, Long> {
 			SET d.balance = d.balance - :quantity,
 			d.updatedOn = CURRENT_TIMESTAMP
 			WHERE d.design.id = :designId
-			AND d.color.id = :colorId
+			AND d.color.id = :colorId 
+			AND d.quality.id = :qualityId
 			""")
-	public int reduceBalance(Long designId, Long colorId, Integer quantity);
+	public int reduceBalance(Long designId, Long colorId, Long qualityId, Integer quantity);
 
 	@Query(value = """
 			SELECT
 			    UPPER(d.design) AS designName,
 			    UPPER(c.color_name) AS colorName,
+			    UPPER(c.quality_name) AS qualityName,
 			    COALESCE(s.obalance, 0) AS openingBalance,
 			    COALESCE(s.balance, 0) AS closingBalance
 			FROM
 			    design_info d
 			CROSS JOIN
 			    color_info c
+			CROSS JOIN
+			    quality_info q
 			LEFT JOIN
 			    stock_info s ON s.design_id = d.id AND s.color_id = c.id
 			WHERE

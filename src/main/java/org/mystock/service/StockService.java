@@ -1,9 +1,9 @@
 package org.mystock.service;
 
+import org.mystock.vo.StockVo;
+
 import java.util.List;
 import java.util.Set;
-
-import org.mystock.vo.StockVo;
 
 public interface StockService {
 
@@ -17,13 +17,13 @@ public interface StockService {
 
 	public List<StockVo> getAll(Long designId);
 
-	public StockVo get(Long designId, Long colorId);
+	public StockVo get(Long designId, Long colorId, Long qualityId);
 
-	public int increaseBalance(Long designId, Long colorId, Integer quantity);
+	public int increaseBalance(Long designId, Long colorId, Long qualityId, Integer quantity);
 
-	public int reduceBalance(Long designId, Long colorId, Integer quantity);
+	public int reduceBalance(Long designId, Long colorId, Long qualityId, Integer quantity);
 
-	public StockVo addOpenningBalance(Long designId, Long colorId, Integer quantity);
+	public StockVo addOpenningBalance(Long designId, Long colorId, Long qualityId, Integer quantity);
 
 	public List<StockVo> addOpenningBalance(Set<StockVo> vos);
 }

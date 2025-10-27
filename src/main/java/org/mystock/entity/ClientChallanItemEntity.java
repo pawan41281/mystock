@@ -34,6 +34,10 @@ public class ClientChallanItemEntity {
 	@JoinColumn(name = "color_id", nullable = false)
 	private ColorEntity color;
 
+	@ManyToOne
+	@JoinColumn(name = "design_quality_id", nullable = false)
+	private QualityEntity quality;
+
 	@Column(name = "quantity", nullable = false)
 	private Integer quantity;
 

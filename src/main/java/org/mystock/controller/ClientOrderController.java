@@ -59,7 +59,7 @@ public class ClientOrderController {
 					.body(ApiResponseVoWrapper.success("Record saved", saved, metadataGenerator.getMetadata(saved)));
 		} else {
 			log.error("Record not saved :: {}", vo);
-			return ResponseEntity.status(500).body(
+			return ResponseEntity.status(200).body(
 					ApiResponseVoWrapper.success("Record not saved", saved, metadataGenerator.getMetadata(saved)));
 		}
 	}
@@ -80,7 +80,7 @@ public class ClientOrderController {
 					.body(ApiResponseVoWrapper.success("Record saved", saved, metadataGenerator.getMetadata(saved)));
 		} else {
 			log.error("Record not saved");
-			return ResponseEntity.status(500).body(
+			return ResponseEntity.status(200).body(
 					ApiResponseVoWrapper.success("Record not saved", saved, metadataGenerator.getMetadata(saved)));
 		}
 	}
@@ -101,7 +101,7 @@ public class ClientOrderController {
 					ApiResponseVoWrapper.success("Record deleted", deleted, metadataGenerator.getMetadata(deleted)));
 		} else {
 			log.error("Record not deleted :: orderId {}", id);
-			return ResponseEntity.status(500).body(ApiResponseVoWrapper.success("Record not deleted", deleted,
+			return ResponseEntity.status(200).body(ApiResponseVoWrapper.success("Record not deleted", deleted,
 					metadataGenerator.getMetadata(deleted)));
 		}
 	}

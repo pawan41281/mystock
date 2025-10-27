@@ -27,6 +27,9 @@ public class ClientChallanItemVo {
 	
 	@NotNull
 	private ColorVo color;
+
+	@NotNull
+	private QualityVo quality;
 	
 	@NotNull
 	@Min(0)

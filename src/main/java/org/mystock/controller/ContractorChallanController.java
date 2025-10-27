@@ -59,7 +59,7 @@ public class ContractorChallanController {
 					.body(ApiResponseVoWrapper.success("Record saved", saved, metadataGenerator.getMetadata(saved)));
 		} else {
 			log.error("Record not saved");
-			return ResponseEntity.status(500)
+			return ResponseEntity.status(200)
 					.body(ApiResponseVoWrapper.success("Record not saved", saved, metadataGenerator.getMetadata(saved)));
 		}
 	}
@@ -85,7 +85,7 @@ public class ContractorChallanController {
 					.body(ApiResponseVoWrapper.success("Record saved", saved, metadataGenerator.getMetadata(saved)));
 		} else {
 			log.error("Record not saved");
-			return ResponseEntity.status(500)
+			return ResponseEntity.status(200)
 					.body(ApiResponseVoWrapper.success("Record not saved", saved, metadataGenerator.getMetadata(saved)));
 		}
 	}

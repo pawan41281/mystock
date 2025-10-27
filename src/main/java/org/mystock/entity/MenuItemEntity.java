@@ -26,9 +26,21 @@ public class MenuItemEntity {
     private String url;
     private String icon;
     private Boolean breadcrumbs;
+    private Boolean active;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "menu_group_id")
     private MenuGroupEntity menuGroup;
 
+    public MenuItemEntity(String id, String title, String type, String classes, String url, String icon, Boolean breadcrumbs, MenuGroupEntity menuGroup) {
+        this.id = id;
+        this.title = title;
+        this.type = type;
+        this.classes = classes;
+        this.url = url;
+        this.icon = icon;
+        this.breadcrumbs = breadcrumbs;
+        this.active = true;
+        this.menuGroup = menuGroup;
+    }
 }

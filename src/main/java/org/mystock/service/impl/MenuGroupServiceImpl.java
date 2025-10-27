@@ -29,9 +29,16 @@ public class MenuGroupServiceImpl implements MenuGroupService {
 	@Override
 	public List<MenuGroupVo> findAll() throws UnableToProcessException {
 		List<MenuGroupEntity> list = menuGroupRepository.findAll();
+		List<MenuGroupEntity> tmpList = new ArrayList<>();
 
-		if (!list.isEmpty())
-			return list.stream().map(menuGroupMapper::convert).collect(Collectors.toList());
+		if (!list.isEmpty()){
+			list.stream().forEach(mg -> {
+				List<MenuItemEntity> items = mg.getChildren().stream().filter(mi -> mi.getActive()!=null && mi.getActive().equals(true)).collect(Collectors.toList());
+				mg.setChildren(items);
+				tmpList.add(mg);
+			});
+			return tmpList.stream().map(menuGroupMapper::convert).collect(Collectors.toList());
+			}
 		else
 			throw new ResourceNotFoundException("Record not exists");
 	}
@@ -39,9 +46,16 @@ public class MenuGroupServiceImpl implements MenuGroupService {
 	@Override
 	public List<MenuGroupVo> findByIdNotIgnoreCase(String id) throws UnableToProcessException {
 		List<MenuGroupEntity> list = menuGroupRepository.findByIdNotIgnoreCase(id);
+		List<MenuGroupEntity> tmpList = new ArrayList<>(list);
 
-		if (!list.isEmpty())
-			return list.stream().map(menuGroupMapper::convert).collect(Collectors.toList());
+		if (!list.isEmpty()) {
+			list.stream().forEach(mg -> {
+				List<MenuItemEntity> items = mg.getChildren().stream().filter(mi -> mi.getActive()!=null && mi.getActive().equals(true)).collect(Collectors.toList());
+				mg.setChildren(items);
+				tmpList.add(mg);
+			});
+			return tmpList.stream().map(menuGroupMapper::convert).collect(Collectors.toList());
+		}
 		else
 			throw new ResourceNotFoundException("Record not exists");
 	}
@@ -65,20 +79,7 @@ public class MenuGroupServiceImpl implements MenuGroupService {
 		menuItem = new MenuItemEntity("newcontractorchallan", "New Challan (Contractor)", "item", "nav-item", "/newcontractorchallan", "ant-design", true, menuGroup);
 		MenuItemEntity menuItem2 = new MenuItemEntity("newpartychallan", "New Challan (Party)", "item", "nav-item", "/newpartychallan", "ant-design", true, menuGroup);
 		MenuItemEntity menuItem3 = new MenuItemEntity("newpartyorder", "New Order (Party)", "item", "nav-item", "/newpartyorder", "ant-design", true, menuGroup);
-		menuItems = new ArrayList<MenuItemEntity>();
-		menuItems.add(menuItem);
-		menuItems.add(menuItem2);
-		menuItems.add(menuItem3);
-		menuGroup.setChildren(menuItems);
-		if(!menuGroupRepository.existsByIdIgnoreCaseAndTitleIgnoreCase(menuGroup.getId(),menuGroup.getTitle()))
-			menuGroupRepository.save(menuGroup);
-
-
-		menuGroup = new MenuGroupEntity("register","Register","group","icon-navigation");
-		menuItem = new MenuItemEntity("stockregister", "Stock Register", "item", "nav-item", "/stockregister", "ant-design", true, menuGroup);
-		menuItem2 = new MenuItemEntity("contractorstockregister", "Contractor Stock Register", "item", "nav-item", "/contractorstockregister", "ant-design", true, menuGroup);
-		menuItem3 = new MenuItemEntity("partychallanregister", "Party Challan Register", "item", "nav-item", "/partychallanregister", "ant-design", true, menuGroup);
-		MenuItemEntity menuItem4 = new MenuItemEntity("contractorchallanregister", "Contractor Challan Register", "item", "nav-item", "/contractorchallanregister", "ant-design", true, menuGroup);
+		MenuItemEntity menuItem4 = new MenuItemEntity("newcontractorpayment", "New Payment (Contractor)", "item", "nav-item", "/newcontractorpayment", "ant-design", true, menuGroup);
 		menuItems = new ArrayList<MenuItemEntity>();
 		menuItems.add(menuItem);
 		menuItems.add(menuItem2);
@@ -89,13 +90,32 @@ public class MenuGroupServiceImpl implements MenuGroupService {
 			menuGroupRepository.save(menuGroup);
 
 
+		menuGroup = new MenuGroupEntity("register","Register","group","icon-navigation");
+		menuItem = new MenuItemEntity("stockregister", "Stock Register", "item", "nav-item", "/stockregister", "ant-design", true, menuGroup);
+		menuItem2 = new MenuItemEntity("contractorstockregister", "Contractor Stock Register", "item", "nav-item", "/contractorstockregister", "ant-design", true, menuGroup);
+		menuItem3 = new MenuItemEntity("partychallanregister", "Party Challan Register", "item", "nav-item", "/partychallanregister", "ant-design", true, menuGroup);
+		menuItem4 = new MenuItemEntity("orderregister", "Order Register", "item", "nav-item", "/orderregister", "ant-design", true, menuGroup);
+		MenuItemEntity menuItem5 = new MenuItemEntity("contractorchallanregister", "Contractor Challan Register", "item", "nav-item", "/contractorchallanregister", "ant-design", true, menuGroup);
+		MenuItemEntity menuItem6 = new MenuItemEntity("paymentregister", "Payment Register", "item", "nav-item", "/paymentregister", "ant-design", true, menuGroup);
+		menuItems = new ArrayList<MenuItemEntity>();
+		menuItems.add(menuItem);
+		menuItems.add(menuItem2);
+		menuItems.add(menuItem3);
+		menuItems.add(menuItem4);
+		menuItems.add(menuItem5);
+		menuItems.add(menuItem6);
+		menuGroup.setChildren(menuItems);
+		if(!menuGroupRepository.existsByIdIgnoreCaseAndTitleIgnoreCase(menuGroup.getId(),menuGroup.getTitle()))
+			menuGroupRepository.save(menuGroup);
+
+
 		menuGroup = new MenuGroupEntity("masterdata","Master Data","group","icon-navigation");
 		menuItem = new MenuItemEntity("color", "Color", "item", "nav-item", "/color", "ant-design", true, menuGroup);
 		menuItem2 = new MenuItemEntity("design", "Design", "item", "nav-item", "/design", "ant-design", true, menuGroup);
 		menuItem3 = new MenuItemEntity("party", "Party", "item", "nav-item", "/party", "ant-design", true, menuGroup);
 		menuItem4 = new MenuItemEntity("contractor", "Contractor", "item", "nav-item", "/contractor", "ant-design", true, menuGroup);
-		MenuItemEntity menuItem5 = new MenuItemEntity("openingStock", "Design Opening Stock", "item", "nav-item", "/openingstock", "ant-design", true, menuGroup);
-		MenuItemEntity menuItem6 = new MenuItemEntity("contractoropeningstock", "Contractor Opening Stock", "item", "nav-item", "/contractoropeningstock", "ant-design", true, menuGroup);
+		menuItem5 = new MenuItemEntity("openingStock", "Design Opening Stock", "item", "nav-item", "/openingstock", "ant-design", true, menuGroup);
+		menuItem6 = new MenuItemEntity("contractoropeningstock", "Contractor Opening Stock", "item", "nav-item", "/contractoropeningstock", "ant-design", true, menuGroup);
 		menuItems = new ArrayList<MenuItemEntity>();
 		menuItems.add(menuItem);
 		menuItems.add(menuItem2);

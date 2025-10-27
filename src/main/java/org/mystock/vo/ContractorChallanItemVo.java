@@ -23,6 +23,9 @@ public class ContractorChallanItemVo {
 	private ContractorChallanVo contractorChallan;
 
 	@NotNull
+	private QualityVo quality;
+
+	@NotNull
 	private DesignVo design;
 
 	@NotNull

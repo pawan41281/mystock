@@ -99,7 +99,7 @@ public class UserController {
 			if (userVo != null) userVo.setPassword("********");
 			return ResponseEntity.ok(ApiResponseVoWrapper.success("User updated successfully", userVo, null));
 		} catch (Exception e) {
-			return ResponseEntity.status(500).body(ApiResponseVoWrapper.failure(e.getMessage(), userVo, null));
+			return ResponseEntity.status(200).body(ApiResponseVoWrapper.failure(e.getMessage(), userVo, null));
 		}
 	}
 
@@ -126,7 +126,7 @@ public class UserController {
 			String message = userVo != null ? "User exists" : "User not exists";
 			return ResponseEntity.ok(ApiResponseVoWrapper.success(message, userVo, null));
 		} catch (Exception e) {
-			return ResponseEntity.status(500).body(ApiResponseVoWrapper.failure(e.getMessage(), null, null));
+			return ResponseEntity.status(200).body(ApiResponseVoWrapper.failure(e.getMessage(), null, null));
 		}
 	}
 

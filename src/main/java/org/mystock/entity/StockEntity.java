@@ -9,7 +9,7 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "stock_info", uniqueConstraints = @UniqueConstraint(columnNames = {"design_id", "color_id"}))
+@Table(name = "stock_info", uniqueConstraints = @UniqueConstraint(columnNames = {"design_id", "color_id", "quality_id"}))
 @Getter
 @Setter
 @AllArgsConstructor
@@ -19,6 +19,10 @@ public class StockEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+
+	@ManyToOne
+	@JoinColumn(name = "quality_id", nullable = false)
+	private QualityEntity quality;
 
 	@ManyToOne
 	@JoinColumn(name = "design_id", nullable = false)

@@ -61,7 +61,7 @@ public class ContractorPaymentController {
 					.body(ApiResponseVoWrapper.success("Record saved", saved, metadataGenerator.getMetadata(saved)));
 		} else {
 			log.error("Record not saved");
-			return ResponseEntity.status(500)
+			return ResponseEntity.status(200)
 					.body(ApiResponseVoWrapper.success("Record not saved", saved, metadataGenerator.getMetadata(saved)));
 		}
 	}
@@ -87,7 +87,7 @@ public class ContractorPaymentController {
 					.body(ApiResponseVoWrapper.success("Records saved", saved, metadataGenerator.getMetadata(saved)));
 		} else {
 			log.error("Records not saved");
-			return ResponseEntity.status(500)
+			return ResponseEntity.status(200)
 					.body(ApiResponseVoWrapper.success("Records not saved", saved, metadataGenerator.getMetadata(saved)));
 		}
 	}

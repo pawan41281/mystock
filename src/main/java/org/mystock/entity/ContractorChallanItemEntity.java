@@ -27,6 +27,10 @@ public class ContractorChallanItemEntity {
 	private ContractorChallanEntity challan;
 
 	@ManyToOne
+	@JoinColumn(name = "quality_id", nullable = false)
+	private QualityEntity quality;
+
+	@ManyToOne
 	@JoinColumn(name = "design_id", nullable = false)
 	private DesignEntity design;
 

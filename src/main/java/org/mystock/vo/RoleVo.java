@@ -1,6 +1,6 @@
 package org.mystock.vo;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 @ToString
@@ -10,12 +10,12 @@ import lombok.*;
 @AllArgsConstructor
 public class RoleVo {
 
-	@JsonIgnore
+	//@JsonIgnore
 	private Long id;
 
 	private String name;
 
-	@JsonIgnore
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private UserVo user;
 
 	public RoleVo(Long id, String name){

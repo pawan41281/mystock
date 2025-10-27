@@ -1,6 +1,7 @@
 package org.mystock.vo;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -10,18 +11,22 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class StockVo {
+public class QualityVo {
 
 	private Long id;
-	private QualityVo quality;
-	private DesignVo design;
-	private ColorVo color;
-	private Integer openingBalance=0;
-	private Integer balance=0;
+	@NotNull
+	private String qualityName;
+	private Boolean active=true;
+
 	//This allows input but hides it in responses
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-	private LocalDateTime updatedOn = LocalDateTime.now();
+	private LocalDateTime createdOn;
+	
+	public String getQualityName() {
+		return qualityName!=null?qualityName.toUpperCase():"";
+	}
+
 	//This allows input but hides it in responses
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-	private LocalDateTime createdOn = LocalDateTime.now();
+	private UserVo user;
 }

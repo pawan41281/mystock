@@ -66,10 +66,10 @@ public class MenuGroupController {
             List<MenuGroupVo> list;
 
             if (roles.contains("ROLE_ADMIN")) {
-                // ✅ Admin → fetch all menu groups
+                // Admin → fetch all menu groups
                 list = menuGroupService.findAll();
             } else if (roles.contains("ROLE_USER")) {
-                // ✅ User → fetch all except specific menu group (e.g., user management)
+                // User → fetch all except specific menu group (e.g., user management)
                 list = menuGroupService.findByIdNotIgnoreCase("usermanagement");
             } else {
                 throw new ResourceNotFoundException("Unauthorized role access");

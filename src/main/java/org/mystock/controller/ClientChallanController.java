@@ -39,7 +39,7 @@ public class ClientChallanController {
 
 	@PostMapping
 	@Operation(
-			summary = "Create a client challan",
+			summary = "Create a new client challan",
 			description = "Creates a single client challan. Challan Type: `I` (Issue) or `R` (Received)"
 	)
 	@ApiResponses({
@@ -61,17 +61,17 @@ public class ClientChallanController {
 			return ResponseEntity.status(201)
 					.body(ApiResponseVoWrapper.success("Record saved", saved, metadataGenerator.getMetadata(saved)));
 		}
-		return ResponseEntity.status(500)
+		return ResponseEntity.status(200)
 				.body(ApiResponseVoWrapper.success("Record not saved", saved, metadataGenerator.getMetadata(saved)));
 	}
 
 	@PostMapping("/bulk")
 	@Operation(
-			summary = "Create multiple client challans",
-			description = "Creates multiple challans in one request. Challan Type: `I` (Issue) or `R` (Received)"
+			summary = "Create multiple client challan",
+			description = "Creates multiple challan in one request. Challan Type: `I` (Issue) or `R` (Received)"
 	)
 	@ApiResponses({
-			@ApiResponse(responseCode = "201", description = "Challans created successfully"),
+			@ApiResponse(responseCode = "201", description = "Challan created successfully"),
 			@ApiResponse(responseCode = "400", description = "Invalid challan data"),
 			@ApiResponse(responseCode = "500", description = "Internal server error")
 	})
@@ -85,7 +85,7 @@ public class ClientChallanController {
 			return ResponseEntity.status(201)
 					.body(ApiResponseVoWrapper.success("Records saved", saved, metadataGenerator.getMetadata(saved)));
 		}
-		return ResponseEntity.status(500)
+		return ResponseEntity.status(200)
 				.body(ApiResponseVoWrapper.success("Records not saved", saved, metadataGenerator.getMetadata(saved)));
 	}
 
@@ -128,9 +128,9 @@ public class ClientChallanController {
 
 	@GetMapping
 	@Operation(
-			summary = "Search challans by filters",
+			summary = "Search challan by filters",
 			description = """
-					Fetch challans using optional filters:
+					Fetch challan using optional filters:
 					- challanNumber (Integer)
 					- clientId (Long)
 					- orderId (Long)

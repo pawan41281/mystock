@@ -1,13 +1,6 @@
 package org.mystock.service.impl;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
+import lombok.AllArgsConstructor;
 import org.mystock.entity.ClientChallanEntity;
 import org.mystock.entity.ClientOrderEntity;
 import org.mystock.exception.ResourceNotFoundException;
@@ -25,7 +18,13 @@ import org.mystock.vo.StockVo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import lombok.AllArgsConstructor;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -70,9 +69,9 @@ public class ClientChallanServiceImpl implements ClientChallanService {
 					// issuing finished products to client
 					// update the available stock balance :: reduce the available stock :: minus
 					// entry in StockInfo
-					StockVo stockVo = stockService.get(item.getDesign().getId(), item.getColor().getId());
+					StockVo stockVo = stockService.get(item.getDesign().getId(), item.getColor().getId(), item.getQuality().getId());
 					if (stockVo != null) {
-						stockService.reduceBalance(item.getDesign().getId(), item.getColor().getId(),
+						stockService.reduceBalance(item.getDesign().getId(), item.getColor().getId(), item.getQuality().getId(),
 								item.getQuantity());
 					} else {
 						stockVo = new StockVo();
@@ -89,9 +88,9 @@ public class ClientChallanServiceImpl implements ClientChallanService {
 					// received finished products from client because of any reason
 					// update the available stock balance :: increase the available stock :: plus
 					// entry in StockInfo
-					StockVo stockVo = stockService.get(item.getDesign().getId(), item.getColor().getId());
+					StockVo stockVo = stockService.get(item.getDesign().getId(), item.getColor().getId(), item.getQuality().getId());
 					if (stockVo != null) {
-						stockService.increaseBalance(item.getDesign().getId(), item.getColor().getId(),
+						stockService.increaseBalance(item.getDesign().getId(), item.getColor().getId(), item.getQuality().getId(),
 								item.getQuantity());
 					} else {
 						stockVo = new StockVo();
@@ -131,9 +130,9 @@ public class ClientChallanServiceImpl implements ClientChallanService {
 						// update the available stock balance :: reduce the available stock :: minus
 						// entry in StockInfo
 
-						StockVo stockVo = stockService.get(item.getDesign().getId(), item.getColor().getId());
+						StockVo stockVo = stockService.get(item.getDesign().getId(), item.getColor().getId(), item.getQuality().getId());
 						if (stockVo != null) {
-							stockService.reduceBalance(item.getDesign().getId(), item.getColor().getId(),
+							stockService.reduceBalance(item.getDesign().getId(), item.getColor().getId(), item.getQuality().getId(),
 									item.getQuantity());
 						} else {
 							stockVo = new StockVo();
@@ -152,9 +151,9 @@ public class ClientChallanServiceImpl implements ClientChallanService {
 						// update the available stock balance :: increase the available stock :: plus
 						// entry in StockInfo
 
-						StockVo stockVo = stockService.get(item.getDesign().getId(), item.getColor().getId());
+						StockVo stockVo = stockService.get(item.getDesign().getId(), item.getColor().getId(), item.getQuality().getId());
 						if (stockVo != null) {
-							stockService.increaseBalance(item.getDesign().getId(), item.getColor().getId(),
+							stockService.increaseBalance(item.getDesign().getId(), item.getColor().getId(), item.getQuality().getId(),
 									item.getQuantity());
 						} else {
 							stockVo = new StockVo();
@@ -201,9 +200,9 @@ public class ClientChallanServiceImpl implements ClientChallanService {
 						// Reverse entry for issuing finished products to client
 						// update the available stock balance :: increase the available stock :: plus
 						// entry in StockInfo
-						StockVo stockVo = stockService.get(item.getDesign().getId(), item.getColor().getId());
+						StockVo stockVo = stockService.get(item.getDesign().getId(), item.getColor().getId(), item.getQuality().getId());
 						if (stockVo != null) {// reverse entry
-							stockService.increaseBalance(item.getDesign().getId(), item.getColor().getId(),
+							stockService.increaseBalance(item.getDesign().getId(), item.getColor().getId(), item.getQuality().getId(),
 									item.getQuantity());
 						} else {
 							stockVo = new StockVo();
@@ -223,10 +222,10 @@ public class ClientChallanServiceImpl implements ClientChallanService {
 						// update the available stock balance :: increase the available stock :: minus
 						// entry in StockInfo
 
-						StockVo stockVo = stockService.get(item.getDesign().getId(), item.getColor().getId());
+						StockVo stockVo = stockService.get(item.getDesign().getId(), item.getColor().getId(), item.getQuality().getId());
 						if (stockVo != null) {
 							// reverse entry
-							stockService.reduceBalance(item.getDesign().getId(), item.getColor().getId(),
+							stockService.reduceBalance(item.getDesign().getId(), item.getColor().getId(), item.getQuality().getId(),
 									item.getQuantity());
 						} else {
 							stockVo = new StockVo();
