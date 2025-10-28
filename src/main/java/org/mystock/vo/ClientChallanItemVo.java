@@ -35,6 +35,10 @@ public class ClientChallanItemVo {
 	@Min(0)
 	private Integer quantity;
 
+	@NotNull
+	@Min(0)
+	private Float rate;
+
 	//This allows input but hides it in responses
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private LocalDateTime createdOn;

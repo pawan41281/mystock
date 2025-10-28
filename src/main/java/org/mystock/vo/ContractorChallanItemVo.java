@@ -26,6 +26,10 @@ public class ContractorChallanItemVo {
 	private QualityVo quality;
 
 	@NotNull
+	@Min(0)
+	private Float rate;
+
+	@NotNull
 	private DesignVo design;
 
 	@NotNull

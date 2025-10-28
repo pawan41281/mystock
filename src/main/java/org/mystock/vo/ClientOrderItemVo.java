@@ -27,6 +27,13 @@ public class ClientOrderItemVo {
 	
 	@NotNull
 	private ColorVo color;
+
+	@NotNull
+	private QualityVo quality;
+
+	@NotNull
+	@Min(0)
+	private Float rate;
 	
 	@NotNull
 	@Min(0)

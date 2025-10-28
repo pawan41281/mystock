@@ -35,11 +35,14 @@ public class ClientChallanItemEntity {
 	private ColorEntity color;
 
 	@ManyToOne
-	@JoinColumn(name = "design_quality_id", nullable = false)
+	@JoinColumn(name = "quality_id", nullable = false)
 	private QualityEntity quality;
 
 	@Column(name = "quantity", nullable = false)
 	private Integer quantity;
+
+	@Column(name = "rate", nullable = false)
+	private Float rate;
 
 	@Column(name = "created_on", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
 	private LocalDateTime createdOn;

@@ -34,6 +34,13 @@ public class ClientOrderItemEntity {
 	@JoinColumn(name = "color_id", nullable = false)
 	private ColorEntity color;
 
+	@ManyToOne
+	@JoinColumn(name = "quality_id", nullable = false)
+	private QualityEntity quality;
+
+	@Column(name = "rate", nullable = false)
+	private Float rate;
+
 	@Column(name = "quantity", nullable = false)
 	private Integer quantity;
 
