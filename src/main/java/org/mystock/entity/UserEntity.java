@@ -76,4 +76,15 @@ public class UserEntity {
 		this.locked = locked;
 	}
 
+	public UserEntity(Long id, String name, String userId, String email, String mobile, String password, boolean locked) {
+		super();
+		this.id =id;
+		this.name = name;
+		this.userId = userId;
+		this.email = email;
+		this.mobile = mobile;
+		this.password = password;
+		this.locked = locked;
+	}
+
 }

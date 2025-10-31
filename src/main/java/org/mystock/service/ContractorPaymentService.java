@@ -10,15 +10,15 @@ import java.util.Set;
 
 public interface ContractorPaymentService {
 
-    public ContractorPaymentVo save(ContractorPaymentVo vo);
+    ContractorPaymentVo save(ContractorPaymentVo vo);
 
-    public Set<ContractorPaymentVo> saveAll(Set<ContractorPaymentVo> vos);
+    Set<ContractorPaymentVo> saveAll(Set<ContractorPaymentVo> vos);
 
-    public ContractorPaymentVo findById(Long id);
+    ContractorPaymentVo findById(Long id);
 
-    public ContractorPaymentVo deleteById(Long id);
+    ContractorPaymentVo deleteById(Long id);
 
-    public List<ContractorPaymentVo> findAll(@NonNull LocalDate paymentDateStart, @NonNull LocalDate paymentDateEnd,
+    List<ContractorPaymentVo> findAll(@NonNull LocalDate paymentDateStart, @NonNull LocalDate paymentDateEnd,
                                              @Nullable Integer paymentAmountStart, @Nullable Integer paymentAmountEnd,
                                              @Nullable Long id);
 

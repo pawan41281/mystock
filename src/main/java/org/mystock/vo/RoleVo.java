@@ -15,11 +15,14 @@ public class RoleVo {
 
 	private String name;
 
+	private boolean adminrole = false;
+
+	//This allows input but hides it in responses
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private UserVo user;
 
-	public RoleVo(Long id, String name){
-		this.id=id;
-		this.name=name;
-	}
+//	public RoleVo(Long id, String name){
+//		this.id=id;
+//		this.name=name;
+//	}
 }

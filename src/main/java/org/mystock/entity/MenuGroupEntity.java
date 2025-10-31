@@ -27,13 +27,18 @@ public class MenuGroupEntity {
 
     private String icon;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "role_id")
+    private RoleEntity role;
+
     @OneToMany(mappedBy = "menuGroup", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<MenuItemEntity> children;
 
-    public MenuGroupEntity(String id, String title, String type, String icon){
+    public MenuGroupEntity(String id, String title, String type, String icon, RoleEntity role){
         this.id=id;
         this.title=title;
         this.type=type;
         this.icon=icon;
+        this.role = role;
     }
 }

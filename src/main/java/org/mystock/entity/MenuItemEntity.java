@@ -32,7 +32,11 @@ public class MenuItemEntity {
     @JoinColumn(name = "menu_group_id")
     private MenuGroupEntity menuGroup;
 
-    public MenuItemEntity(String id, String title, String type, String classes, String url, String icon, Boolean breadcrumbs, MenuGroupEntity menuGroup) {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "role_id")
+    private RoleEntity role;
+
+    public MenuItemEntity(String id, String title, String type, String classes, String url, String icon, Boolean breadcrumbs, MenuGroupEntity menuGroup, RoleEntity role) {
         this.id = id;
         this.title = title;
         this.type = type;
@@ -42,5 +46,6 @@ public class MenuItemEntity {
         this.breadcrumbs = breadcrumbs;
         this.active = true;
         this.menuGroup = menuGroup;
+        this.role = role;
     }
 }

@@ -7,18 +7,18 @@ import java.util.Set;
 
 public interface QualityService {
 
-	public QualityVo save(QualityVo qualityVo);
+	QualityVo save(QualityVo qualityVo);
 
-	public Set<QualityVo> saveAll(Set<QualityVo> qualityVos);
+	Set<QualityVo> saveAll(Set<QualityVo> qualityVos);
 
-	public List<QualityVo> getAll();
+	List<QualityVo> getAll();
 
-	public List<QualityVo> findByNameIgnoreCaseLike(String qualityName);
+	List<QualityVo> findByNameIgnoreCaseLike(String qualityName);
 
-	public QualityVo findByNameIgnoreCase(String qualityName);
+	QualityVo findByNameIgnoreCase(String qualityName);
 
-	public QualityVo getById(Long id);
+	QualityVo getById(Long id);
 
-	public QualityVo updateStatus(Long id, boolean status);
+	QualityVo updateStatus(Long id, boolean status);
 
 }

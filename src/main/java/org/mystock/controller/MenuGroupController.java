@@ -63,19 +63,9 @@ public class MenuGroupController {
                     .map(GrantedAuthority::getAuthority)
                     .collect(Collectors.toSet());
 
-            List<MenuGroupVo> list;
+            List<MenuGroupVo> list = menuGroupService.findAll(roles);
 
-            if (roles.contains("ROLE_ADMIN")) {
-                // Admin → fetch all menu groups
-                list = menuGroupService.findAll();
-            } else if (roles.contains("ROLE_USER")) {
-                // User → fetch all except specific menu group (e.g., user management)
-                list = menuGroupService.findByIdNotIgnoreCase("usermanagement");
-            } else {
-                throw new ResourceNotFoundException("Unauthorized role access");
-            }
-
-            String message = (list != null && !list.isEmpty()) ? "MenuGroups found" : "No MenuGroups available";
+            String message = (list != null && !list.isEmpty()) ? "Record found" : "Record not found";
 
             Map<String, String> metadata = new HashMap<>();
             metadata.put("recordcount", String.valueOf(list != null ? list.size() : 0));

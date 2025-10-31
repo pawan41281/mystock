@@ -1,21 +1,21 @@
 package org.mystock.service;
 
+import org.mystock.vo.ContractorVo;
+
 import java.util.List;
 import java.util.Set;
 
-import org.mystock.vo.ContractorVo;
-
 public interface ContractorService {
 
-	public ContractorVo save(ContractorVo contractorVo);
+	ContractorVo save(ContractorVo contractorVo);
 	
-	public Set<ContractorVo> saveAll(Set<ContractorVo> contractorVos);
+	Set<ContractorVo> saveAll(Set<ContractorVo> contractorVos);
 
-	public List<ContractorVo> getAll();
+	List<ContractorVo> getAll();
 
-	public ContractorVo getById(Long id);
+	ContractorVo getById(Long id);
 
-	public ContractorVo updateStatus(Long id, boolean status);
+	ContractorVo updateStatus(Long id, boolean status);
 
 	List<ContractorVo> findByContractorNameIgnoreCase(String contractorName);
 
@@ -33,7 +33,7 @@ public interface ContractorService {
 
 	List<ContractorVo> findByActive(boolean active);
 	
-	public List<ContractorVo> find(String clientName, String city, String state, String mobile, String email, String gstNo, Boolean active);
+	List<ContractorVo> find(String clientName, String city, String state, String mobile, String email, String gstNo, Boolean active);
 
 
 }

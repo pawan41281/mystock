@@ -4,5 +4,5 @@ import org.mystock.vo.ClientOrderItemVo;
 
 public interface ClientOrderItemService{
 
-	public ClientOrderItemVo getById(Long id);
+	ClientOrderItemVo getById(Long id);
 }

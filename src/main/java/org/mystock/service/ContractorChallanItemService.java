@@ -4,6 +4,6 @@ import org.mystock.vo.ContractorChallanItemVo;
 
 public interface ContractorChallanItemService{
 	
-	public ContractorChallanItemVo getById(Long id);
+	ContractorChallanItemVo getById(Long id);
 
 }

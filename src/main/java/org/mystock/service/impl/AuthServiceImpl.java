@@ -14,12 +14,9 @@ import org.mystock.repository.UserRepository;
 import org.mystock.security.JwtAuthResponse;
 import org.mystock.security.JwtTokenProvider;
 import org.mystock.service.AuthService;
-import org.mystock.service.RoleService;
 import org.mystock.vo.LoginVo;
 import org.mystock.vo.SignupRequestVo;
 import org.mystock.vo.UserVo;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -38,8 +35,6 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class AuthServiceImpl implements AuthService {
 
-    final String ADMIN = "admin";
-
     private final AuthenticationManager authenticationManager;
 
     private final JwtTokenProvider jwtTokenProvider;
@@ -51,8 +46,6 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder encoder;
 
     private final UserMapper userMapper;
-
-    private final RoleService roleService;
 
     //Token blacklist (thread-safe)
     private final Set<String> invalidatedTokens = ConcurrentHashMap.newKeySet();
@@ -78,8 +71,7 @@ public class AuthServiceImpl implements AuthService {
         }
         String username = jwtTokenProvider.getUsernameFromToken(refreshToken);
 
-        // Rebuild authentication object manually (optional, based on your token
-        // content)
+        // Rebuild authentication object manually (optional, based on your token content)
         Authentication authentication = new UsernamePasswordAuthenticationToken(username, null, new ArrayList<>());
 
         String newAccessToken = jwtTokenProvider.generateAccessToken(authentication);
@@ -135,31 +127,6 @@ public class AuthServiceImpl implements AuthService {
             return saved.getId() != null ? userMapper.toSignupRequestVo(saved) : signUpRequestVo;
         } catch (Exception e) {
             throw new UnableToProcessException(e.getMessage());
-        }
-    }
-
-    @EventListener(ApplicationReadyEvent.class)
-    private void save() {
-        roleService.initRoles();
-
-        if (Boolean.FALSE.equals(userRepository.existsByUserId(ADMIN))) {
-            SignupRequestVo signUpRequestVo = new SignupRequestVo();
-            signUpRequestVo.setEmail("admin@gmail.com");
-            signUpRequestVo.setMobile("1234567890");
-            signUpRequestVo.setName(ADMIN);
-            signUpRequestVo.setPassword(ADMIN);
-            signUpRequestVo.setUserId(ADMIN);
-
-            // Create new user's account
-            UserEntity user = new UserEntity(signUpRequestVo.getName(), signUpRequestVo.getUserId(),
-                    signUpRequestVo.getEmail(), signUpRequestVo.getMobile(),
-                    encoder.encode(signUpRequestVo.getPassword()), signUpRequestVo.isLocked());
-            Set<String> adminRole = new HashSet<>();
-            adminRole.add("ROLE_ADMIN");
-            Set<RoleEntity> roles = resolveRoles(adminRole);
-            user.setRoles(roles);
-            userRepository.save(user);
-            log.info("Default user has been created :: {}", signUpRequestVo);
         }
     }
 

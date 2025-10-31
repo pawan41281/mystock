@@ -12,24 +12,24 @@ import org.springframework.security.core.Authentication;
 
 public interface AuthService {
 
-	public String login(LoginVo loginVo) throws InvalidCredentialsException;
+	String login(LoginVo loginVo) throws InvalidCredentialsException;
 
-	public JwtAuthResponse refreshToken(String refreshToken);
+	JwtAuthResponse refreshToken(String refreshToken);
 
-	public boolean validateToken(String token);
+	boolean validateToken(String token);
 
-	public void invalidateToken(String token);
+	void invalidateToken(String token);
 
-	public boolean existsByUserId(String userId) throws ResourceNotFoundException;
+	boolean existsByUserId(String userId) throws ResourceNotFoundException;
 
-	public boolean existsByEmail(String email) throws ResourceNotFoundException;
+	boolean existsByEmail(String email) throws ResourceNotFoundException;
 
-	public SignupRequestVo save(SignupRequestVo signUpRequestVo)
+	SignupRequestVo save(SignupRequestVo signUpRequestVo)
 			throws UnableToProcessException, ResourceAlreadyExistsException;
 
-	public Authentication authenticate(LoginVo loginVo) throws InvalidCredentialsException;
+	Authentication authenticate(LoginVo loginVo) throws InvalidCredentialsException;
 
-	public UserVo getUserFromToken(String token) throws ResourceNotFoundException;
+	UserVo getUserFromToken(String token) throws ResourceNotFoundException;
 
-	public UserVo getCurrentUser() throws ResourceNotFoundException;
+	UserVo getCurrentUser() throws ResourceNotFoundException;
 }

@@ -7,6 +7,7 @@ import org.mystock.exception.ResourceNotFoundException;
 import org.mystock.mapper.ClientChallanMapper;
 import org.mystock.mapper.ColorMapper;
 import org.mystock.mapper.DesignMapper;
+import org.mystock.mapper.QualityMapper;
 import org.mystock.repository.ClientChallanRepository;
 import org.mystock.repository.ClientOrderRepository;
 import org.mystock.service.ClientChallanService;
@@ -36,6 +37,7 @@ public class ClientChallanServiceImpl implements ClientChallanService {
 	private final StockService stockService;
 	private final DesignMapper designMapper;
 	private final ColorMapper colorMapper;
+	private final QualityMapper qualityMapper;
 
 	@Transactional
 	@Override

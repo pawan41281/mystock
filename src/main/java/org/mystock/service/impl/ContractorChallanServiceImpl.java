@@ -3,10 +3,7 @@ package org.mystock.service.impl;
 import lombok.AllArgsConstructor;
 import org.mystock.entity.ContractorChallanEntity;
 import org.mystock.exception.ResourceNotFoundException;
-import org.mystock.mapper.ColorMapper;
-import org.mystock.mapper.ContractorChallanMapper;
-import org.mystock.mapper.ContractorMapper;
-import org.mystock.mapper.DesignMapper;
+import org.mystock.mapper.*;
 import org.mystock.repository.ContractorChallanRepository;
 import org.mystock.service.ContractorChallanService;
 import org.mystock.service.ContractorStockService;
@@ -41,6 +38,7 @@ public class ContractorChallanServiceImpl implements ContractorChallanService {
 	private final ColorMapper colorMapper;
 //	private final ContractorStockMapper contractorStockMapper;
 //	private final StockMapper stockMapper;
+	private final QualityMapper qualityMapper;
 
 	@Transactional
 	@Override
@@ -54,7 +52,7 @@ public class ContractorChallanServiceImpl implements ContractorChallanService {
 			final boolean isReceive = "R".equalsIgnoreCase(savedEntity.getChallanType());
 			final boolean isIssue = "I".equalsIgnoreCase(savedEntity.getChallanType());
 
-			savedEntity.getChallanItems().stream().forEach(item -> {
+			savedEntity.getChallanItems().forEach(item -> {
 
 				if (isIssue) {
 
@@ -109,6 +107,7 @@ public class ContractorChallanServiceImpl implements ContractorChallanService {
 						stockVo = new StockVo();
 						stockVo.setDesign(designMapper.toVo(item.getDesign()));
 						stockVo.setColor(colorMapper.toVo(item.getColor()));
+						stockVo.setQuality(qualityMapper.toVo(item.getQuality()));
 						stockVo.setBalance(item.getQuantity());
 						stockVo.setUpdatedOn(LocalDateTime.now());
 						stockService.save(stockVo);

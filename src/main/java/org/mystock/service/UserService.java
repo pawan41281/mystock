@@ -9,23 +9,23 @@ import java.util.List;
 
 public interface UserService {
 
-	public UserVo findById(Long id) throws ResourceNotFoundException;
+	UserVo findById(Long id) throws ResourceNotFoundException;
 
-	public UserVo findByUserId(String userName) throws ResourceNotFoundException;
+	UserVo findByUserId(String userName) throws ResourceNotFoundException;
 
-	public UserVo findByEmail(String email) throws ResourceNotFoundException;
+	UserVo findByEmail(String email) throws ResourceNotFoundException;
 	
-	public List<UserVo> find(String userName, String email, String mobile) throws ResourceNotFoundException;
+	List<UserVo> find(String userName, String email, String mobile) throws ResourceNotFoundException;
 
-	public UserVo save(UserVo UserVo) throws UnableToProcessException, ResourceAlreadyExistsException;
+	UserVo save(UserVo UserVo) throws UnableToProcessException, ResourceAlreadyExistsException;
 
-	public UserVo update(UserVo UserVo) throws UnableToProcessException, ResourceNotFoundException;
+	UserVo update(UserVo UserVo) throws UnableToProcessException, ResourceNotFoundException;
 
-	public boolean updateStatus(Long id, boolean status) throws UnableToProcessException, ResourceNotFoundException;
+	boolean updateStatus(Long id, boolean status) throws UnableToProcessException, ResourceNotFoundException;
 
-	public boolean existsByUserId(String userName) throws ResourceNotFoundException;
+	boolean existsByUserId(String userName) throws ResourceNotFoundException;
 
-	public boolean existsByEmail(String Email) throws ResourceNotFoundException;
+	boolean existsByEmail(String Email) throws ResourceNotFoundException;
 
-	public List<UserVo> findAll() throws UnableToProcessException;
+	List<UserVo> findAll() throws UnableToProcessException;
 }
