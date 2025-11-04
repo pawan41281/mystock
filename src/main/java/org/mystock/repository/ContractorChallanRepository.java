@@ -89,6 +89,6 @@ public interface ContractorChallanRepository extends JpaRepository<ContractorCha
 			GROUP BY d.challan_day
 			ORDER BY d.challan_day
 			""", nativeQuery = true)
-	public List<DashboardContractorGraphVo> getDashboardContractorGraphData();
+	List<DashboardContractorGraphVo> getDashboardContractorGraphData();
 
 }

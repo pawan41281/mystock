@@ -73,4 +73,10 @@ public class ClientOrderServiceImpl implements ClientOrderService {
 				.collect(Collectors.toList());
 	}
 
+	@Override
+	public List<ClientOrderVo> findAll(Integer orderNumber, LocalDate fromOrderDate, LocalDate toOrderDate, Long clientId, Long designId, Long colorId, Long qualityId) {
+		return repository.findAll(orderNumber, fromOrderDate, toOrderDate, clientId, designId, colorId, qualityId).stream().map(mapper::toVo)
+				.collect(Collectors.toList());
+	}
+
 }

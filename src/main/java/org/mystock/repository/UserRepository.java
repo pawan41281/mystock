@@ -14,24 +14,24 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
 
 
-	public UserEntity findByUserId(String userId);
+	UserEntity findByUserId(String userId);
 
-	public UserEntity findByEmail(String email);
+	UserEntity findByEmail(String email);
 
-	public List<UserEntity> findByMobile(String mobile);
+	List<UserEntity> findByMobile(String mobile);
 
-	public Boolean existsByUserId(String userId);
+	Boolean existsByUserId(String userId);
 
-	public Boolean existsByEmail(String email);
+	Boolean existsByEmail(String email);
 
 	@Query("SELECT u FROM UserEntity u WHERE " +
 			"(:userId IS NULL OR u.userId like %:userId%) AND " +
 			"(:email IS NULL OR u.email like :email) AND " +
 			"(:mobile IS NULL OR u.mobile like :mobile)")
-	public List<UserEntity> find(String userId, String email, String mobile);
+	List<UserEntity> find(String userId, String email, String mobile);
 
 	@Transactional
 	@Modifying
 	@Query("update UserEntity u set u.locked = :status where u.id = :id")
-	public void updateStatus(Long id, boolean status);
+	void updateStatus(Long id, boolean status);
 }

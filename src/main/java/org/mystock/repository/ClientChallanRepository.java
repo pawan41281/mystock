@@ -26,7 +26,7 @@ public interface ClientChallanRepository extends JpaRepository<ClientChallanEnti
 			      AND (:challanType IS NULL OR c.challanType = :challanType)
 			    ORDER BY c.challanDate DESC
 			""")
-	public List<ClientChallanEntity> findAll(@Param("challanNumber") Integer challanNumber,
+	List<ClientChallanEntity> findAll(@Param("challanNumber") Integer challanNumber,
 			@Param("clientId") Long clientId, @Param("orderId") Long orderId,
 			@Param("fromChallanDate") LocalDate fromChallanDate, @Param("toChallanDate") LocalDate toChallanDate,
 			@Param("challanType") String challanType);
@@ -38,7 +38,7 @@ public interface ClientChallanRepository extends JpaRepository<ClientChallanEnti
 			      AND (c.challanType like :challanType)
 			    ORDER BY c.id DESC
 			""")
-	public List<ClientChallanEntity> getRecentChallans(@Param("challanDate") LocalDate challanDate,
+	List<ClientChallanEntity> getRecentChallans(@Param("challanDate") LocalDate challanDate,
 			@Param("challanType") String challanType);
 
 	@Query(value = "SELECT COUNT(*) FROM CLIENT_CHALLAN_INFO WHERE CHALLAN_DATE >= DATE_FORMAT(CURRENT_DATE, '%Y-%m-01') AND CHALLAN_DATE < DATE_FORMAT(CURRENT_DATE + INTERVAL 1 MONTH, '%Y-%m-01') AND CHALLANTYPE = :challanType", nativeQuery = true)
@@ -52,7 +52,7 @@ public interface ClientChallanRepository extends JpaRepository<ClientChallanEnti
 			AND CHALLAN_DATE < DATE_FORMAT(CURRENT_DATE + INTERVAL 1 MONTH, '%Y-%m-01')
 			GROUP BY CHALLANTYPE
 			""", nativeQuery = true)
-	public List<DashboardCurrentMonthClientCardVo> getCurrentMonthChallanCount();
+	List<DashboardCurrentMonthClientCardVo> getCurrentMonthChallanCount();
 
 	@Query(value = """
 			SELECT challan_type as challanType,
@@ -61,7 +61,7 @@ public interface ClientChallanRepository extends JpaRepository<ClientChallanEnti
 			WHERE CHALLAN_DATE = (CURRENT_DATE-1)
 			GROUP BY CHALLANTYPE
 			""", nativeQuery = true)
-	public List<DashboardPreviousDayClientCardVo> getPreviousDayChallanCount();
+	List<DashboardPreviousDayClientCardVo> getPreviousDayChallanCount();
 
 	@Query(value = """
 						SELECT
@@ -95,6 +95,6 @@ public interface ClientChallanRepository extends JpaRepository<ClientChallanEnti
 			GROUP BY d.challan_day
 			ORDER BY d.challan_day
 			""", nativeQuery = true)
-	public List<DashboardClientGraphVo> getDashboardClientGraphData();
+	List<DashboardClientGraphVo> getDashboardClientGraphData();
 
 }

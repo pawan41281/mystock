@@ -127,6 +127,51 @@ public class ClientOrderController {
 		}
 	}
 
+//	@Operation(
+//			summary = "Search client orders",
+//			description = """
+//			Retrieves client orders by applying optional filters:
+//			- `ordernumber`: Filter by order number
+//			- `clientid`: Filter by client ID
+//			- `fromorderdate` and `toorderdate`: Filter by date range (maximum 90 days)
+//
+//			Requires ADMIN or USER role.
+//			""",
+//			tags = {"Client Order Operations"}
+//	)
+//	@GetMapping
+//	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+//	public ResponseEntity<ApiResponseVo<List<ClientOrderVo>>> find(
+//			@RequestParam(value = "ordernumber", required = false) Integer orderNumber,
+//			@RequestParam(value = "clientid", required = false) Long clientId,
+//			@RequestParam(value = "fromorderdate", required = false) LocalDate fromOrderDate,
+//			@RequestParam(value = "toorderdate", required = false) LocalDate toOrderDate) {
+//
+//		log.info("Received request for find :: orderNumber {}, clientId {}, fromOrderDate {}, toOrderDate {}",
+//				orderNumber, clientId, fromOrderDate, toOrderDate);
+//
+//		if (fromOrderDate != null && toOrderDate != null) {
+//			if (toOrderDate.isBefore(fromOrderDate)) {
+//				throw new BusinessException(
+//						"Invalid date range: 'To Date' must be greater than or equal to 'From Date'");
+//			}
+//
+//			long days = ChronoUnit.DAYS.between(fromOrderDate, toOrderDate);
+//			log.info("Days {}", days);
+//			if (days > 90) {
+//				throw new BusinessException("Date range cannot exceed 90 days");
+//			}
+//		}
+//
+//		List<ClientOrderVo> found = service.findAll(orderNumber, clientId, fromOrderDate, toOrderDate);
+//		log.info("Record {}", found != null && !found.isEmpty() ? "found" : "not found");
+//
+//		return ResponseEntity
+//				.ok(ApiResponseVoWrapper.success("Record fetched", found, metadataGenerator.getMetadata(found)));
+//	}
+
+
+
 	@Operation(
 			summary = "Search client orders",
 			description = """
@@ -134,6 +179,9 @@ public class ClientOrderController {
 			- `ordernumber`: Filter by order number
 			- `clientid`: Filter by client ID
 			- `fromorderdate` and `toorderdate`: Filter by date range (maximum 90 days)
+			- `designId`: Filter by design ID
+			- `colorId`: Filter by color ID
+			- `qualityId`: Filter by quality ID
 			
 			Requires ADMIN or USER role.
 			""",
@@ -145,10 +193,13 @@ public class ClientOrderController {
 			@RequestParam(value = "ordernumber", required = false) Integer orderNumber,
 			@RequestParam(value = "clientid", required = false) Long clientId,
 			@RequestParam(value = "fromorderdate", required = false) LocalDate fromOrderDate,
-			@RequestParam(value = "toorderdate", required = false) LocalDate toOrderDate) {
+			@RequestParam(value = "toorderdate", required = false) LocalDate toOrderDate,
+			@RequestParam(value = "designId", required = false) Long designId,
+			@RequestParam(value = "colorId", required = false) Long colorId,
+			@RequestParam(value = "qualityId", required = false) Long qualityId) {
 
-		log.info("Received request for find :: orderNumber {}, clientId {}, fromOrderDate {}, toOrderDate {}",
-				orderNumber, clientId, fromOrderDate, toOrderDate);
+		log.info("Received request for find :: orderNumber {}, clientId {}, fromOrderDate {}, toOrderDate {}, designId {}, colorId {}, qualityId {}",
+				orderNumber, clientId, fromOrderDate, toOrderDate, designId, colorId, qualityId);
 
 		if (fromOrderDate != null && toOrderDate != null) {
 			if (toOrderDate.isBefore(fromOrderDate)) {
@@ -163,10 +214,9 @@ public class ClientOrderController {
 			}
 		}
 
-		List<ClientOrderVo> found = service.findAll(orderNumber, clientId, fromOrderDate, toOrderDate);
+		List<ClientOrderVo> found = service.findAll(orderNumber, fromOrderDate, toOrderDate, clientId, designId, colorId, qualityId);
 		log.info("Record {}", found != null && !found.isEmpty() ? "found" : "not found");
 
-		return ResponseEntity
-				.ok(ApiResponseVoWrapper.success("Record fetched", found, metadataGenerator.getMetadata(found)));
+		return ResponseEntity.ok(ApiResponseVoWrapper.success("Record fetched", found, metadataGenerator.getMetadata(found)));
 	}
 }

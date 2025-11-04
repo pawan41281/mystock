@@ -63,6 +63,9 @@ public class DownloadReportController {
 			@Parameter(description = "Filter by color name (partial match)", example = "Blue")
 			@RequestParam(required = false) String colorName,
 
+			@Parameter(description = "Filter by quality name (partial match)", example = "Premium")
+			@RequestParam(required = false) String qualityName,
+
 			@Parameter(description = "Number of records to fetch per page (for streaming large reports)", example = "100")
 			@RequestParam(required = false, defaultValue = "10") Integer pageSize) {
 
@@ -116,7 +119,7 @@ public class DownloadReportController {
 	@GetMapping("/contractor/designs/colors/stock/report")
 	@Operation(
 			summary = "Download Contractor Design & Color-wise Stock Report",
-			description = "Download the stock report showing balance quantities for each contractor, design, and color. "
+			description = "Download the stock report showing balance quantities for each contractor, design, color, and quality. "
 					+ "Supports optional filtering and paginated streaming for large datasets.",
 			tags = {"Download Reports"}
 	)
@@ -136,11 +139,14 @@ public class DownloadReportController {
 			@Parameter(description = "Filter by color name (partial match)", example = "Blue")
 			@RequestParam(required = false) String colorName,
 
+			@Parameter(description = "Filter by quality name (partial match)", example = "Premium")
+			@RequestParam(required = false) String qualityName,
+
 			@Parameter(description = "Number of records to fetch per page (for streaming large reports)", example = "100")
 			@RequestParam(required = false, defaultValue = "100") Integer pageSize) {
 
 		log.info("Received download request for Contractor Design & Color-wise stock report.");
-		int count = contractorStockReportService.getStockCount(contractorName, designName, colorName);
+		int count = contractorStockReportService.getStockCount(contractorName, designName, colorName, qualityName);
 		log.info("Records found: {}", count);
 
 		if (count > 0) {
@@ -151,8 +157,7 @@ public class DownloadReportController {
 				outputStream.write("[".getBytes(StandardCharsets.UTF_8)); // Start of JSON array
 
 				while (pageCount < totalPages) {
-					List<ContractorStockReportVo> found = contractorStockReportService
-							.getStockReport(contractorName, designName, colorName, pageSize, pageCount);
+					List<ContractorStockReportVo> found = contractorStockReportService.getStockReport(contractorName, designName, colorName, qualityName, pageSize, pageCount);
 					StringBuilder response = new StringBuilder(mapper.writeValueAsString(found));
 					response.deleteCharAt(0); // remove '['
 					response.deleteCharAt(response.indexOf("]")); // remove ']'

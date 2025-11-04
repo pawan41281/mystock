@@ -16,10 +16,10 @@ import java.util.List;
 @Repository
 public interface StockRepository extends JpaRepository<StockEntity, Long> {
 
-	public List<StockEntity> findByDesign_Id(Long designId);
+	List<StockEntity> findByDesign_Id(Long designId);
 
 	@Lock(LockModeType.PESSIMISTIC_WRITE)
-	public StockEntity findByDesign_IdAndColor_IdAndQuality_Id(Long designId, Long colorId, Long qualityId);
+	StockEntity findByDesign_IdAndColor_IdAndQuality_Id(Long designId, Long colorId, Long qualityId);
 
 	@Modifying
 	@Transactional
@@ -31,7 +31,7 @@ public interface StockRepository extends JpaRepository<StockEntity, Long> {
 			AND d.color.id = :colorId 
 			AND d.quality.id = :qualityId
 			""")
-	public int increaseBalance(Long designId, Long colorId, Long qualityId, Integer quantity);
+	int increaseBalance(Long designId, Long colorId, Long qualityId, Integer quantity);
 
 	@Modifying
 	@Transactional
@@ -43,7 +43,7 @@ public interface StockRepository extends JpaRepository<StockEntity, Long> {
 			AND d.color.id = :colorId 
 			AND d.quality.id = :qualityId
 			""")
-	public int reduceBalance(Long designId, Long colorId, Long qualityId, Integer quantity);
+	int reduceBalance(Long designId, Long colorId, Long qualityId, Integer quantity);
 
 	@Query(value = """
 			SELECT
@@ -65,7 +65,7 @@ public interface StockRepository extends JpaRepository<StockEntity, Long> {
 			    AND
 			    c.color_name LIKE :colorName
 			""", nativeQuery = true)
-	public List<DesignStockReportVo> getDesignStockReport(@Param("designName") String designName,
+	List<DesignStockReportVo> getDesignStockReport(@Param("designName") String designName,
 			@Param("colorName") String colorName);
 	
 	@Query(value = """
@@ -87,7 +87,7 @@ public interface StockRepository extends JpaRepository<StockEntity, Long> {
 			    AND
 			    s.balance<>0
 			""", nativeQuery = true)
-	public List<DesignStockReportVo> getDesignStockNonZeroReport(@Param("designName") String designName,
+	List<DesignStockReportVo> getDesignStockNonZeroReport(@Param("designName") String designName,
 			@Param("colorName") String colorName);
 
 	@Query(value = """
@@ -98,7 +98,7 @@ public interface StockRepository extends JpaRepository<StockEntity, Long> {
 			WHERE d.description LIKE :designName
 			  AND c.color_name LIKE :colorName
 			""", nativeQuery = true)
-	public int getDesignStockCount(@Param("designName") String designName, @Param("colorName") String colorName);
+	int getDesignStockCount(@Param("designName") String designName, @Param("colorName") String colorName);
 
 	@Query(value = """
 			SELECT
@@ -117,7 +117,7 @@ public interface StockRepository extends JpaRepository<StockEntity, Long> {
 			    c.color_name LIKE :colorName
 			LIMIT :pageSize OFFSET :pageCount
 			""", nativeQuery = true)
-	public List<DesignStockReportVo> getDesignStockReport(@Param("designName") String designName,
+	List<DesignStockReportVo> getDesignStockReport(@Param("designName") String designName,
 			@Param("colorName") String colorName, @Param("pageSize") Integer pageSize,
 			@Param("pageCount") Integer pageCount);
 

@@ -116,6 +116,7 @@ public class ContractorStockController {
 				vo.getContractor().getId(),
 				vo.getDesign().getId(),
 				vo.getColor().getId(),
+				vo.getQuality().getId(),
 				vo.getOpeningBalance()
 		);
 

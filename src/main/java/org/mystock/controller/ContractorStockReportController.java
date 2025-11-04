@@ -61,6 +61,11 @@ public class ContractorStockReportController {
 							name = "colorName",
 							description = "Filter by color name (supports partial match)",
 							example = "Ivory White"
+					),
+					@Parameter(
+							name = "qualityName",
+							description = "Filter by quality name (supports partial match)",
+							example = "Superfine"
 					)
 			},
 			responses = {
@@ -90,21 +95,23 @@ public class ContractorStockReportController {
 	public ResponseEntity<ApiResponseVo<List<ContractorStockReportVo>>> getBalanceReport(
 			@RequestParam(required = false) String contractorName,
 			@RequestParam(required = false) String designName,
-			@RequestParam(required = false) String colorName) {
+			@RequestParam(required = false) String colorName,
+			@RequestParam(required = false) String qualityName) {
 
-		log.info("Received request for contractor stock report: contractor={}, design={}, color={}",
-				contractorName, designName, colorName);
+		log.info("Received request for contractor stock report: contractor={}, design={}, color={}, quality {}",
+				contractorName, designName, colorName, qualityName);
 
 		List<ContractorStockReportVo> found = Collections.emptyList();
 
 		// Logic: if any filter is passed, fetch filtered report; else fetch non-zero report
 		if ((contractorName != null && !contractorName.isEmpty()) ||
 				(designName != null && !designName.isEmpty()) ||
+				(qualityName != null && !qualityName.isEmpty()) ||
 				(colorName != null && !colorName.isEmpty())) {
 
-			found = contractorStockReportService.getStockReport(contractorName, designName, colorName);
+			found = contractorStockReportService.getStockReport(contractorName, designName, colorName, qualityName);
 		} else {
-			found = contractorStockReportService.getNonZeroStockReport(contractorName, designName, colorName);
+			found = contractorStockReportService.getNonZeroStockReport(contractorName, designName, colorName, qualityName);
 		}
 
 		if (found != null && !found.isEmpty()) {

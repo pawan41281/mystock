@@ -61,8 +61,7 @@ public class ContractorPaymentController {
 					.body(ApiResponseVoWrapper.success("Record saved", saved, metadataGenerator.getMetadata(saved)));
 		} else {
 			log.error("Record not saved");
-			return ResponseEntity.status(200)
-					.body(ApiResponseVoWrapper.success("Record not saved", saved, metadataGenerator.getMetadata(saved)));
+			return ResponseEntity.ok(ApiResponseVoWrapper.success("Record not saved", saved, metadataGenerator.getMetadata(saved)));
 		}
 	}
 
@@ -87,8 +86,7 @@ public class ContractorPaymentController {
 					.body(ApiResponseVoWrapper.success("Records saved", saved, metadataGenerator.getMetadata(saved)));
 		} else {
 			log.error("Records not saved");
-			return ResponseEntity.status(200)
-					.body(ApiResponseVoWrapper.success("Records not saved", saved, metadataGenerator.getMetadata(saved)));
+			return ResponseEntity.ok(ApiResponseVoWrapper.success("Record not saved", saved, metadataGenerator.getMetadata(saved)));
 		}
 	}
 
@@ -113,8 +111,7 @@ public class ContractorPaymentController {
 					.body(ApiResponseVoWrapper.success("Record deleted", deleted, metadataGenerator.getMetadata(deleted)));
 		} else {
 			log.error("Record not deleted :: paymentId {}", id);
-			return ResponseEntity.status(404)
-					.body(ApiResponseVoWrapper.success("Record not deleted", deleted, metadataGenerator.getMetadata(deleted)));
+			return ResponseEntity.ok(ApiResponseVoWrapper.success("Record not deleted", deleted, metadataGenerator.getMetadata(deleted)));
 		}
 	}
 

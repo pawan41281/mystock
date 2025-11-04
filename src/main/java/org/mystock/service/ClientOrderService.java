@@ -8,15 +8,15 @@ import java.util.Set;
 
 public interface ClientOrderService {
 
-	ClientOrderVo save(ClientOrderVo vo);
+    ClientOrderVo save(ClientOrderVo vo);
 
-	Set<ClientOrderVo> saveAll(Set<ClientOrderVo> vos);
+    Set<ClientOrderVo> saveAll(Set<ClientOrderVo> vos);
 
-	ClientOrderVo findById(Long id);
+    ClientOrderVo findById(Long id);
 
-	ClientOrderVo deleteById(Long id);
+    ClientOrderVo deleteById(Long id);
 
-	List<ClientOrderVo> findAll(Integer orderNumber, Long clientId, LocalDate fromOrderDate,
-			LocalDate toOrderDate);
+    List<ClientOrderVo> findAll(Integer orderNumber, Long clientId, LocalDate fromOrderDate, LocalDate toOrderDate);
 
+    List<ClientOrderVo> findAll(Integer orderNumber, LocalDate fromOrderDate, LocalDate toOrderDate, Long clientId, Long designId, Long colorId, Long qualityId);
 }

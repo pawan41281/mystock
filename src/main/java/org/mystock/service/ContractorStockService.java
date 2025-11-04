@@ -13,19 +13,27 @@ public interface ContractorStockService {
 
 	List<ContractorStockVo> getAll();
 
-	List<ContractorStockVo> getAll(Long contractorId);
+//	List<ContractorStockVo> getAll(Long contractorId);
 
-	List<ContractorStockVo> getAll(Long contractorId, Long designId);
+//	List<ContractorStockVo> getAll(Long contractorId, Long designId);
 
-	ContractorStockVo get(Long contractorId, Long designId, Long colorId);
+//	ContractorStockVo get(Long contractorId, Long designId, Long colorId);
 
-	List<ContractorStockVo> getAllDesignAndColor(Long designId, Long colorId);
+	ContractorStockVo get(Long contractorId, Long designId, Long colorId, Long qualityId);
 
-	int increaseBalance(Long contractorId, Long designId, Long colorId, Integer quantity);
+//	List<ContractorStockVo> getAllDesignAndColor(Long designId, Long colorId);
 
-	int reduceBalance(Long contractorId, Long designId, Long colorId, Integer quantity);
+//	int increaseBalance(Long contractorId, Long designId, Long colorId, Integer quantity);
 
-	ContractorStockVo addOpenningBalance(Long contractorId, Long designId, Long colorId, Integer quantity);
+//	int reduceBalance(Long contractorId, Long designId, Long colorId, Integer quantity);
+
+//	ContractorStockVo addOpenningBalance(Long contractorId, Long designId, Long colorId, Integer quantity);
 
 	List<ContractorStockVo> addOpenningBalance(Set<ContractorStockVo> vos);
+
+	int increaseBalance(Long contractorId, Long designId, Long colorId, Long qualityId, Integer quantity);
+
+	int reduceBalance(Long contractorId, Long designId, Long colorId, Long qualityId, Integer quantity);
+
+	ContractorStockVo addOpenningBalance(Long contractorId, Long designId, Long colorId, Long qualityId, Integer quantity);
 }

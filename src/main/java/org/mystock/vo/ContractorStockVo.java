@@ -16,6 +16,7 @@ public class ContractorStockVo {
 	private ContractorVo contractor;
 	private DesignVo design;
 	private ColorVo color;
+	private QualityVo quality;
 	private Integer openingBalance=0;
 	private Integer balance=0;
 

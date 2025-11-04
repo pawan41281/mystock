@@ -77,16 +77,15 @@ public class ContractorChallanServiceImpl implements ContractorChallanService {
 					// update the contractor stock balance :: increase the pending balance of
 					// contractor :: plus entry in ContractorStockInfo
 					// pending balance + receive pieces
-					ContractorStockVo contractorStockVo = contractorStockService.get(entity.getContractor().getId(),
-							item.getDesign().getId(), item.getColor().getId());
+					ContractorStockVo contractorStockVo = contractorStockService.get(entity.getContractor().getId(), item.getDesign().getId(), item.getColor().getId(), item.getQuality().getId());
 					if (contractorStockVo != null) {
-						contractorStockService.increaseBalance(entity.getContractor().getId(), item.getDesign().getId(),
-								item.getColor().getId(), item.getQuantity());
+						contractorStockService.increaseBalance(entity.getContractor().getId(), item.getDesign().getId(), item.getColor().getId(), item.getQuality().getId(), item.getQuantity());
 					} else {
 						contractorStockVo = new ContractorStockVo();
 						contractorStockVo.setContractor(contractorMapper.toVo(entity.getContractor()));
 						contractorStockVo.setDesign(designMapper.toVo(item.getDesign()));
 						contractorStockVo.setColor(colorMapper.toVo(item.getColor()));
+						contractorStockVo.setQuality(qualityMapper.toVo(item.getQuality()));
 						contractorStockVo.setBalance(item.getQuantity());
 						contractorStockVo.setUpdatedOn(LocalDateTime.now());
 						contractorStockService.save(contractorStockVo);
@@ -116,11 +115,9 @@ public class ContractorChallanServiceImpl implements ContractorChallanService {
 					// update the contractor stock balance :: reduce the pending balance of
 					// contractor :: minus entry in ContractorStockInfo
 					// pending balance - receive pieces
-					ContractorStockVo contractorStockVo = contractorStockService.get(entity.getContractor().getId(),
-							item.getDesign().getId(), item.getColor().getId());
+					ContractorStockVo contractorStockVo = contractorStockService.get(entity.getContractor().getId(), item.getDesign().getId(), item.getColor().getId(), item.getQuality().getId());
 					if (contractorStockVo != null) {
-						contractorStockService.reduceBalance(entity.getContractor().getId(), item.getDesign().getId(),
-								item.getColor().getId(), item.getQuantity());
+						contractorStockService.reduceBalance(entity.getContractor().getId(), item.getDesign().getId(), item.getColor().getId(), item.getQuality().getId(), item.getQuantity());
 					} else {
 						contractorStockVo = new ContractorStockVo();
 						contractorStockVo.setContractor(contractorMapper.toVo(entity.getContractor()));
@@ -175,11 +172,9 @@ public class ContractorChallanServiceImpl implements ContractorChallanService {
 
 						// update the contractor stock balance :: increase the pending balance of
 						// contractor :: plus entry in ContractorStockInfo
-						ContractorStockVo contractorStockVo = contractorStockService.get(
-								savedEntity.getContractor().getId(), item.getDesign().getId(), item.getColor().getId());
+						ContractorStockVo contractorStockVo = contractorStockService.get(savedEntity.getContractor().getId(), item.getDesign().getId(), item.getColor().getId(),  item.getQuality().getId());
 						if (contractorStockVo != null) {
-							contractorStockService.increaseBalance(savedEntity.getContractor().getId(),
-									item.getDesign().getId(), item.getColor().getId(), item.getQuantity());
+							contractorStockService.increaseBalance(savedEntity.getContractor().getId(), item.getDesign().getId(), item.getColor().getId(), item.getQuality().getId(), item.getQuantity());
 						} else {
 							contractorStockVo = new ContractorStockVo();
 							contractorStockVo.setContractor(contractorMapper.toVo(savedEntity.getContractor()));
@@ -214,11 +209,9 @@ public class ContractorChallanServiceImpl implements ContractorChallanService {
 
 						// update the contractor stock balance :: reduce the pending balance of
 						// contractor :: minus entry in ContractorStockInfo
-						ContractorStockVo contractorStockVo = contractorStockService.get(
-								savedEntity.getContractor().getId(), item.getDesign().getId(), item.getColor().getId());
+						ContractorStockVo contractorStockVo = contractorStockService.get(savedEntity.getContractor().getId(), item.getDesign().getId(), item.getColor().getId(), item.getQuality().getId());
 						if (contractorStockVo != null) {
-							contractorStockService.reduceBalance(savedEntity.getContractor().getId(),
-									item.getDesign().getId(), item.getColor().getId(), item.getQuantity());
+							contractorStockService.reduceBalance(savedEntity.getContractor().getId(), item.getDesign().getId(), item.getColor().getId(), item.getQuality().getId(), item.getQuantity());
 						} else {
 							contractorStockVo = new ContractorStockVo();
 							contractorStockVo.setContractor(contractorMapper.toVo(savedEntity.getContractor()));
@@ -289,14 +282,11 @@ public class ContractorChallanServiceImpl implements ContractorChallanService {
 						// contractor :: plus entry in ContractorStockInfo
 						// reduce the pending balance of the contractor
 
-						ContractorStockVo contractorStockVo = contractorStockService.get(
-								contractorChallanEntity.getContractor().getId(), item.getDesign().getId(),
-								item.getColor().getId());
+						ContractorStockVo contractorStockVo = contractorStockService.get(contractorChallanEntity.getContractor().getId(), item.getDesign().getId(), item.getColor().getId(), item.getQuality().getId());
 
 						if (contractorStockVo != null) {
 							// reverse entry
-							contractorStockService.reduceBalance(contractorChallanEntity.getContractor().getId(),
-									item.getDesign().getId(), item.getColor().getId(), item.getQuantity());
+							contractorStockService.reduceBalance(contractorChallanEntity.getContractor().getId(),item.getDesign().getId(), item.getColor().getId(), item.getQuality().getId(), item.getQuantity());
 						} else {
 							contractorStockVo = new ContractorStockVo();
 							contractorStockVo.setBalance((0 - item.getQuantity()));
@@ -335,14 +325,11 @@ public class ContractorChallanServiceImpl implements ContractorChallanService {
 						// update the contractor stock balance :: increase the pending balance of
 						// contractor :: plus entry in ContractorStockInfo
 
-						ContractorStockVo contractorStockVo = contractorStockService.get(
-								contractorChallanEntity.getContractor().getId(), item.getDesign().getId(),
-								item.getColor().getId());
+						ContractorStockVo contractorStockVo = contractorStockService.get(contractorChallanEntity.getContractor().getId(), item.getDesign().getId(),item.getColor().getId(), item.getQuality().getId());
 
 						if (contractorStockVo != null) {
 							// reverse entry
-							contractorStockService.increaseBalance(contractorChallanEntity.getContractor().getId(),
-									item.getDesign().getId(), item.getColor().getId(), item.getQuantity());
+							contractorStockService.increaseBalance(contractorChallanEntity.getContractor().getId(),item.getDesign().getId(), item.getColor().getId(), item.getQuality().getId(), item.getQuantity());
 						} else {
 							contractorStockVo = new ContractorStockVo();
 							contractorStockVo.setBalance(item.getQuantity());

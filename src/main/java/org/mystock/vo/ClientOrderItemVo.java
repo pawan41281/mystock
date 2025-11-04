@@ -33,7 +33,7 @@ public class ClientOrderItemVo {
 
 	@NotNull
 	@Min(0)
-	private Float rate;
+	private Float rate=0f;
 	
 	@NotNull
 	@Min(0)
