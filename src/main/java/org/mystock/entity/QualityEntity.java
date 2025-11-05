@@ -24,7 +24,7 @@ public class QualityEntity {
 	private String qualityName;
 
 	@Column(name = "active", columnDefinition = "BOOLEAN DEFAULT TRUE", nullable = false)
-	private boolean active;
+	private boolean active=true;
 	
 	@Column(name = "created_on", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
     private LocalDateTime createdOn;
@@ -32,4 +32,10 @@ public class QualityEntity {
 	@ManyToOne
 	@JoinColumn(name = "created_by", nullable = false)
 	private UserEntity user;
+
+	public QualityEntity(Long id, String qualityName, UserEntity user){
+		this.id=id;
+		this.qualityName=qualityName;
+		this.user=user;
+	}
 }

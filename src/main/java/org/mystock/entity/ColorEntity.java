@@ -24,7 +24,7 @@ public class ColorEntity {
 	private String colorName;
 
 	@Column(name = "active", columnDefinition = "BOOLEAN DEFAULT TRUE", nullable = false)
-	private boolean active;
+	private boolean active=true;
 	
 	@Column(name = "created_on", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
     private LocalDateTime createdOn;
@@ -32,4 +32,10 @@ public class ColorEntity {
 	@ManyToOne
 	@JoinColumn(name = "created_by", nullable = false)
 	private UserEntity user;
+
+	public ColorEntity(Long id, String colorName, UserEntity userEntity){
+		this.id=id;
+		this.colorName=colorName;
+		this.user=userEntity;
+	}
 }

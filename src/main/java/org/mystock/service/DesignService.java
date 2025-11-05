@@ -21,6 +21,8 @@ public interface DesignService {
 
 	List<DesignVo> getAll();
 
+	List<DesignVo> getAll(Boolean active);
+
 	DesignVo updateStatus(Long id, boolean status);
 
 

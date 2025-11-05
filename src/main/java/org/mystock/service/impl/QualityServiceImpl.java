@@ -90,6 +90,14 @@ public class QualityServiceImpl implements QualityService {
 	}
 
 	@Override
+	public List<QualityVo> getAll(Boolean active) {
+		List<QualityEntity> list = qualityRepository.findAll();
+		if(active!=null && (active.equals(true) || active.equals(false)))
+			list = list.stream().filter(q -> q.isActive()==active).collect(Collectors.toUnmodifiableList());
+		return list.stream().map(qualityMapper::toVo).collect(Collectors.toList());
+	}
+
+	@Override
 	public List<QualityVo> findByNameIgnoreCaseLike(String qualityName) {
 		return qualityRepository.findByNameIgnoreCaseLike(qualityName).stream().map(qualityMapper::toVo).collect(Collectors.toList());
 	}

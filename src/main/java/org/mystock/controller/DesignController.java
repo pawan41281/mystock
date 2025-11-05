@@ -129,9 +129,10 @@ public class DesignController {
 			@ApiResponse(responseCode = "500", description = "Internal server error")
 	})
 	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
-	public ResponseEntity<ApiResponseVo<List<DesignVo>>> getAll() {
+	public ResponseEntity<ApiResponseVo<List<DesignVo>>> getAll(
+			@Parameter(description = "Active status (true/false)") @RequestParam(required = false) Boolean active) {
 		log.info("Received request to fetch all designs");
-		List<DesignVo> found = designService.getAll();
+		List<DesignVo> found = designService.getAll(active);
 		String message = (found != null && !found.isEmpty()) ? "Record found" : "Record not found";
 		log.info(message);
 

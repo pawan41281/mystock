@@ -90,6 +90,14 @@ public class ColorServiceImpl implements ColorService {
 	}
 
 	@Override
+	public List<ColorVo> getAll(Boolean active) {
+		if(active!=null && (active.equals(true) || active.equals(false)))
+			return colorRepository.findAll().stream().filter(c -> c.isActive()==active).map(colorMapper::toVo).collect(Collectors.toList());
+		else
+			return colorRepository.findAll().stream().map(colorMapper::toVo).collect(Collectors.toList());
+	}
+
+	@Override
 	public List<ColorVo> findByNameIgnoreCaseLike(String colorName) {
 		return colorRepository.findByNameIgnoreCaseLike(colorName).stream().map(colorMapper::toVo).collect(Collectors.toList());
 	}

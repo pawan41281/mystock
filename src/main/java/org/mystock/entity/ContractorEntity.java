@@ -45,7 +45,7 @@ public class ContractorEntity {
 	private String gstNo;
 
 	@Column(name = "active", columnDefinition = "BOOLEAN DEFAULT TRUE", nullable = false)
-	private boolean active;
+	private boolean active=true;
 
     @Column(name = "created_on", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
     private LocalDateTime createdOn;
@@ -53,4 +53,11 @@ public class ContractorEntity {
 	@ManyToOne
 	@JoinColumn(name = "created_by", nullable = false)
 	private UserEntity user;
+
+	public ContractorEntity(Long id, String contractorName, String mobile, UserEntity user){
+		this.id=id;
+		this.contractorName=contractorName;
+		this.mobile=mobile;
+		this.user=user;
+	}
 }

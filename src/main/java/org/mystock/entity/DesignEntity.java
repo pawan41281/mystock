@@ -27,7 +27,7 @@ public class DesignEntity {
 	private String description;
 
 	@Column(name = "active", columnDefinition = "BOOLEAN DEFAULT TRUE", nullable = false)
-	private boolean active;
+	private boolean active=true;
 
 	@Column(name = "created_on", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
 	private LocalDateTime createdOn;
@@ -35,5 +35,11 @@ public class DesignEntity {
 	@ManyToOne
 	@JoinColumn(name = "created_by", nullable = false)
 	private UserEntity user;
+
+	public DesignEntity(Long id, String designName, UserEntity user){
+		this.id=id;
+		this.designName=designName;
+		this.user=user;
+	}
 
 }

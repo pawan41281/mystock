@@ -13,6 +13,8 @@ public interface ColorService {
 
 	List<ColorVo> getAll();
 
+	List<ColorVo> getAll(Boolean active);
+
 	List<ColorVo> findByNameIgnoreCaseLike(String colorName);
 
 	ColorVo findByNameIgnoreCase(String colorName);

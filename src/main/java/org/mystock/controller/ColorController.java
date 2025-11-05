@@ -106,9 +106,10 @@ public class ColorController {
 	)
 	@GetMapping
 	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
-	public ResponseEntity<ApiResponseVo<List<ColorVo>>> getAll() {
+	public ResponseEntity<ApiResponseVo<List<ColorVo>>> getAll(
+			@Parameter(description = "Active status (true/false)") @RequestParam(required = false) Boolean active) {
 		log.info("Received request for find all");
-		List<ColorVo> found = colorService.getAll();
+		List<ColorVo> found = colorService.getAll(active);
 		if (found != null && !found.isEmpty()) {
 			log.info("Records found");
 			return ResponseEntity

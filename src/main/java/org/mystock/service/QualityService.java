@@ -13,6 +13,8 @@ public interface QualityService {
 
 	List<QualityVo> getAll();
 
+	List<QualityVo> getAll(Boolean active);
+
 	List<QualityVo> findByNameIgnoreCaseLike(String qualityName);
 
 	QualityVo findByNameIgnoreCase(String qualityName);

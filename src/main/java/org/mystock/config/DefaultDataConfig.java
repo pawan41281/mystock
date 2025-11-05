@@ -2,13 +2,8 @@ package org.mystock.config;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.mystock.entity.MenuGroupEntity;
-import org.mystock.entity.MenuItemEntity;
-import org.mystock.entity.RoleEntity;
-import org.mystock.entity.UserEntity;
-import org.mystock.repository.MenuGroupRepository;
-import org.mystock.repository.RoleRepository;
-import org.mystock.repository.UserRepository;
+import org.mystock.entity.*;
+import org.mystock.repository.*;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -32,6 +27,16 @@ public class DefaultDataConfig {
 
     private final PasswordEncoder encoder;
 
+    private final ColorRepository colorRepository;
+
+    private final DesignRepository designRepository;
+
+    private final QualityRepository qualityRepository;
+
+    private final ClientRepository clientRepository;
+
+    private final ContractorRepository contractorRepository;
+
     @EventListener(ApplicationReadyEvent.class)
     private void initializeDefaultData() {
 
@@ -49,10 +54,10 @@ public class DefaultDataConfig {
 
         log.info("initializing default users");
 
-        UserEntity defaultUser = new UserEntity(1L, "admin", "admin", "admin@gmail.com", "1234567890", encoder.encode("admin"), false);
+        UserEntity adminUser = new UserEntity(1L, "admin", "admin", "admin@gmail.com", "1234567890", encoder.encode("admin"), false);
         Set<RoleEntity> roles = new HashSet<>(roleList);  //resolveRoles(adminRole);
-        defaultUser.setRoles(roles);
-        userRepository.saveAndFlush(defaultUser);
+        adminUser.setRoles(roles);
+        userRepository.saveAndFlush(adminUser);
 
         log.info("User initialization completed...");
 
@@ -118,5 +123,52 @@ public class DefaultDataConfig {
         menuGroupRepository.saveAllAndFlush(menuGroupEntityList);
 
         log.info("Menu and menu options initialization completed...");
+
+        log.info("Initializing default colors...");
+        List<ColorEntity> colorEntityList = new ArrayList<>();
+        colorEntityList.add(new ColorEntity(1L,"Red",adminUser));
+        colorEntityList.add(new ColorEntity(2L, "Green",adminUser));
+        colorEntityList.add(new ColorEntity(3L, "Blue",adminUser));
+        colorEntityList.add(new ColorEntity(4L, "Yellow",adminUser));
+        colorEntityList.add(new ColorEntity(5L, "Navy",adminUser));
+        colorEntityList.add(new ColorEntity(6L, "Maroon",adminUser));
+        colorRepository.saveAll(colorEntityList);
+        log.info("Colors initialization completed...");
+
+        log.info("Initializing default designs...");
+        List<DesignEntity> designEntityList = new ArrayList<>();
+        designEntityList.add(new DesignEntity(1L, "3570",adminUser));
+        designEntityList.add(new DesignEntity(2L, "3590",adminUser));
+        designEntityList.add(new DesignEntity(3L, "2210",adminUser));
+        designEntityList.add(new DesignEntity(4L, "2250",adminUser));
+        designEntityList.add(new DesignEntity(5L, "5540",adminUser));
+        designEntityList.add(new DesignEntity(6L, "3070",adminUser));
+        designRepository.saveAll(designEntityList);
+        log.info("Designs initialization completed...");
+
+        log.info("Initializing default qualities...");
+        List<QualityEntity> qualityEntityList = new ArrayList<>();
+        qualityEntityList.add(new QualityEntity(1L, "Superfine",adminUser));
+        qualityEntityList.add(new QualityEntity(2L, "Standard",adminUser));
+        qualityEntityList.add(new QualityEntity(3L, "Eco",adminUser));
+        qualityEntityList.add(new QualityEntity(4L, "Hector",adminUser));
+        qualityEntityList.add(new QualityEntity(5L, "Pure",adminUser));
+        qualityRepository.saveAll(qualityEntityList);
+        log.info("Qualities initialization completed...");
+
+        log.info("Initializing default parties...");
+        List<ClientEntity> clientEntityList = new ArrayList<>();
+        clientEntityList.add(new ClientEntity(1L, "Aman Handloom", "1122334455", adminUser));
+        clientEntityList.add(new ClientEntity(2L, "Shree Textile", "1478521478", adminUser));
+        clientRepository.saveAll(clientEntityList);
+        log.info("Parties initialization completed...");
+
+        log.info("Initializing default contractors...");
+        List<ContractorEntity> contractorEntityList = new ArrayList<>();
+        contractorEntityList.add(new ContractorEntity(1L, "Ramesh Singh", "1234512345", adminUser));
+        contractorEntityList.add(new ContractorEntity(2L, "Shambhu Nath", "1477815478", adminUser));
+        contractorRepository.saveAll(contractorEntityList);
+        log.info("Contractors initialization completed...");
+
     }
 }

@@ -106,9 +106,10 @@ public class QualityController {
 	)
 	@GetMapping
 	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
-	public ResponseEntity<ApiResponseVo<List<QualityVo>>> getAll() {
+	public ResponseEntity<ApiResponseVo<List<QualityVo>>> getAll(
+			@Parameter(description = "Active status (true/false)") @RequestParam(required = false) Boolean active) {
 		log.info("Received request for find all");
-		List<QualityVo> found = qualityService.getAll();
+		List<QualityVo> found = qualityService.getAll(active);
 		if (found != null && !found.isEmpty()) {
 			log.info("Records found");
 			return ResponseEntity

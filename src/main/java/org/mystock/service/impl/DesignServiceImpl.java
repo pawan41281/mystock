@@ -106,6 +106,14 @@ public class DesignServiceImpl implements DesignService {
 	}
 
 	@Override
+	public List<DesignVo> getAll(Boolean active) {
+		List<DesignEntity> entities = designRepository.findAll();
+		if(active!=null && (active.equals(true) || active.equals(false)))
+			entities = entities.stream().filter(d -> d.isActive()==active).collect(Collectors.toUnmodifiableList());
+		return entities.stream().map(designMapper::toVo).collect(Collectors.toList());
+	}
+
+	@Override
 	public DesignVo updateStatus(Long id, boolean status) {
 		Optional<DesignEntity> optional = designRepository.findById(id);
 		if (optional.isPresent()) {
