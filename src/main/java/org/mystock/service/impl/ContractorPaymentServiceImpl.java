@@ -70,4 +70,15 @@ public class ContractorPaymentServiceImpl implements ContractorPaymentService {
 				.map(mapper::toVo).collect(Collectors.toList());
 	}
 
+	@Override
+	public List<ContractorPaymentVo> findAll(
+			LocalDate paymentDateStart,
+			LocalDate paymentDateEnd,
+			Long id) {
+		return repository.findByPaymentDateBetweenOrContractor_Id(
+				paymentDateStart, paymentDateEnd, id)
+				.stream()
+				.map(mapper::toVo).collect(Collectors.toList());
+	}
+
 }

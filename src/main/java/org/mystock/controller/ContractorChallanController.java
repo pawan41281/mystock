@@ -14,6 +14,7 @@ import org.mystock.apiresponse.ApiResponseVoWrapper;
 import org.mystock.exception.BusinessException;
 import org.mystock.service.ContractorChallanService;
 import org.mystock.util.MetadataGenerator;
+import org.mystock.vo.ContractorChallanItemVo;
 import org.mystock.vo.ContractorChallanVo;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -169,6 +170,93 @@ public class ContractorChallanController {
 
 		List<ContractorChallanVo> found = service.findAll(challanNumber, contractorId, fromChallanDate, toChallanDate, challanType);
 		log.info("Record {}", found != null && !found.isEmpty() ? "found" : "not found");
+
+		return ResponseEntity.ok(ApiResponseVoWrapper.success("Record fetched", found, metadataGenerator.getMetadata(found)));
+	}
+
+
+
+    @GetMapping("/lastchallan")
+    @Operation(
+            summary = "Get contractor last challan",
+            description = """
+					Fetches contractor last challan record
+					""",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Records fetched successfully")
+            }
+    )
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+    public ResponseEntity<ApiResponseVo<ContractorChallanVo>> find(
+            @RequestParam(value = "contractorid", required = false) Long contractorId,
+            @RequestParam(value = "challantype", required = false) String challanType,
+			@RequestParam(value = "qualityId", required = false) Long qualityId,
+			@RequestParam(value = "designId", required = false) Long designId,
+			@RequestParam(value = "colorId", required = false) Long colorId) {
+
+        log.info("Received request for find :: contractorId  {}, challanType {}, qualityId {}, designId {}, colorId {}",
+				contractorId, challanType, qualityId, designId, colorId);
+
+        ContractorChallanVo found = service.findLastChallan(contractorId, challanType, qualityId, designId, colorId);
+        log.info("Record {}", found != null ? "found" : "not found");
+
+        return ResponseEntity.ok(ApiResponseVoWrapper.success("Record fetched", found, metadataGenerator.getMetadata(found)));
+    }
+
+
+
+	@GetMapping("/lastchallanitem")
+	@Operation(
+			summary = "Get contractor last challan item",
+			description = """
+					Fetches contractor last challan item record
+					""",
+			responses = {
+					@ApiResponse(responseCode = "200", description = "Records fetched successfully")
+			}
+	)
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+	public ResponseEntity<ApiResponseVo<ContractorChallanItemVo>> findLatChallanItem(
+			@RequestParam(value = "contractorid", required = false) Long contractorId,
+			@RequestParam(value = "challantype", required = false) String challanType,
+			@RequestParam(value = "qualityId", required = false) Long qualityId,
+			@RequestParam(value = "designId", required = false) Long designId,
+			@RequestParam(value = "colorId", required = false) Long colorId) {
+
+		log.info("Received request for find :: contractorId  {}, challanType {}, qualityId {}, designId {}, colorId {}",
+				contractorId, challanType, qualityId, designId, colorId);
+
+		ContractorChallanItemVo found = service.findLastChallanItem(contractorId, challanType, qualityId, designId, colorId);
+		log.info("Record {}", found != null ? "found" : "not found");
+
+		return ResponseEntity.ok(ApiResponseVoWrapper.success("Record fetched", found, metadataGenerator.getMetadata(found)));
+	}
+
+
+
+	@GetMapping("/lastchallanitemrate")
+	@Operation(
+			summary = "Get contractor last challan item rate",
+			description = """
+					Fetches contractor last challan item rate
+					""",
+			responses = {
+					@ApiResponse(responseCode = "200", description = "Records fetched successfully")
+			}
+	)
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+	public ResponseEntity<ApiResponseVo<Float>> findLatChallanItemRate(
+			@RequestParam(value = "contractorid", required = false) Long contractorId,
+			@RequestParam(value = "challantype", required = false) String challanType,
+			@RequestParam(value = "qualityId", required = false) Long qualityId,
+			@RequestParam(value = "designId", required = false) Long designId,
+			@RequestParam(value = "colorId", required = false) Long colorId) {
+
+		log.info("Received request for rate :: contractorId  {}, challanType {}, qualityId {}, designId {}, colorId {}",
+				contractorId, challanType, qualityId, designId, colorId);
+
+		Float found = service.findLastChallanItemRate(contractorId, challanType, qualityId, designId, colorId);
+		log.info("Record {}", found != null ? "found" : "not found");
 
 		return ResponseEntity.ok(ApiResponseVoWrapper.success("Record fetched", found, metadataGenerator.getMetadata(found)));
 	}

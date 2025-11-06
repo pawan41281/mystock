@@ -22,4 +22,7 @@ public interface ContractorPaymentService {
                                              @Nullable Integer paymentAmountStart, @Nullable Integer paymentAmountEnd,
                                              @Nullable Long id);
 
+    List<ContractorPaymentVo> findAll(@NonNull LocalDate paymentDateStart, @NonNull LocalDate paymentDateEnd,
+                                      @Nullable Long id);
+
 }

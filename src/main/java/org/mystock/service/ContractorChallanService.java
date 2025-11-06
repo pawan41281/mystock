@@ -1,5 +1,6 @@
 package org.mystock.service;
 
+import org.mystock.vo.ContractorChallanItemVo;
 import org.mystock.vo.ContractorChallanVo;
 import org.mystock.vo.DashboardCurrentMonthContractorCardVo;
 import org.mystock.vo.DashboardPreviousDayContractorCardVo;
@@ -18,8 +19,15 @@ public interface ContractorChallanService {
 
 	ContractorChallanVo deleteById(Long id);
 
-	List<ContractorChallanVo> findAll(Integer challanNumber, Long contractorId, LocalDate fromChallanDate,
-			LocalDate toChallanDate, String challanType);
+	List<ContractorChallanVo> findAll(Integer challanNumber, Long contractorId, LocalDate fromChallanDate, LocalDate toChallanDate, String challanType);
+
+	ContractorChallanVo findRecentChallan(Long contractorId, String challanType, Long qualityId, Long designId, Long colorId);
+
+	ContractorChallanVo findLastChallan(Long contractorId, String challanType, Long qualityId, Long designId, Long colorId);
+
+	ContractorChallanItemVo findLastChallanItem(Long contractorId, String challanType, Long qualityId, Long designId, Long colorId);
+
+	Float findLastChallanItemRate(Long contractorId, String challanType, Long qualityId, Long designId, Long colorId);
 
 	List<ContractorChallanVo> getRecentChallans(String challanType);
 	

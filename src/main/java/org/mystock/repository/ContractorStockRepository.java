@@ -130,7 +130,7 @@ public interface ContractorStockRepository extends JpaRepository<ContractorStock
 			WHERE
 			  c.contractor_name like :contractorName
 			  AND
-			  d.description LIKE :designName
+			  d.design LIKE :designName
 			  AND
 			  clr.color_name LIKE :colorName
 			  AND
@@ -189,7 +189,7 @@ public interface ContractorStockRepository extends JpaRepository<ContractorStock
 			WHERE
 			  c.contractor_name like :contractorName
 			  AND
-			  d.description LIKE :designName
+			  d.design LIKE :designName
 			  AND
 			  clr.color_name LIKE :colorName
 			  AND
@@ -250,7 +250,7 @@ public interface ContractorStockRepository extends JpaRepository<ContractorStock
 			WHERE
 			  c.contractor_name like :contractorName
 			  AND
-			  d.description LIKE :designName
+			  d.design LIKE :designName
 			  AND
 			  clr.color_name LIKE :colorName
 			  AND
@@ -295,7 +295,7 @@ public interface ContractorStockRepository extends JpaRepository<ContractorStock
 			WHERE
 			  c.contractor_name like :contractorName
 			  AND
-			  d.description LIKE :designName
+			  d.design LIKE :designName
 			  AND
 			  clr.color_name LIKE :colorName
 			  AND
