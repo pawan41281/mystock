@@ -6,10 +6,15 @@ import java.util.List;
 
 public interface DesignStockReportService {
 
-	List<DesignStockReportVo> getDesignStockReport(String designName, String colorName);
-	
-	List<DesignStockReportVo> getDesignStockNonZeroReport(String designName, String colorName);
+//	List<DesignStockReportVo> getDesignStockReport(String designName, String colorName);
 
-	List<DesignStockReportVo> getDesignStockReport(String designName, String colorName, Integer pageSize, Integer pageCount);
-	int getDesignStockCount(String designName, String colorName);
+	List<DesignStockReportVo> getDesignStockReport(String qualityName, String designName, String colorName);
+
+//	List<DesignStockReportVo> getDesignStockNonZeroReport(String designName, String colorName);
+
+	List<DesignStockReportVo> getDesignStockNonZeroReport(String qualityName, String designName, String colorName);
+
+	List<DesignStockReportVo> getDesignStockReport(String qualityName, String designName, String colorName, Integer pageSize, Integer pageCount);
+
+	int getDesignStockCount(String qualityName, String designName, String colorName);
 }

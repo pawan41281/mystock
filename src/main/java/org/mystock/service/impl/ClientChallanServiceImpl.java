@@ -79,6 +79,7 @@ public class ClientChallanServiceImpl implements ClientChallanService {
 						stockVo = new StockVo();
 						stockVo.setDesign(designMapper.toVo(item.getDesign()));
 						stockVo.setColor(colorMapper.toVo(item.getColor()));
+						stockVo.setQuality(qualityMapper.toVo(item.getQuality()));
 						stockVo.setBalance(0 - item.getQuantity());
 						stockService.save(stockVo);
 					}
@@ -98,6 +99,7 @@ public class ClientChallanServiceImpl implements ClientChallanService {
 						stockVo = new StockVo();
 						stockVo.setDesign(designMapper.toVo(item.getDesign()));
 						stockVo.setColor(colorMapper.toVo(item.getColor()));
+						stockVo.setQuality(qualityMapper.toVo(item.getQuality()));
 						stockVo.setBalance(item.getQuantity());
 						stockService.save(stockVo);
 					}

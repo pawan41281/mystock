@@ -1,6 +1,7 @@
 package org.mystock.service.impl;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.mystock.service.ContractorAccountStatementService;
 import org.mystock.service.ContractorChallanService;
 import org.mystock.service.ContractorPaymentService;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class ContractorAccountStatementServiceImpl implements ContractorAccountStatementService {
 
     private final ContractorChallanService contractorChallanService;
@@ -74,6 +76,17 @@ public class ContractorAccountStatementServiceImpl implements ContractorAccountS
                                         .sum()
                         )
                 ));
+
+//        //c1 - 100 e1
+//        //c1 - 200 e2
+//        //c2 - 100 e3
+//        //c1 - 300 e4
+//        //c2 - 200 e5
+//        Map<ContractorVo, Double> challanTotalAmount = new HashMap<>();
+//        challanTotals.entrySet().stream().forEach(e -> {
+//            Double total = challanTotalAmount.getOrDefault(e.getKey(), 0D) + e.getValue();
+//            challanTotalAmount.put(e.getKey(),total);
+//        });
 
         // --- 2️⃣ Payments ---
         Map<ContractorVo, Integer> contractorPayments = paymentList.stream()

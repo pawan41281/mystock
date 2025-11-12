@@ -70,7 +70,7 @@ public class DownloadReportController {
 			@RequestParam(required = false, defaultValue = "10") Integer pageSize) {
 
 		log.info("Received download request for Design & Color-wise stock report.");
-		int count = designStockReportService.getDesignStockCount(designName, colorName);
+		int count = designStockReportService.getDesignStockCount(qualityName, designName, colorName);
 		log.info("Records found: {}", count);
 
 		if (count > 0) {
@@ -82,7 +82,7 @@ public class DownloadReportController {
 
 				while (pageCount < totalPages) {
 					List<DesignStockReportVo> found = designStockReportService
-							.getDesignStockReport(designName, colorName, pageSize, pageCount);
+							.getDesignStockReport(qualityName, designName, colorName, pageSize, pageCount);
 					StringBuilder response = new StringBuilder(mapper.writeValueAsString(found));
 					response.deleteCharAt(0); // remove '['
 					response.deleteCharAt(response.indexOf("]")); // remove ']'

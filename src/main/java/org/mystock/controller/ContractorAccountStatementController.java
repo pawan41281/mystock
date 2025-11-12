@@ -83,6 +83,9 @@ public class ContractorAccountStatementController {
             throw new BusinessException("Date range cannot exceed 31 days");
         }
 
+        //single contractor - 90 days
+        //all contractor - 30 days
+
         List<ContractorAccountStatementVo> found = contractorAccountStatementService.findAll(fromDate, toDate, contractorId);
         log.info("Record {}", found != null && !found.isEmpty() ? "found" : "not found");
 

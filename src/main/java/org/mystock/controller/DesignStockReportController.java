@@ -34,13 +34,55 @@ public class DesignStockReportController {
 	private final DesignStockReportService designStockReportService;
 	private final MetadataGenerator metadataGenerator;
 
+//	@GetMapping
+//	@Operation(
+//			summary = "Get Design and Color-wise Stock Balance",
+//			description = """
+//                    Fetches stock balance grouped by design and color.
+//                    If no filter is provided, returns only records with non-zero balance.
+//                    You can optionally filter by design name or color name (partial matches allowed).
+//                    """
+//	)
+//	@ApiResponses({
+//			@ApiResponse(responseCode = "200", description = "Report fetched successfully"),
+//			@ApiResponse(responseCode = "400", description = "Invalid filter parameter provided"),
+//			@ApiResponse(responseCode = "500", description = "Internal server error occurred")
+//	})
+//	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+//	public ResponseEntity<ApiResponseVo<List<DesignStockReportVo>>> getBalanceReport(
+//			@Parameter(description = "Filter by design name (partial match)", example = "Floral")
+//			@RequestParam(required = false) String designName,
+//
+//			@Parameter(description = "Filter by color name (partial match)", example = "Blue")
+//			@RequestParam(required = false) String colorName) {
+//
+//		log.info("Received request for design and color-wise stock report with designName='{}', colorName='{}'",
+//				designName, colorName);
+//
+//		List<DesignStockReportVo> found = Collections.emptyList();
+//
+//		if ((designName != null && !designName.isEmpty()) || (colorName != null && !colorName.isEmpty())) {
+//			found = designStockReportService.getDesignStockReport(designName, colorName);
+//		} else {
+//			found = designStockReportService.getDesignStockNonZeroReport(designName, colorName);
+//		}
+//
+//		String message = (found != null && !found.isEmpty()) ? "Record found" : "Record not found";
+//		log.info(message);
+//
+//		return ResponseEntity.ok(
+//				ApiResponseVoWrapper.success(message, found, metadataGenerator.getMetadata(found))
+//		);
+//	}
+
+
 	@GetMapping
 	@Operation(
 			summary = "Get Design and Color-wise Stock Balance",
 			description = """
-                    Fetches stock balance grouped by design and color.
+                    Fetches stock balance grouped by quality, design and color.
                     If no filter is provided, returns only records with non-zero balance.
-                    You can optionally filter by design name or color name (partial matches allowed).
+                    You can optionally filter by quality name, design name or color name (partial matches allowed).
                     """
 	)
 	@ApiResponses({
@@ -50,21 +92,24 @@ public class DesignStockReportController {
 	})
 	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<List<DesignStockReportVo>>> getBalanceReport(
+			@Parameter(description = "Filter by quality name (partial match)", example = "Superior")
+			@RequestParam(required = false) String qualityName,
+
 			@Parameter(description = "Filter by design name (partial match)", example = "Floral")
 			@RequestParam(required = false) String designName,
 
 			@Parameter(description = "Filter by color name (partial match)", example = "Blue")
 			@RequestParam(required = false) String colorName) {
 
-		log.info("Received request for design and color-wise stock report with designName='{}', colorName='{}'",
-				designName, colorName);
+		log.info("Received request for design and color-wise stock report with qualityName {}, designName='{}', colorName='{}'",
+				qualityName, designName, colorName);
 
 		List<DesignStockReportVo> found = Collections.emptyList();
 
-		if ((designName != null && !designName.isEmpty()) || (colorName != null && !colorName.isEmpty())) {
-			found = designStockReportService.getDesignStockReport(designName, colorName);
+		if ((qualityName != null && !qualityName.isEmpty()) || (designName != null && !designName.isEmpty()) || (colorName != null && !colorName.isEmpty())) {
+			found = designStockReportService.getDesignStockReport(qualityName, designName, colorName);
 		} else {
-			found = designStockReportService.getDesignStockNonZeroReport(designName, colorName);
+			found = designStockReportService.getDesignStockNonZeroReport(qualityName, designName, colorName);
 		}
 
 		String message = (found != null && !found.isEmpty()) ? "Record found" : "Record not found";
@@ -74,6 +119,7 @@ public class DesignStockReportController {
 				ApiResponseVoWrapper.success(message, found, metadataGenerator.getMetadata(found))
 		);
 	}
+
 
 	// Uncomment and document if you decide to re-enable the non-zero endpoint later
     /*
