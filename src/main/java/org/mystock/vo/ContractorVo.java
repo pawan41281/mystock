@@ -51,7 +51,8 @@ public class ContractorVo {
 	public boolean equals(Object o) {
 		if (o == null || getClass() != o.getClass()) return false;
 		ContractorVo that = (ContractorVo) o;
-		return Objects.equals(getId(), that.getId()) && Objects.equals(getContractorName(), that.getContractorName()) && Objects.equals(getEmail(), that.getEmail()) && Objects.equals(getMobile(), that.getMobile()) && Objects.equals(getGstNo(), that.getGstNo());
+		//return Objects.equals(getId(), that.getId()) && Objects.equals(getContractorName(), that.getContractorName()) && Objects.equals(getEmail(), that.getEmail()) && Objects.equals(getMobile(), that.getMobile()) && Objects.equals(getGstNo(), that.getGstNo());
+		return Objects.equals(getId(), that.getId());
 	}
 
 	@Override
