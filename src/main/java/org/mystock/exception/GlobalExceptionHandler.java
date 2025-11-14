@@ -14,13 +14,13 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(ResourceNotFoundException.class)
 	public ResponseEntity<ApiResponseVo<?>> handleResourceNotFound(ResourceNotFoundException ex) {
 		ApiResponseVo<Object> apiResponseVo = new ApiResponseVo<Object>("error", ex.getMessage(), null, null);
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponseVo);
+		return ResponseEntity.status(HttpStatus.ACCEPTED).body(apiResponseVo);
 	}
 
 	@ExceptionHandler(ResourceAlreadyExistsException.class)
 	public ResponseEntity<ApiResponseVo<?>> handleRecordAlreadyExistsException(ResourceAlreadyExistsException ex) {
 		ApiResponseVo<Object> apiResponseVo = new ApiResponseVo<Object>("error", ex.getMessage(), ex.getObject(), null);
-		return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponseVo);
+		return ResponseEntity.status(HttpStatus.ACCEPTED).body(apiResponseVo);
 	}
 
 	@ExceptionHandler(HttpClientErrorException.class)
@@ -34,7 +34,7 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<ApiResponseVo<?>> handleUnableToProcessException(
 			ServiceNotRespondingException ex) {
 		ApiResponseVo<Object> apiResponseVo = new ApiResponseVo<Object>("error", ex.getMessage(), null, null);
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponseVo);
+		return ResponseEntity.status(HttpStatus.ACCEPTED).body(apiResponseVo);
 	}
 
 	@ExceptionHandler(Exception.class)
@@ -47,6 +47,6 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(BusinessException.class)
 	public ResponseEntity<ApiResponseVo<?>> handleBusinessException(BusinessException ex) {
 		ApiResponseVo<Object> apiResponseVo = new ApiResponseVo<Object>("error", ex.getMessage(), null, null);
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponseVo);
+		return ResponseEntity.status(HttpStatus.ACCEPTED).body(apiResponseVo);
 	}
 }

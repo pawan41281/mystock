@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import org.mystock.entity.StockEntity;
 import org.mystock.mapper.ColorMapper;
 import org.mystock.mapper.DesignMapper;
+import org.mystock.mapper.QualityMapper;
 import org.mystock.mapper.StockMapper;
 import org.mystock.repository.StockRepository;
 import org.mystock.service.ColorService;
@@ -30,6 +31,7 @@ public class StockServiceImpl implements StockService {
 	private final StockMapper stockMapper;
 	private final DesignMapper designMapper;
 	private final ColorMapper colorMapper;
+	private final QualityMapper qualityMapper;
 
 	@Override
 	public StockVo save(StockVo stockVo) {
@@ -117,6 +119,7 @@ public class StockServiceImpl implements StockService {
 			}
 
 			entity.setOpeningBalance(vo.getOpeningBalance());
+			entity.setQuality(qualityMapper.toEntity(vo.getQuality()));
 			entity.setDesign(designMapper.toEntity(vo.getDesign()));
 			entity.setColor(colorMapper.toEntity(vo.getColor()));
 			entity.setUpdatedOn(LocalDateTime.now());
