@@ -134,7 +134,7 @@ public class ClientChallanController {
 					- challanNumber (Integer)
 					- clientId (Long)
 					- orderId (Long)
-					- fromChallanDate / toChallanDate (max 90 days range)
+					- fromDate / toDate (max 90 days range)
 					- challanType: `I` (Issue) or `R` (Received)
 					"""
 	)
@@ -147,25 +147,25 @@ public class ClientChallanController {
 			@Parameter(description = "Challan number") @RequestParam(value = "challannumber", required = false) Integer challanNumber,
 			@Parameter(description = "Client ID") @RequestParam(value = "clientid", required = false) Long clientId,
 			@Parameter(description = "Order ID") @RequestParam(value = "orderid", required = false) Long orderId,
-			@Parameter(description = "Start date for challan search (max 90-day range)") @RequestParam(value = "fromchallandate", required = false) LocalDate fromChallanDate,
-			@Parameter(description = "End date for challan search (max 90-day range)") @RequestParam(value = "tochallandate", required = false) LocalDate toChallanDate,
+			@Parameter(description = "Start date for challan search (max 90-day range)") @RequestParam(value = "fromDate", required = false) LocalDate fromDate,
+			@Parameter(description = "End date for challan search (max 90-day range)") @RequestParam(value = "toDate", required = false) LocalDate toDate,
 			@Parameter(description = "Challan type: I (Issue) or R (Received)") @RequestParam(value = "challantype", required = false) String challanType) {
 
 		log.info(
-				"Received request for find :: challanNumber {}, clientId {}, fromChallanDate {}, toChallanDate {}, challanType {}, orderId {}",
-				challanNumber, clientId, fromChallanDate, toChallanDate, challanType, orderId);
+				"Received request for find :: challanNumber {}, clientId {}, fromDate {}, toDate {}, challanType {}, orderId {}",
+				challanNumber, clientId, fromDate, toDate, challanType, orderId);
 
-		if (fromChallanDate != null && toChallanDate != null) {
-			if (toChallanDate.isBefore(fromChallanDate)) {
+		if (fromDate != null && toDate != null) {
+			if (toDate.isBefore(fromDate)) {
 				throw new BusinessException("Invalid date range: 'To Date' must be greater than or equal to 'From Date'");
 			}
-			long days = ChronoUnit.DAYS.between(fromChallanDate, toChallanDate);
+			long days = ChronoUnit.DAYS.between(fromDate, toDate);
 			if (days > 90) {
 				throw new BusinessException("Date range cannot exceed 90 days");
 			}
 		}
 
-		List<ClientChallanVo> found = service.findAll(challanNumber, clientId, orderId, fromChallanDate, toChallanDate, challanType);
+		List<ClientChallanVo> found = service.findAll(challanNumber, clientId, orderId, fromDate, toDate, challanType);
 		return ResponseEntity.ok(ApiResponseVoWrapper.success("Record fetched", found, metadataGenerator.getMetadata(found)));
 	}
 }

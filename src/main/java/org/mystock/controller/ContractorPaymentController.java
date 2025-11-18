@@ -149,8 +149,8 @@ public class ContractorPaymentController {
                     - Contractor ID
                     """,
             parameters = {
-                    @Parameter(name = "frompaymentdate", description = "Start date of the payment range (inclusive)", required = true),
-                    @Parameter(name = "topaymentdate", description = "End date of the payment range (inclusive)", required = true),
+                    @Parameter(name = "fromDate", description = "Start date of the payment range (inclusive)", required = true),
+                    @Parameter(name = "toDate", description = "End date of the payment range (inclusive)", required = true),
                     @Parameter(name = "paymentamountstart", description = "Minimum payment amount (default: 0)", required = false),
                     @Parameter(name = "paymentamountend", description = "Maximum payment amount (default: 99999999)", required = false),
                     @Parameter(name = "contractorid", description = "Contractor ID for filtering", required = false)
@@ -163,25 +163,25 @@ public class ContractorPaymentController {
     )
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     public ResponseEntity<ApiResponseVo<List<ContractorPaymentVo>>> find(
-            @RequestParam(value = "frompaymentdate") LocalDate fromPaymentDate,
-            @RequestParam(value = "topaymentdate") LocalDate toPaymentDate,
+            @RequestParam(value = "fromDate") LocalDate fromDate,
+            @RequestParam(value = "toDate") LocalDate toDate,
             @RequestParam(value = "paymentamountstart", required = false, defaultValue = "0") Integer paymentAmountStart,
             @RequestParam(value = "paymentamountend", required = false, defaultValue = "99999999") Integer paymentAmountEnd,
             @RequestParam(value = "contractorid", required = false) Long contractorId) {
 
-        log.info("Received request for find :: fromPaymentDate {}, toPaymentDate {}, paymentAmountStart {}, paymentAmountEnd {}, contractorId {}",
-                fromPaymentDate, toPaymentDate, paymentAmountStart, paymentAmountEnd, contractorId);
+        log.info("Received request for find :: fromDate {}, toDate {}, paymentAmountStart {}, paymentAmountEnd {}, contractorId {}",
+                fromDate, toDate, paymentAmountStart, paymentAmountEnd, contractorId);
 
-        if (toPaymentDate.isBefore(fromPaymentDate)) {
+        if (toDate.isBefore(fromDate)) {
             throw new BusinessException("Invalid date range: 'To Date' must be greater than or equal to 'From Date'");
         }
 
-        long days = ChronoUnit.DAYS.between(fromPaymentDate, toPaymentDate);
+        long days = ChronoUnit.DAYS.between(fromDate, toDate);
         if (days > 90) {
             throw new BusinessException("Date range cannot exceed 90 days");
         }
 
-        List<ContractorPaymentVo> found = service.findAll(fromPaymentDate, toPaymentDate, paymentAmountStart, paymentAmountEnd, contractorId);
+        List<ContractorPaymentVo> found = service.findAll(fromDate, toDate, paymentAmountStart, paymentAmountEnd, contractorId);
         log.info("Record {}", found != null && !found.isEmpty() ? "found" : "not found");
 
         return ResponseEntity.ok(ApiResponseVoWrapper.success("Record fetched", found, metadataGenerator.getMetadata(found)));
