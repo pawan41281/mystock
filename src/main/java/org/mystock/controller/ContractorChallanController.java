@@ -139,7 +139,7 @@ public class ContractorChallanController {
     @Operation(
             summary = "Get all contractor challans with filters",
             description = """
-                    Fetches contractor challan records filtered by challan number, contractor ID, 
+                    Fetches contractor challan records filtered by challan number, contractor ID,
                     challan date range (max 90 days), and challan type (I/R).
                     """,
             responses = {

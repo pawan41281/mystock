@@ -47,8 +47,8 @@ public class ContractorAccountStatementController {
                     - Contractor ID
                     """,
 //            parameters = {
-//                    @Parameter(name = "fromdate", description = "Start date of the account statement range (inclusive)", required = false),
-//                    @Parameter(name = "todate", description = "End date of the account statement range (inclusive)", required = false),
+//                    @Parameter(name = "fromDate", description = "Start date of the account statement range (inclusive)", required = false),
+//                    @Parameter(name = "toDate", description = "End date of the account statement range (inclusive)", required = false),
 //                    @Parameter(name = "contractorid", description = "Contractor ID for filtering", required = false)
 //            },
             responses = {
@@ -59,8 +59,8 @@ public class ContractorAccountStatementController {
     )
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     public ResponseEntity<ApiResponseVo<List<ContractorAccountStatementVo>>> find(
-            @RequestParam(value = "fromdate", required = false) LocalDate fromDate,
-            @RequestParam(value = "todate", required = false) LocalDate toDate,
+            @RequestParam(value = "fromDate", required = true) LocalDate fromDate,
+            @RequestParam(value = "toDate", required = true) LocalDate toDate,
             @RequestParam(value = "contractorid", required = false) Long contractorId) {
 
         log.info("Received request for find :: fromDate {}, toDate {}, contractorId {}",

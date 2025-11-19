@@ -11,10 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -66,8 +63,15 @@ public class ContractorPaymentServiceImpl implements ContractorPaymentService {
 
 	@Override
 	public List<ContractorPaymentVo> findAll(LocalDate paymentDateStart, LocalDate paymentDateEnd, Integer paymentAmountStart, Integer paymentAmountEnd, Long id) {
-		return repository.findByPaymentDateBetweenOrPaymentAmountBetweenOrContractor_IdOrderByPaymentDateDescContractor_IdAscPaymentAmountDesc(paymentDateStart, paymentDateEnd, paymentAmountStart, paymentAmountEnd, id).stream()
-				.map(mapper::toVo).collect(Collectors.toList());
+		List<ContractorPaymentVo> list = new ArrayList();
+		if(id!=null) {
+			list = repository.findByPaymentDateBetweenAndPaymentAmountBetweenAndContractor_IdOrderByPaymentDateDescContractor_IdAscPaymentAmountDesc(paymentDateStart, paymentDateEnd, paymentAmountStart, paymentAmountEnd, id).stream()
+					.map(mapper::toVo).collect(Collectors.toList());
+		}else{
+			list = repository.findByPaymentDateBetweenOrPaymentAmountBetweenOrderByPaymentDateDescContractor_IdAscPaymentAmountDesc(paymentDateStart, paymentDateEnd, paymentAmountStart, paymentAmountEnd).stream()
+					.map(mapper::toVo).collect(Collectors.toList());
+		}
+		return list;
 	}
 
 	@Override
@@ -75,10 +79,18 @@ public class ContractorPaymentServiceImpl implements ContractorPaymentService {
 			LocalDate paymentDateStart,
 			LocalDate paymentDateEnd,
 			Long id) {
-		return repository.findByPaymentDateBetweenOrContractor_Id(
-				paymentDateStart, paymentDateEnd, id)
-				.stream()
-				.map(mapper::toVo).collect(Collectors.toList());
+		List<ContractorPaymentVo> list = new ArrayList<>();
+		if(id!=null) {
+			list = repository.findByPaymentDateBetweenAndContractor_Id(
+							paymentDateStart, paymentDateEnd, id)
+					.stream()
+					.map(mapper::toVo).collect(Collectors.toList());
+		}else{
+			list = repository.findByPaymentDateBetween(paymentDateStart, paymentDateEnd)
+					.stream()
+					.map(mapper::toVo).collect(Collectors.toList());
+		}
+		return list;
 	}
 
 }
