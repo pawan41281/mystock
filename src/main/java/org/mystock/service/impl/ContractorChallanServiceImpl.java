@@ -351,8 +351,13 @@ public class ContractorChallanServiceImpl implements ContractorChallanService {
     public List<ContractorChallanVo> findAll(Integer challanNumber, Long contractorId, LocalDate fromChallanDate,
                                              LocalDate toChallanDate, String challanType) {
 
-        return repository.findAll(challanNumber, contractorId, fromChallanDate, toChallanDate, challanType).stream()
-                .map(mapper::toVo).collect(Collectors.toList());
+        if(contractorId!=null && contractorId>0) {
+            return repository.findAll(challanNumber, contractorId, fromChallanDate, toChallanDate, challanType).stream()
+                    .map(mapper::toVo).collect(Collectors.toList());
+        }else{
+            return repository.findAll(challanNumber, null, fromChallanDate, toChallanDate, challanType).stream()
+                    .map(mapper::toVo).collect(Collectors.toList());
+        }
     }
 
     @Override
