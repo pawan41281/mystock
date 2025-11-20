@@ -25,10 +25,10 @@ public class ContractorStockReportServiceImpl implements ContractorStockReportSe
 
 	@Override
 	public List<ContractorStockReportVo> getStockReport(Long contractorId, Long designId, Long colorId, Long qualityId) {
-		contractorId=contractorId.equals(0L)?null:contractorId;
-		designId=designId.equals(0L)?null:designId;
-		colorId=colorId.equals(0L)?null:colorId;
-		qualityId=qualityId.equals(0L)?null:qualityId;
+		contractorId=contractorId!=null && contractorId.equals(0L)?null:contractorId;
+		designId=designId!=null && designId.equals(0L)?null:designId;
+		colorId=colorId!=null && colorId.equals(0L)?null:colorId;
+		qualityId=qualityId!=null && qualityId.equals(0L)?null:qualityId;
 
 		if(contractorId==null && designId==null && qualityId==null && contractorId==null)
 			return Collections.emptyList();
