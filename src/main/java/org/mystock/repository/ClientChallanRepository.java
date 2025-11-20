@@ -24,7 +24,7 @@ public interface ClientChallanRepository extends JpaRepository<ClientChallanEnti
 			      AND (:fromChallanDate IS NULL OR c.challanDate >= :fromChallanDate)
 			      AND (:toChallanDate IS NULL OR c.challanDate <= :toChallanDate)
 			      AND (:challanType IS NULL OR c.challanType = :challanType)
-			    ORDER BY c.challanDate DESC
+			    ORDER BY c.challanDate DESC, c.challanNumber DESC 
 			""")
 	List<ClientChallanEntity> findAll(@Param("challanNumber") Integer challanNumber,
 			@Param("clientId") Long clientId, @Param("orderId") Long orderId,
@@ -36,7 +36,7 @@ public interface ClientChallanRepository extends JpaRepository<ClientChallanEnti
 			    FROM ClientChallanEntity c
 			    WHERE (c.challanDate = :challanDate)
 			      AND (c.challanType like :challanType)
-			    ORDER BY c.id DESC
+			    ORDER BY c.challanNumber DESC 
 			""")
 	List<ClientChallanEntity> getRecentChallans(@Param("challanDate") LocalDate challanDate,
 			@Param("challanType") String challanType);

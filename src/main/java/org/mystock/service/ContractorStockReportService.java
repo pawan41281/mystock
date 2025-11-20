@@ -9,7 +9,10 @@ public interface ContractorStockReportService {
 	//List<ContractorStockReportVo> getStockReport(String contractorName, String designName, String colorName);
 
 	List<ContractorStockReportVo> getStockReport(String contractorName, String designName, String colorName, String qualityName);
-	
+
+	List<ContractorStockReportVo> getStockReport(Long contractorId, Long designId, Long colorId, Long qualityId);
+
+
 	//List<ContractorStockReportVo> getNonZeroStockReport(String contractorName, String designName, String colorName);
 
 	List<ContractorStockReportVo> getNonZeroStockReport(String contractorName, String designName, String colorName, String qualityName);

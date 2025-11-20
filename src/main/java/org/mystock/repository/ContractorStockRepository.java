@@ -138,6 +138,8 @@ public interface ContractorStockRepository extends JpaRepository<ContractorStock
 			""", nativeQuery = true)
 	List<ContractorStockReportVo> getContractorStockReport(String contractorName, String designName, String colorName, String qualityName);
 
+
+
 //	@Query(value = """
 //			SELECT
 //			  c.id AS contractorId,
@@ -302,5 +304,45 @@ public interface ContractorStockRepository extends JpaRepository<ContractorStock
 			  q.quality_name LIKE :qualityName
 			""", nativeQuery = true)
 	int getContractorStockCount(String contractorName, String designName, String colorName, String qualityName);
+
+
+
+
+	@Query(value = """
+			SELECT
+			  c.id AS contractorId,
+			  UPPER(c.contractor_name) AS contractorName,
+			  d.id AS designId,
+			  UPPER(d.design) AS designName,
+			  UPPER(clr.color_name) AS colorName,
+			  UPPER(q.quality_name) AS qualityName,
+			  COALESCE(cs.obalance, 0) AS openingBalance,
+			  COALESCE(cs.balance, 0) AS closingBalance
+			FROM
+			  contractor_info c
+			CROSS JOIN
+			  design_info d
+			CROSS JOIN
+			  color_info clr
+			CROSS JOIN
+			  quality_info q
+			LEFT JOIN
+			  contractor_stock_info cs ON cs.contractor_id = c.id AND cs.design_id = d.id AND cs.color_id = clr.id AND cs.quality_id = q.id
+			WHERE
+			  (:contractorId IS NULL OR c.id = :contractorId)
+			  AND 
+			  (:designId IS NULL OR d.id = :designId)
+			  AND 
+			  (:colorId IS NULL OR clr.id = :colorId)
+              AND 
+              (:qualityId IS NULL OR q.id = :qualityId)
+              
+               
+			""", nativeQuery = true)
+	List<ContractorStockReportVo> getContractorStockReport(Long contractorId, Long designId, Long colorId, Long qualityId);
+
+
+
+
 
 }

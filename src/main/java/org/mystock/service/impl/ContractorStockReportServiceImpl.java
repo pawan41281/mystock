@@ -6,6 +6,7 @@ import org.mystock.service.ContractorStockReportService;
 import org.mystock.vo.ContractorStockReportVo;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -21,6 +22,19 @@ public class ContractorStockReportServiceImpl implements ContractorStockReportSe
 //		colorName = colorName != null && !colorName.isEmpty() ? "%" + colorName + "%" : "%";
 //		return contractorStockRepository.getContractorStockReport(contractorName, designName, colorName);
 //	}
+
+	@Override
+	public List<ContractorStockReportVo> getStockReport(Long contractorId, Long designId, Long colorId, Long qualityId) {
+		contractorId=contractorId.equals(0L)?null:contractorId;
+		designId=designId.equals(0L)?null:designId;
+		colorId=colorId.equals(0L)?null:colorId;
+		qualityId=qualityId.equals(0L)?null:qualityId;
+
+		if(contractorId==null && designId==null && qualityId==null && contractorId==null)
+			return Collections.emptyList();
+
+		return contractorStockRepository.getContractorStockReport(contractorId, designId, colorId, qualityId);
+	}
 
 	@Override
 	public List<ContractorStockReportVo> getStockReport(String contractorName, String designName, String colorName, String qualityName) {

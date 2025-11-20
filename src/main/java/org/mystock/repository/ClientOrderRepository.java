@@ -35,7 +35,8 @@ public interface ClientOrderRepository extends JpaRepository<ClientOrderEntity, 
             and (:clientId IS NULL OR c.client.id = :clientId)  
             and (:designId IS NULL OR items.design.id = :designId)  
             and (:colorId IS NULL OR items.color.id = :colorId) 
-            and (:qualityId IS NULL OR items.quality.id = :qualityId)
+            and (:qualityId IS NULL OR items.quality.id = :qualityId) 
+            order by c.orderDate DESC
             """)
     List<ClientOrderEntity> findAll(@Param("orderNumber") Integer orderNumber,
                                     @Param("fromOrderDate") LocalDate fromOrderDate, @Param("toOrderDate") LocalDate toOrderDate,
@@ -47,7 +48,7 @@ public interface ClientOrderRepository extends JpaRepository<ClientOrderEntity, 
                 SELECT c
                 FROM ClientOrderEntity c
                 WHERE (c.orderDate = :orderDate)
-                ORDER BY c.id DESC
+                ORDER BY c.orderDate DESC
             """)
     List<ClientOrderEntity> getRecentOrders(@Param("orderDate") LocalDate orderDate);
 

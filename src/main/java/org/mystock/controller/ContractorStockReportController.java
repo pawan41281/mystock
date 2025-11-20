@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -38,6 +37,95 @@ public class ContractorStockReportController {
 	private final ContractorStockReportService contractorStockReportService;
 	private final MetadataGenerator metadataGenerator;
 
+//	@GetMapping
+//	@Operation(
+//			summary = "Get Contractor Stock Report",
+//			description = """
+//            Retrieves a contractor stock balance report.
+//            - If any filter (contractorName, designName, colorName) is provided, returns all matching records.
+//            - If no filter is provided, returns **only non-zero balances**.
+//            """,
+//			parameters = {
+//					@Parameter(
+//							name = "contractorName",
+//							description = "Filter by contractor name (supports partial match)",
+//							example = "Ravi Traders"
+//					),
+//					@Parameter(
+//							name = "designName",
+//							description = "Filter by design name (supports partial match)",
+//							example = "Classic Marble"
+//					),
+//					@Parameter(
+//							name = "colorName",
+//							description = "Filter by color name (supports partial match)",
+//							example = "Ivory White"
+//					),
+//					@Parameter(
+//							name = "qualityName",
+//							description = "Filter by quality name (supports partial match)",
+//							example = "Superfine"
+//					)
+//			},
+//			responses = {
+//					@ApiResponse(
+//							responseCode = "200",
+//							description = "Report fetched successfully",
+//							content = @Content(schema = @Schema(implementation = ApiResponseVo.class))
+//					),
+//					@ApiResponse(
+//							responseCode = "400",
+//							description = "Invalid request parameters",
+//							content = @Content(schema = @Schema(implementation = ApiResponseVo.class))
+//					),
+//					@ApiResponse(
+//							responseCode = "401",
+//							description = "Unauthorized - missing or invalid token",
+//							content = @Content
+//					),
+//					@ApiResponse(
+//							responseCode = "500",
+//							description = "Internal server error",
+//							content = @Content(schema = @Schema(implementation = ApiResponseVo.class))
+//					)
+//			}
+//	)
+//	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+//	public ResponseEntity<ApiResponseVo<List<ContractorStockReportVo>>> getBalanceReport(
+//			@RequestParam(required = false) String contractorName,
+//			@RequestParam(required = false) String designName,
+//			@RequestParam(required = false) String colorName,
+//			@RequestParam(required = false) String qualityName) {
+//
+//		log.info("Received request for contractor stock report: contractor={}, design={}, color={}, quality {}",
+//				contractorName, designName, colorName, qualityName);
+//
+//		List<ContractorStockReportVo> found = Collections.emptyList();
+//
+//		// Logic: if any filter is passed, fetch filtered report; else fetch non-zero report
+//		if ((contractorName != null && !contractorName.isEmpty()) ||
+//				(designName != null && !designName.isEmpty()) ||
+//				(qualityName != null && !qualityName.isEmpty()) ||
+//				(colorName != null && !colorName.isEmpty())) {
+//
+//			found = contractorStockReportService.getStockReport(contractorName, designName, colorName, qualityName);
+//		} else {
+//			found = contractorStockReportService.getNonZeroStockReport(contractorName, designName, colorName, qualityName);
+//		}
+//
+//		if (found != null && !found.isEmpty()) {
+//			log.info("Report records found: {}", found.size());
+//			return ResponseEntity.ok(ApiResponseVoWrapper.success(
+//					"Record(s) found", found, metadataGenerator.getMetadata(found)));
+//		} else {
+//			log.warn("No records found for given filters");
+//			return ResponseEntity.ok(ApiResponseVoWrapper.success(
+//					"Record not found", found, metadataGenerator.getMetadata(found)));
+//		}
+//	}
+
+
+
 	@GetMapping
 	@Operation(
 			summary = "Get Contractor Stock Report",
@@ -47,26 +135,10 @@ public class ContractorStockReportController {
             - If no filter is provided, returns **only non-zero balances**.
             """,
 			parameters = {
-					@Parameter(
-							name = "contractorName",
-							description = "Filter by contractor name (supports partial match)",
-							example = "Ravi Traders"
-					),
-					@Parameter(
-							name = "designName",
-							description = "Filter by design name (supports partial match)",
-							example = "Classic Marble"
-					),
-					@Parameter(
-							name = "colorName",
-							description = "Filter by color name (supports partial match)",
-							example = "Ivory White"
-					),
-					@Parameter(
-							name = "qualityName",
-							description = "Filter by quality name (supports partial match)",
-							example = "Superfine"
-					)
+					@Parameter(name = "contractorId"),
+					@Parameter(name = "designId"),
+					@Parameter(name = "colorId"),
+					@Parameter(name = "qualityId")
 			},
 			responses = {
 					@ApiResponse(
@@ -93,26 +165,15 @@ public class ContractorStockReportController {
 	)
 	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseVo<List<ContractorStockReportVo>>> getBalanceReport(
-			@RequestParam(required = false) String contractorName,
-			@RequestParam(required = false) String designName,
-			@RequestParam(required = false) String colorName,
-			@RequestParam(required = false) String qualityName) {
+			@RequestParam(required = false) Long contractorId,
+			@RequestParam(required = false) Long designId,
+			@RequestParam(required = false) Long colorId,
+			@RequestParam(required = false) Long qualityId) {
 
-		log.info("Received request for contractor stock report: contractor={}, design={}, color={}, quality {}",
-				contractorName, designName, colorName, qualityName);
+		log.info("Received request for contractor stock report: contractor={}, design={}, color={}, quality={}",
+				contractorId, designId, colorId, qualityId);
 
-		List<ContractorStockReportVo> found = Collections.emptyList();
-
-		// Logic: if any filter is passed, fetch filtered report; else fetch non-zero report
-		if ((contractorName != null && !contractorName.isEmpty()) ||
-				(designName != null && !designName.isEmpty()) ||
-				(qualityName != null && !qualityName.isEmpty()) ||
-				(colorName != null && !colorName.isEmpty())) {
-
-			found = contractorStockReportService.getStockReport(contractorName, designName, colorName, qualityName);
-		} else {
-			found = contractorStockReportService.getNonZeroStockReport(contractorName, designName, colorName, qualityName);
-		}
+		List<ContractorStockReportVo> found = contractorStockReportService.getStockReport(contractorId, designId, colorId, qualityId);
 
 		if (found != null && !found.isEmpty()) {
 			log.info("Report records found: {}", found.size());

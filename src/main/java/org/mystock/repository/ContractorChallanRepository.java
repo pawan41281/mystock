@@ -23,7 +23,7 @@ public interface ContractorChallanRepository extends JpaRepository<ContractorCha
                   AND (:fromChallanDate IS NULL OR c.challanDate >= :fromChallanDate)
                   AND (:toChallanDate IS NULL OR c.challanDate <= :toChallanDate)
                   AND (:challanType IS NULL OR c.challanType = :challanType)
-                ORDER BY c.challanDate DESC
+                ORDER BY c.challanDate DESC, c.challanNumber DESC
             """)
     List<ContractorChallanEntity> findAll(@Param("challanNumber") Integer challanNumber,
                                           @Param("contractorId") Long contractorId, @Param("fromChallanDate") LocalDate fromChallanDate,
@@ -34,7 +34,7 @@ public interface ContractorChallanRepository extends JpaRepository<ContractorCha
                 FROM ContractorChallanEntity c
                 WHERE (c.challanDate = :challanDate)
                   AND (c.challanType like :challanType)
-                ORDER BY c.id DESC
+                ORDER BY c.challanDate DESC, c.challanNumber DESC
             """)
     List<ContractorChallanEntity> getRecentChallans(@Param("challanDate") LocalDate challanDate,
                                                     @Param("challanType") String challanType);
@@ -106,7 +106,7 @@ public interface ContractorChallanRepository extends JpaRepository<ContractorCha
             challanItems.design.id = :designId 
             and 
             challanItems.color.id = :colorId
-            order by c.challanDate desc
+            order by c.challanDate DESC, c.challanNumber DESC
             """)
     ContractorChallanEntity findRecentChallan(Long contractorId, String challanType, Long qualityId, Long designId, Long colorId);
 
@@ -120,7 +120,7 @@ public interface ContractorChallanRepository extends JpaRepository<ContractorCha
               AND ci.quality_id = :qualityId
               AND ci.design_id = :designId
               AND ci.color_id = :colorId
-            ORDER BY c.challan_date DESC, c.created_on DESC
+            ORDER BY c.challanDate DESC, c.challanNumber DESC
             LIMIT 1
             """, nativeQuery = true)
     ContractorChallanEntity findLastChallan(
