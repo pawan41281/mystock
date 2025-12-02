@@ -57,7 +57,13 @@ public class DefaultDataConfig {
         UserEntity adminUser = new UserEntity(1L, "admin", "admin", "admin@gmail.com", "1234567890", encoder.encode("admin"), false);
         Set<RoleEntity> roles = new HashSet<>(roleList);  //resolveRoles(adminRole);
         adminUser.setRoles(roles);
+        UserEntity ashish = new UserEntity(2L, "ashish", "ashish", "ashish@gmail.com", "1020304050", encoder.encode("ashish"), false);
+        Set<RoleEntity> userRoles = new HashSet<>();
+        userRoles.add(userRoleEntity);
+        ashish.setRoles(userRoles);
+
         userRepository.saveAndFlush(adminUser);
+        userRepository.saveAndFlush(ashish);
 
         log.info("User initialization completed...");
 
@@ -158,15 +164,21 @@ public class DefaultDataConfig {
 
         log.info("Initializing default parties...");
         List<ClientEntity> clientEntityList = new ArrayList<>();
-        clientEntityList.add(new ClientEntity(1L, "Aman Handloom", "1122334455", adminUser));
-        clientEntityList.add(new ClientEntity(2L, "Shree Textile", "1478521478", adminUser));
+        clientEntityList.add(new ClientEntity(1L, "Aman Handloom", "4122334455", adminUser));
+        clientEntityList.add(new ClientEntity(2L, "Shree Textile", "5478956878", adminUser));
+        clientEntityList.add(new ClientEntity(3L, "Jainsons Textile", "5845721478", adminUser));
+        clientEntityList.add(new ClientEntity(4L, "Golden Fabs", "5478521111", adminUser));
+        clientEntityList.add(new ClientEntity(5L, "Maa Durga Traders", "4751521478", adminUser));
         clientRepository.saveAll(clientEntityList);
         log.info("Parties initialization completed...");
 
         log.info("Initializing default contractors...");
         List<ContractorEntity> contractorEntityList = new ArrayList<>();
         contractorEntityList.add(new ContractorEntity(1L, "Ramesh Singh", "1234512345", adminUser));
-        contractorEntityList.add(new ContractorEntity(2L, "Shambhu Nath", "1477815478", adminUser));
+        contractorEntityList.add(new ContractorEntity(2L, "Shambhu Nath", "2477815478", adminUser));
+        contractorEntityList.add(new ContractorEntity(3L, "Jairam Saini", "3778154784", adminUser));
+        contractorEntityList.add(new ContractorEntity(4L, "Mukesh Kumar", "9978154730", adminUser));
+        contractorEntityList.add(new ContractorEntity(5L, "Deepak Sharma", "8378154720", adminUser));
         contractorRepository.saveAll(contractorEntityList);
         log.info("Contractors initialization completed...");
 
