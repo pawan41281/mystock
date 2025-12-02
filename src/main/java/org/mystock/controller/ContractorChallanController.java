@@ -53,6 +53,21 @@ public class ContractorChallanController {
 
         log.info("Received request for save");
         if (vo.getId() != null && vo.getId().equals(0L)) vo.setId(null);
+        if(vo.getContractor()==null){
+            return ResponseEntity.status(201)
+                    .body(ApiResponseVoWrapper.error("Contractor is missing.", null, metadataGenerator.getMetadata(null)));
+        }
+
+        if(vo.getContractor().getId()==null){
+            return ResponseEntity.status(201)
+                    .body(ApiResponseVoWrapper.error("Contractor is missing.", null, metadataGenerator.getMetadata(null)));
+        }
+
+        if(vo.getContractor().getId().equals(0L)){
+            return ResponseEntity.status(201)
+                    .body(ApiResponseVoWrapper.error("Contractor is missing.", null, metadataGenerator.getMetadata(null)));
+        }
+
         ContractorChallanVo saved = service.save(vo);
         if (saved != null && saved.getId() != null) {
             log.info("Record saved");
@@ -257,4 +272,7 @@ public class ContractorChallanController {
 
         return ResponseEntity.ok(ApiResponseVoWrapper.success("Record fetched", found, metadataGenerator.getMetadata(found)));
     }
+
+
+
 }

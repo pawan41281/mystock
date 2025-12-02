@@ -80,7 +80,7 @@ public class AuthController {
 
             JwtAuthResponse jwtAuthResponse = new JwtAuthResponse();
             jwtAuthResponse.setAccessToken(accessToken);
-            jwtAuthResponse.setRefreshToken("Set in HttpOnly Cookie");
+            jwtAuthResponse.setRefreshToken(refreshToken);
 
             return ResponseEntity.ok(ApiResponseVoWrapper.success("Login successful", jwtAuthResponse, null));
         } catch (Exception e) {
