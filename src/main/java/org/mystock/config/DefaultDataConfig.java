@@ -37,6 +37,8 @@ public class DefaultDataConfig {
 
     private final ContractorRepository contractorRepository;
 
+    private final PropertyRepository propertyRepository;
+
     @EventListener(ApplicationReadyEvent.class)
     private void initializeDefaultData() {
 
@@ -181,6 +183,14 @@ public class DefaultDataConfig {
         contractorEntityList.add(new ContractorEntity(5L, "Deepak Sharma", "8378154720", adminUser));
         contractorRepository.saveAll(contractorEntityList);
         log.info("Contractors initialization completed...");
+
+        log.info("Initializing default properties...");
+        List<PropertyEntity> propertyEntityList = new ArrayList<>();
+        propertyEntityList.add(new PropertyEntity(1L, "VALD", "31", adminUser));
+        propertyEntityList.add(new PropertyEntity(2L, "VALM", "12", adminUser));
+        propertyEntityList.add(new PropertyEntity(3L, "VALY", "2025", adminUser));
+        propertyRepository.saveAll(propertyEntityList);
+        log.info("Properties initialization completed...");
 
     }
 }
