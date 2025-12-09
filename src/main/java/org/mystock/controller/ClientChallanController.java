@@ -133,7 +133,7 @@ public class ClientChallanController {
 					Fetch challan using optional filters:
 					- challanNumber (Integer)
 					- clientId (Long)
-					- orderId (Long)
+					- orderNumber (Integer)
 					- fromDate / toDate (max 90 days range)
 					- challanType: `I` (Issue) or `R` (Received)
 					"""
@@ -146,14 +146,14 @@ public class ClientChallanController {
 	public ResponseEntity<ApiResponseVo<List<ClientChallanVo>>> find(
 			@Parameter(description = "Challan number") @RequestParam(value = "challannumber", required = false) Integer challanNumber,
 			@Parameter(description = "Client ID") @RequestParam(value = "clientid", required = false) Long clientId,
-			@Parameter(description = "Order ID") @RequestParam(value = "orderid", required = false) Long orderId,
+			@Parameter(description = "Order NUMBER") @RequestParam(value = "orderNumber", required = false) Integer orderNumber,
 			@Parameter(description = "Start date for challan search (max 90-day range)") @RequestParam(value = "fromDate", required = false) LocalDate fromDate,
 			@Parameter(description = "End date for challan search (max 90-day range)") @RequestParam(value = "toDate", required = false) LocalDate toDate,
 			@Parameter(description = "Challan type: I (Issue) or R (Received)") @RequestParam(value = "challantype", required = false) String challanType) {
 
 		log.info(
-				"Received request for find :: challanNumber {}, clientId {}, fromDate {}, toDate {}, challanType {}, orderId {}",
-				challanNumber, clientId, fromDate, toDate, challanType, orderId);
+				"Received request for find :: challanNumber {}, clientId {}, fromDate {}, toDate {}, challanType {}, orderNumber {}",
+				challanNumber, clientId, fromDate, toDate, challanType, orderNumber);
 
 		if (fromDate != null && toDate != null) {
 			if (toDate.isBefore(fromDate)) {
@@ -165,7 +165,7 @@ public class ClientChallanController {
 			}
 		}
 
-		List<ClientChallanVo> found = service.findAll(challanNumber, clientId, orderId, fromDate, toDate, challanType);
+		List<ClientChallanVo> found = service.findAll(challanNumber, clientId, orderNumber, fromDate, toDate, challanType);
 		return ResponseEntity.ok(ApiResponseVoWrapper.success("Record fetched", found, metadataGenerator.getMetadata(found)));
 	}
 }

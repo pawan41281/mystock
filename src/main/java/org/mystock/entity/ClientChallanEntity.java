@@ -34,7 +34,7 @@ public class ClientChallanEntity {
 	private ClientEntity client;
 
 	@ManyToOne
-	@JoinColumn(name = "order_id")
+	@JoinColumn(name = "order_id", nullable = true)
 	private ClientOrderEntity order;
 
 	@Column(name = "challan_type", nullable = false) // I - Issue, R - Received

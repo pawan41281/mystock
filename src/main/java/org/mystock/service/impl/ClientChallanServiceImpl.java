@@ -255,6 +255,20 @@ public class ClientChallanServiceImpl implements ClientChallanService {
 	}
 
 	@Override
+	public List<ClientChallanVo> findAll(Integer challanNumber, Long clientId, Integer orderNumber, LocalDate fromChallanDate,
+										 LocalDate toChallanDate, String challanType) {
+
+		if(challanNumber==null){
+			Long orderId = null;
+			return repository.findAll(challanNumber, clientId, orderId, fromChallanDate, toChallanDate, challanType)
+					.stream().map(mapper::toVo).collect(Collectors.toList());
+		}else {
+			return repository.findAll(challanNumber, clientId, orderNumber, fromChallanDate, toChallanDate, challanType)
+					.stream().map(mapper::toVo).collect(Collectors.toList());
+		}
+	}
+
+	@Override
 	public List<ClientChallanVo> getRecentChallans(String challanType) {
 
 		if (challanType != null && !challanType.equalsIgnoreCase("I") && !challanType.equalsIgnoreCase("R"))

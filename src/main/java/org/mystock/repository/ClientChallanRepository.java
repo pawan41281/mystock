@@ -27,9 +27,29 @@ public interface ClientChallanRepository extends JpaRepository<ClientChallanEnti
 			    ORDER BY c.challanDate DESC, c.challanNumber DESC 
 			""")
 	List<ClientChallanEntity> findAll(@Param("challanNumber") Integer challanNumber,
-			@Param("clientId") Long clientId, @Param("orderId") Long orderId,
-			@Param("fromChallanDate") LocalDate fromChallanDate, @Param("toChallanDate") LocalDate toChallanDate,
+			@Param("clientId") Long clientId,
+			@Param("orderId") Long orderId,
+			@Param("fromChallanDate") LocalDate fromChallanDate,
+			@Param("toChallanDate") LocalDate toChallanDate,
 			@Param("challanType") String challanType);
+
+	@Query("""
+			    SELECT c
+			    FROM ClientChallanEntity c
+			    WHERE (:challanNumber IS NULL OR c.challanNumber = :challanNumber)
+			      AND (:clientId IS NULL OR c.client.id = :clientId)
+			      AND (:orderNumber IS NULL OR c.order.orderNumber = :orderNumber)
+			      AND (:fromChallanDate IS NULL OR c.challanDate >= :fromChallanDate)
+			      AND (:toChallanDate IS NULL OR c.challanDate <= :toChallanDate)
+			      AND (:challanType IS NULL OR c.challanType = :challanType)
+			    ORDER BY c.challanDate DESC, c.challanNumber DESC 
+			""")
+	List<ClientChallanEntity> findAll(@Param("challanNumber") Integer challanNumber,
+									  @Param("clientId") Long clientId,
+									  @Param("orderNumber") Integer orderNumber,
+									  @Param("fromChallanDate") LocalDate fromChallanDate,
+									  @Param("toChallanDate") LocalDate toChallanDate,
+									  @Param("challanType") String challanType);
 
 	@Query("""
 			    SELECT c

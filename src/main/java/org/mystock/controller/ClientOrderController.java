@@ -201,6 +201,13 @@ public class ClientOrderController {
 		log.info("Received request for find :: orderNumber {}, clientId {}, fromOrderDate {}, toOrderDate {}, designId {}, colorId {}, qualityId {}",
 				orderNumber, clientId, fromOrderDate, toOrderDate, designId, colorId, qualityId);
 
+
+		if(orderNumber!=null && orderNumber.equals(0)) orderNumber=null;
+		if(clientId!=null && clientId.equals(0L)) clientId=null;
+		if(designId!=null && designId.equals(0L)) designId=null;
+		if(colorId!=null && colorId.equals(0L)) colorId=null;
+		if(qualityId!=null && qualityId.equals(0L)) qualityId=null;
+
 		if (fromOrderDate != null && toOrderDate != null) {
 			if (toOrderDate.isBefore(fromOrderDate)) {
 				throw new BusinessException(

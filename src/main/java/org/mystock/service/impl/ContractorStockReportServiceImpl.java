@@ -30,7 +30,7 @@ public class ContractorStockReportServiceImpl implements ContractorStockReportSe
 		colorId=colorId!=null && colorId.equals(0L)?null:colorId;
 		qualityId=qualityId!=null && qualityId.equals(0L)?null:qualityId;
 
-		if(contractorId==null && designId==null && qualityId==null && contractorId==null)
+		if(contractorId==null && designId==null && qualityId==null && colorId==null)
 			return Collections.emptyList();
 
 		return contractorStockRepository.getContractorStockReport(contractorId, designId, colorId, qualityId);

@@ -21,6 +21,9 @@ public interface ClientChallanService {
 	List<ClientChallanVo> findAll(Integer challanNumber, Long clientId, Long orderId, LocalDate fromChallanDate,
 			LocalDate toChallanDate, String challanType);
 
+	public List<ClientChallanVo> findAll(Integer challanNumber, Long clientId, Integer orderNumber, LocalDate fromChallanDate,
+										 LocalDate toChallanDate, String challanType);
+
 	List<ClientChallanVo> getRecentChallans(String challanType);
 
 	Integer getCurrentMonthChallanCount(String challanType);
