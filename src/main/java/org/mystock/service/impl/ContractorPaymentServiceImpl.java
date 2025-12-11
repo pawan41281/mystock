@@ -68,7 +68,7 @@ public class ContractorPaymentServiceImpl implements ContractorPaymentService {
 			list = repository.findByPaymentDateBetweenAndPaymentAmountBetweenAndContractor_IdOrderByPaymentDateDescContractor_IdAscPaymentAmountDesc(paymentDateStart, paymentDateEnd, paymentAmountStart, paymentAmountEnd, id).stream()
 					.map(mapper::toVo).collect(Collectors.toList());
 		}else{
-			list = repository.findByPaymentDateBetweenOrPaymentAmountBetweenOrderByPaymentDateDescContractor_IdAscPaymentAmountDesc(paymentDateStart, paymentDateEnd, paymentAmountStart, paymentAmountEnd).stream()
+			list = repository.findByPaymentDateBetweenAndPaymentAmountBetweenOrderByPaymentDateDescContractor_IdAscPaymentAmountDesc(paymentDateStart, paymentDateEnd, paymentAmountStart, paymentAmountEnd).stream()
 					.map(mapper::toVo).collect(Collectors.toList());
 		}
 		return list;

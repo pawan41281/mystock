@@ -258,7 +258,7 @@ public class ClientChallanServiceImpl implements ClientChallanService {
 	public List<ClientChallanVo> findAll(Integer challanNumber, Long clientId, Integer orderNumber, LocalDate fromChallanDate,
 										 LocalDate toChallanDate, String challanType) {
 
-		if(challanNumber==null){
+		if(orderNumber==null){
 			Long orderId = null;
 			return repository.findAll(challanNumber, clientId, orderId, fromChallanDate, toChallanDate, challanType)
 					.stream().map(mapper::toVo).collect(Collectors.toList());

@@ -16,6 +16,7 @@ public interface ContractorPaymentRepository extends JpaRepository<ContractorPay
 
 	List<ContractorPaymentEntity> findByPaymentDateBetweenAndPaymentAmountBetweenAndContractor_IdOrderByPaymentDateDescContractor_IdAscPaymentAmountDesc(@NonNull LocalDate paymentDateStart, @NonNull LocalDate paymentDateEnd, @Nullable int paymentAmountStart, @Nullable int paymentAmountEnd, @Nullable Long id);
 	List<ContractorPaymentEntity> findByPaymentDateBetweenOrPaymentAmountBetweenOrderByPaymentDateDescContractor_IdAscPaymentAmountDesc(@NonNull LocalDate paymentDateStart, @NonNull LocalDate paymentDateEnd, @Nullable int paymentAmountStart, @Nullable int paymentAmountEnd);
+	List<ContractorPaymentEntity> findByPaymentDateBetweenAndPaymentAmountBetweenOrderByPaymentDateDescContractor_IdAscPaymentAmountDesc(@NonNull LocalDate paymentDateStart, @NonNull LocalDate paymentDateEnd, @Nullable int paymentAmountStart, @Nullable int paymentAmountEnd);
 	List<ContractorPaymentEntity> findByPaymentDateBetweenAndContractor_Id(@NonNull LocalDate paymentDateStart, @NonNull LocalDate paymentDateEnd, @Nullable Long id);
 
 	List<ContractorPaymentEntity> findByPaymentDateBetweenOrderByPaymentDateDescContractor_IdAscPaymentAmountDesc(@NonNull LocalDate paymentDateStart, @NonNull LocalDate paymentDateEnd);

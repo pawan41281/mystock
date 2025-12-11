@@ -58,7 +58,9 @@ public class DefaultDataConfig {
 
         UserEntity adminUser = new UserEntity(1L, "admin", "admin", "admin@gmail.com", "1234567890", encoder.encode("admin"), false);
         Set<RoleEntity> roles = new HashSet<>(roleList);  //resolveRoles(adminRole);
-        adminUser.setRoles(roles);
+        Set<RoleEntity> adminRoles = new HashSet<>();
+        adminRoles.add(adminRoleEntity);
+        adminUser.setRoles(adminRoles);
         UserEntity ashish = new UserEntity(2L, "ashish", "ashish", "ashish@gmail.com", "1020304050", encoder.encode("ashish"), false);
         Set<RoleEntity> userRoles = new HashSet<>();
         userRoles.add(userRoleEntity);
