@@ -11,6 +11,8 @@ public interface UserService {
 
 	UserVo findById(Long id) throws ResourceNotFoundException;
 
+	UserVo findByIdAndPassword(Long id, String password) throws ResourceNotFoundException;
+
 	UserVo findByUserId(String userName) throws ResourceNotFoundException;
 
 	UserVo findByEmail(String email) throws ResourceNotFoundException;

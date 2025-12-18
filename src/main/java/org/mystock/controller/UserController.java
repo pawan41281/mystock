@@ -103,6 +103,44 @@ public class UserController {
 		}
 	}
 
+
+
+	// ----------------------------
+	// UPDATE PASSWORD
+	// ----------------------------
+	@Operation(
+			summary = "Update password of an existing user",
+			description = "Updates password of an existing user. Accessible to ADMIN or USER roles."
+	)
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "User updated successfully"),
+			@ApiResponse(responseCode = "404", description = "User not found"),
+			@ApiResponse(responseCode = "500", description = "Internal server error")
+	})
+	@PatchMapping("/updatepassword")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+	public ResponseEntity<ApiResponseVo<UserVo>> updatePassword(
+			@RequestParam Long id,
+			@RequestParam String oldPassword,
+			@RequestParam String newPassword)
+			throws ResourceNotFoundException {
+
+		UserVo userVo = null;
+
+		try {
+			userVo = userService.findByIdAndPassword(id, oldPassword);
+			userVo.setPassword(newPassword);
+			UserVo newUser = userService.update(userVo);
+			if(newUser!=null){
+				return ResponseEntity.ok(ApiResponseVoWrapper.success("Password updated successfully", newUser, null));
+			}else{
+				return ResponseEntity.ok(ApiResponseVoWrapper.success("Password not updated", newUser, null));
+			}
+		} catch (Exception e) {
+			return ResponseEntity.status(200).body(ApiResponseVoWrapper.failure(e.getMessage(), userVo, null));
+		}
+	}
+
 	// ----------------------------
 	// FIND BY USER ID
 	// ----------------------------

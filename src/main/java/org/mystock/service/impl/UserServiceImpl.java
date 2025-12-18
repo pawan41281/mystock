@@ -1,6 +1,7 @@
 package org.mystock.service.impl;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.mystock.entity.RoleEntity;
 import org.mystock.entity.UserEntity;
 import org.mystock.exception.ResourceAlreadyExistsException;
@@ -21,6 +22,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -175,6 +177,24 @@ public class UserServiceImpl implements UserService {
 			return userMapper.convert(user.get());
 		else
 			throw new ResourceNotFoundException("UserId not exists");
+	}
+
+	@Override
+	public UserVo findByIdAndPassword(Long id, String password) throws ResourceNotFoundException {
+		Optional<UserEntity> usr = userRepository.findById(id);
+		if(usr.isPresent()){
+			UserEntity user = usr.get();
+			if(encoder.matches(password,user.getPassword())){
+				//log.info("valid password");
+				user.setPassword(encoder.encode(password));
+				userRepository.save(user);
+				return userMapper.convert(user);
+			}else{
+				throw new ResourceNotFoundException("Invalid id or password");
+			}
+		}else{
+			throw new ResourceNotFoundException("Invalid id or password");
+		}
 	}
 
 	@Override

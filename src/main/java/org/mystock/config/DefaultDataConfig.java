@@ -114,7 +114,7 @@ public class DefaultDataConfig {
 
         MenuGroupEntity usermanagementMenuGroup = new MenuGroupEntity("usermanagement", "User Management", "group", "icon-navigation", adminRoleEntity);
         List<MenuItemEntity> usermanagementMenuItems = new ArrayList<>();
-        usermanagementMenuItems.add(new MenuItemEntity("newuser", "New User", "item", "nav-item", "/newuser", "ant-design", false, usermanagementMenuGroup, adminRoleEntity));
+        usermanagementMenuItems.add(new MenuItemEntity("newuser", "Users", "item", "nav-item", "/newuser", "ant-design", false, usermanagementMenuGroup, adminRoleEntity));
         usermanagementMenuGroup.setChildren(usermanagementMenuItems);
 
 
