@@ -1,17 +1,27 @@
 package org.mystock.service;
 
-import java.util.List;
-
 import org.mystock.vo.ContractorStockReportVo;
+
+import java.util.List;
 
 public interface ContractorStockReportService {
 
-	public List<ContractorStockReportVo> getStockReport(String contractorName, String designName, String colorName);
-	
-	public List<ContractorStockReportVo> getNonZeroStockReport(String contractorName, String designName, String colorName);
+	//List<ContractorStockReportVo> getStockReport(String contractorName, String designName, String colorName);
 
-	public int getStockCount(String contractorName, String designName, String colorName);
+	List<ContractorStockReportVo> getStockReport(String contractorName, String designName, String colorName, String qualityName);
 
-	public List<ContractorStockReportVo> getStockReport(String contractorName, String designName, String colorName,
-			Integer pageSize, Integer pageCount);
+	List<ContractorStockReportVo> getStockReport(Long contractorId, Long designId, Long colorId, Long qualityId);
+
+
+	//List<ContractorStockReportVo> getNonZeroStockReport(String contractorName, String designName, String colorName);
+
+	List<ContractorStockReportVo> getNonZeroStockReport(String contractorName, String designName, String colorName, String qualityName);
+
+	//int getStockCount(String contractorName, String designName, String colorName);
+
+	int getStockCount(String contractorName, String designName, String colorName, String qualityName);
+
+	//List<ContractorStockReportVo> getStockReport(String contractorName, String designName, String colorName, Integer pageSize, Integer pageCount);
+
+	List<ContractorStockReportVo> getStockReport(String contractorName, String designName, String colorName, String qualityName, Integer pageSize, Integer pageCount);
 }

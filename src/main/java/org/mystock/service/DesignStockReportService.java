@@ -1,15 +1,20 @@
 package org.mystock.service;
 
-import java.util.List;
-
 import org.mystock.vo.DesignStockReportVo;
+
+import java.util.List;
 
 public interface DesignStockReportService {
 
-	public List<DesignStockReportVo> getDesignStockReport(String designName, String colorName);
-	
-	public List<DesignStockReportVo> getDesignStockNonZeroReport(String designName, String colorName);
+//	List<DesignStockReportVo> getDesignStockReport(String designName, String colorName);
 
-	public List<DesignStockReportVo> getDesignStockReport(String designName, String colorName, Integer pageSize, Integer pageCount);
-	public int getDesignStockCount(String designName, String colorName);
+	List<DesignStockReportVo> getDesignStockReport(String qualityName, String designName, String colorName);
+
+//	List<DesignStockReportVo> getDesignStockNonZeroReport(String designName, String colorName);
+
+	List<DesignStockReportVo> getDesignStockNonZeroReport(String qualityName, String designName, String colorName);
+
+	List<DesignStockReportVo> getDesignStockReport(String qualityName, String designName, String colorName, Integer pageSize, Integer pageCount);
+
+	int getDesignStockCount(String qualityName, String designName, String colorName);
 }

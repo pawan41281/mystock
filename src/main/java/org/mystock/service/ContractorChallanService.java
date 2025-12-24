@@ -1,30 +1,38 @@
 package org.mystock.service;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Set;
-
+import org.mystock.vo.ContractorChallanItemVo;
 import org.mystock.vo.ContractorChallanVo;
 import org.mystock.vo.DashboardCurrentMonthContractorCardVo;
 import org.mystock.vo.DashboardPreviousDayContractorCardVo;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Set;
+
 public interface ContractorChallanService {
 
-	public ContractorChallanVo save(ContractorChallanVo vo);
+	ContractorChallanVo save(ContractorChallanVo vo);
 
-	public Set<ContractorChallanVo> saveAll(Set<ContractorChallanVo> vos);
+	Set<ContractorChallanVo> saveAll(Set<ContractorChallanVo> vos);
 
-	public ContractorChallanVo findById(Long id);
+	ContractorChallanVo findById(Long id);
 
-	public ContractorChallanVo deleteById(Long id);
+	ContractorChallanVo deleteById(Long id);
 
-	public List<ContractorChallanVo> findAll(Integer challanNumber, Long contractorId, LocalDate fromChallanDate,
-			LocalDate toChallanDate, String challanType);
+	List<ContractorChallanVo> findAll(Integer challanNumber, Long contractorId, LocalDate fromChallanDate, LocalDate toChallanDate, String challanType);
 
-	public List<ContractorChallanVo> getRecentChallans(String challanType);
+	ContractorChallanVo findRecentChallan(Long contractorId, String challanType, Long qualityId, Long designId, Long colorId);
+
+	ContractorChallanVo findLastChallan(Long contractorId, String challanType, Long qualityId, Long designId, Long colorId);
+
+	ContractorChallanItemVo findLastChallanItem(Long contractorId, String challanType, Long qualityId, Long designId, Long colorId);
+
+	Float findLastChallanItemRate(Long contractorId, String challanType, Long qualityId, Long designId, Long colorId);
+
+	List<ContractorChallanVo> getRecentChallans(String challanType);
 	
-	public List<DashboardCurrentMonthContractorCardVo> getCurrentMonthChallanCount();
+	List<DashboardCurrentMonthContractorCardVo> getCurrentMonthChallanCount();
 	
-	public List<DashboardPreviousDayContractorCardVo> getPreviousDayChallanCount();
+	List<DashboardPreviousDayContractorCardVo> getPreviousDayChallanCount();
 
 }

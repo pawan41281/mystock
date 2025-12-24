@@ -1,0 +1,217 @@
+package org.mystock.service.impl;
+
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.mystock.entity.RoleEntity;
+import org.mystock.entity.UserEntity;
+import org.mystock.exception.InvalidCredentialsException;
+import org.mystock.exception.ResourceAlreadyExistsException;
+import org.mystock.exception.ResourceNotFoundException;
+import org.mystock.exception.UnableToProcessException;
+import org.mystock.mapper.UserMapper;
+import org.mystock.repository.RoleRepository;
+import org.mystock.repository.UserRepository;
+import org.mystock.security.JwtAuthResponse;
+import org.mystock.security.JwtTokenProvider;
+import org.mystock.service.AuthService;
+import org.mystock.vo.LoginVo;
+import org.mystock.vo.SignupRequestVo;
+import org.mystock.vo.UserVo;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
+@Service
+@AllArgsConstructor
+@Slf4j
+public class AuthServiceImpl implements AuthService {
+
+    private final AuthenticationManager authenticationManager;
+
+    private final JwtTokenProvider jwtTokenProvider;
+
+    private final UserRepository userRepository;
+
+    private final RoleRepository roleRepository;
+
+    private final PasswordEncoder encoder;
+
+    private final UserMapper userMapper;
+
+    //Token blacklist (thread-safe)
+    private final Set<String> invalidatedTokens = ConcurrentHashMap.newKeySet();
+
+    @Override
+    public String login(LoginVo loginVo) throws InvalidCredentialsException {
+        try {
+            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
+                    loginVo.getUserId(), loginVo.getPassword());
+            Authentication authentication = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+//			return jwtTokenProvider.generateToken(authentication);
+            return jwtTokenProvider.generateAccessToken(authentication);
+        } catch (BadCredentialsException e) {
+            throw new InvalidCredentialsException("Invalid username or password.");
+        }
+    }
+
+    @Override
+    public JwtAuthResponse refreshToken(String refreshToken) {
+        if (!jwtTokenProvider.validateToken(refreshToken)) {
+            throw new InvalidCredentialsException("Invalid or expired refresh token");
+        }
+        String username = jwtTokenProvider.getUsernameFromToken(refreshToken);
+
+        // Rebuild authentication object manually (optional, based on your token content)
+        Authentication authentication = new UsernamePasswordAuthenticationToken(username, null, new ArrayList<>());
+
+        String newAccessToken = jwtTokenProvider.generateAccessToken(authentication);
+        String newRefreshToken = jwtTokenProvider.generateRefreshToken(authentication);
+
+        JwtAuthResponse jwtAuthResponse = new JwtAuthResponse();
+        jwtAuthResponse.setAccessToken(newAccessToken);
+        jwtAuthResponse.setRefreshToken(newRefreshToken);
+        return jwtAuthResponse;
+    }
+
+    @Override
+    public boolean existsByUserId(String userId) throws ResourceNotFoundException {
+        try {
+            return userRepository.existsByUserId(userId);
+        } catch (Exception e) {
+            throw new ResourceNotFoundException("Username not exists");
+        }
+    }
+
+    @Override
+    public boolean existsByEmail(String email) throws ResourceNotFoundException {
+        try {
+            return userRepository.existsByEmail(email);
+        } catch (Exception e) {
+            throw new ResourceNotFoundException("Email not exists");
+        }
+    }
+
+    @Override
+    public SignupRequestVo save(SignupRequestVo signUpRequestVo)
+            throws UnableToProcessException, ResourceAlreadyExistsException {
+
+        if (existsByUserId(signUpRequestVo.getUserId())) {
+            throw new ResourceAlreadyExistsException("UserId is already exists",signUpRequestVo);
+        }
+
+        if (existsByEmail(signUpRequestVo.getEmail())) {
+            throw new ResourceAlreadyExistsException("Email is already exists",signUpRequestVo);
+        }
+
+        try {
+
+            // Create new user's account
+            UserEntity user = new UserEntity(signUpRequestVo.getName(), signUpRequestVo.getUserId(),
+                    signUpRequestVo.getEmail(), signUpRequestVo.getMobile(),
+                    encoder.encode(signUpRequestVo.getPassword()), signUpRequestVo.isLocked());
+
+            Set<String> strRoles = signUpRequestVo.getRoles();
+            Set<RoleEntity> roles = resolveRoles(strRoles);
+            user.setRoles(roles);
+            UserEntity saved = userRepository.save(user);
+            return saved.getId() != null ? userMapper.toSignupRequestVo(saved) : signUpRequestVo;
+        } catch (Exception e) {
+            throw new UnableToProcessException(e.getMessage());
+        }
+    }
+
+    @Override
+    public boolean validateToken(String token) {
+        return jwtTokenProvider.validateToken(token);
+    }
+
+    @Override
+    public void invalidateToken(String token) {
+        try {
+            invalidatedTokens.add(token);
+            log.info("Token invalidated successfully: {}", token);
+        } catch (Exception e) {
+            log.error("Failed to invalidate token: {}", e.getMessage());
+        }
+    }
+
+    private Set<RoleEntity> resolveRoles(Set<String> roleNames) {
+        Set<RoleEntity> roles = new HashSet<>();
+        if (roleNames != null && !roleNames.isEmpty()) {
+            for (String role : roleNames) {
+                RoleEntity userRole = roleRepository.findByNameIgnoreCase(role);
+                if (userRole == null) {
+                    throw new ResourceNotFoundException("Role '" + role + "' not found.");
+                }
+                roles.add(userRole);
+            }
+        } else {// Assign default role
+            RoleEntity userRole = roleRepository.findByNameIgnoreCase("ROLE_USER");
+            if (userRole == null) {
+                throw new ResourceNotFoundException("Default role not found.");
+            }
+            roles.add(userRole);
+        }
+        return roles;
+    }
+
+    @Override
+    public Authentication authenticate(LoginVo loginVo) throws InvalidCredentialsException {
+        try {
+            UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(
+                    loginVo.getUserId(), loginVo.getPassword());
+            return authenticationManager.authenticate(authRequest);
+        } catch (BadCredentialsException e) {
+            throw new InvalidCredentialsException("Invalid username or password.");
+        }
+    }
+
+    public UserVo getUserFromToken(String token) throws ResourceNotFoundException {
+        if (!jwtTokenProvider.validateToken(token)) {
+            throw new ResourceNotFoundException("Invalid or expired token");
+        }
+
+        String username = jwtTokenProvider.getUsernameFromToken(token);
+        UserEntity user = userRepository.findByUserId(username);
+
+        if (user == null) {
+            throw new ResourceNotFoundException("User not found for the given token");
+        }
+
+        return userMapper.convert(user);
+    }
+
+    @Override
+    public UserVo getCurrentUser() throws ResourceNotFoundException {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+            if (authentication == null || !authentication.isAuthenticated()) {
+                throw new ResourceNotFoundException("No authenticated user found");
+            }
+
+            String username = authentication.getName();
+            UserEntity userEntity = userRepository.findByUserId(username);
+
+            if (userEntity == null) {
+                throw new ResourceNotFoundException("User not found: " + username);
+            }
+
+            return userMapper.convert(userEntity);
+        } catch (Exception e) {
+            throw new ResourceNotFoundException("Unable to fetch user: " + e.getMessage());
+        }
+    }
+
+
+}

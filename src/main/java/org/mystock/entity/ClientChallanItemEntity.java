@@ -1,24 +1,16 @@
 package org.mystock.entity;
 
-import java.time.LocalDateTime;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Entity
-@Table(name = "clientchallaniteminfo")
+@Table(name = "client_challan_item_info")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -42,9 +34,16 @@ public class ClientChallanItemEntity {
 	@JoinColumn(name = "color_id", nullable = false)
 	private ColorEntity color;
 
+	@ManyToOne
+	@JoinColumn(name = "quality_id", nullable = false)
+	private QualityEntity quality;
+
 	@Column(name = "quantity", nullable = false)
 	private Integer quantity;
 
-	@Column(name = "createdon", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
+	@Column(name = "rate", nullable = false)
+	private Float rate;
+
+	@Column(name = "created_on", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
 	private LocalDateTime createdOn;
 }

@@ -1,20 +1,15 @@
 package org.mystock.entity;
 
-import java.time.LocalDateTime;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Entity
-@Table(name = "designinfo")
+@Table(name = "design_info")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -32,9 +27,19 @@ public class DesignEntity {
 	private String description;
 
 	@Column(name = "active", columnDefinition = "BOOLEAN DEFAULT TRUE", nullable = false)
-	private boolean active;
+	private boolean active=true;
 
-	@Column(name = "createdon", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
+	@Column(name = "created_on", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
 	private LocalDateTime createdOn;
+
+	@ManyToOne
+	@JoinColumn(name = "created_by", nullable = false)
+	private UserEntity user;
+
+	public DesignEntity(Long id, String designName, UserEntity user){
+		this.id=id;
+		this.designName=designName;
+		this.user=user;
+	}
 
 }

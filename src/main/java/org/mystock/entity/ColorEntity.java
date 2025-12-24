@@ -1,20 +1,15 @@
 package org.mystock.entity;
 
-import java.time.LocalDateTime;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Entity
-@Table(name = "colorinfo")
+@Table(name = "color_info")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -25,12 +20,22 @@ public class ColorEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@Column(name = "colorname", length = 30, nullable = false, unique = true)
+	@Column(name = "color_name", length = 30, nullable = false, unique = true)
 	private String colorName;
 
 	@Column(name = "active", columnDefinition = "BOOLEAN DEFAULT TRUE", nullable = false)
-	private boolean active;
+	private boolean active=true;
 	
-	@Column(name = "createdon", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
+	@Column(name = "created_on", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
     private LocalDateTime createdOn;
+
+	@ManyToOne
+	@JoinColumn(name = "created_by", nullable = false)
+	private UserEntity user;
+
+	public ColorEntity(Long id, String colorName, UserEntity userEntity){
+		this.id=id;
+		this.colorName=colorName;
+		this.user=userEntity;
+	}
 }

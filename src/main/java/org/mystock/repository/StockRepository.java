@@ -1,7 +1,7 @@
 package org.mystock.repository;
 
-import java.util.List;
-
+import jakarta.persistence.LockModeType;
+import jakarta.transaction.Transactional;
 import org.mystock.entity.StockEntity;
 import org.mystock.vo.DesignStockReportVo;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,16 +11,15 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import jakarta.persistence.LockModeType;
-import jakarta.transaction.Transactional;
+import java.util.List;
 
 @Repository
 public interface StockRepository extends JpaRepository<StockEntity, Long> {
 
-	public List<StockEntity> findByDesign_Id(Long designId);
+	List<StockEntity> findByDesign_Id(Long designId);
 
 	@Lock(LockModeType.PESSIMISTIC_WRITE)
-	public StockEntity findByDesign_IdAndColor_Id(Long designId, Long colorId);
+	StockEntity findByDesign_IdAndColor_IdAndQuality_Id(Long qualityId, Long designId, Long colorId);
 
 	@Modifying
 	@Transactional
@@ -29,9 +28,10 @@ public interface StockRepository extends JpaRepository<StockEntity, Long> {
 			SET d.balance = d.balance + :quantity,
 			d.updatedOn = CURRENT_TIMESTAMP
 			WHERE d.design.id = :designId
-			AND d.color.id = :colorId
+			AND d.color.id = :colorId 
+			AND d.quality.id = :qualityId
 			""")
-	public int increaseBalance(Long designId, Long colorId, Integer quantity);
+	int increaseBalance(Long qualityId, Long designId, Long colorId, Integer quantity);
 
 	@Modifying
 	@Transactional
@@ -40,81 +40,116 @@ public interface StockRepository extends JpaRepository<StockEntity, Long> {
 			SET d.balance = d.balance - :quantity,
 			d.updatedOn = CURRENT_TIMESTAMP
 			WHERE d.design.id = :designId
-			AND d.color.id = :colorId
+			AND d.color.id = :colorId 
+			AND d.quality.id = :qualityId
 			""")
-	public int reduceBalance(Long designId, Long colorId, Integer quantity);
+	int reduceBalance(Long qualityId, Long designId, Long colorId, Integer quantity);
 
 	@Query(value = """
 			SELECT
 			    UPPER(d.design) AS designName,
-			    UPPER(c.colorname) AS colorName,
+			    UPPER(c.color_name) AS colorName,
+			    UPPER(q.quality_name) AS qualityName,
 			    COALESCE(s.obalance, 0) AS openingBalance,
 			    COALESCE(s.balance, 0) AS closingBalance
 			FROM
-			    designinfo d
+			    design_info d
 			CROSS JOIN
-			    colorinfo c
+			    color_info c
+			CROSS JOIN
+			    quality_info q
 			LEFT JOIN
-			    stockinfo s ON s.design_id = d.id AND s.color_id = c.id
+			    stock_info s ON s.design_id = d.id AND s.color_id = c.id AND s.quality_id = q.id
 			WHERE
-			    d.description LIKE :designName
+			    d.design LIKE :designName
 			    AND
-			    c.colorname LIKE :colorName
+			    c.color_name LIKE :colorName
+			    AND
+			    q.quality_name LIKE :qualityName
 			""", nativeQuery = true)
-	public List<DesignStockReportVo> getDesignStockReport(@Param("designName") String designName,
+	List<DesignStockReportVo> getDesignStockReport(
+			@Param("qualityName") String qualityName,
+			@Param("designName") String designName,
 			@Param("colorName") String colorName);
 	
 	@Query(value = """
 			SELECT
 			    UPPER(d.design) AS designName,
-			    UPPER(c.colorname) AS colorName,
+			    UPPER(c.color_name) AS colorName,
+			    UPPER(q.quality_name) AS qualityName,
 			    COALESCE(s.obalance, 0) AS openingBalance,
 			    COALESCE(s.balance, 0) AS closingBalance
 			FROM
-			    designinfo d
+			    design_info d
 			CROSS JOIN
-			    colorinfo c
+			    color_info c
+			CROSS JOIN
+			    quality_info q
 			LEFT JOIN
-			    stockinfo s ON s.design_id = d.id AND s.color_id = c.id
+			    stock_info s ON s.design_id = d.id AND s.color_id = c.id AND s.quality_id = q.id
 			WHERE
-			    d.description LIKE :designName
+			    d.design LIKE :designName
 			    AND
-			    c.colorname LIKE :colorName
+			    c.color_name LIKE :colorName
+			    AND
+			    q.quality_name LIKE :qualityName
 			    AND
 			    s.balance<>0
 			""", nativeQuery = true)
-	public List<DesignStockReportVo> getDesignStockNonZeroReport(@Param("designName") String designName,
+	List<DesignStockReportVo> getDesignStockNonZeroReport(
+			@Param("qualityName") String qualityName,
+			@Param("designName") String designName,
 			@Param("colorName") String colorName);
 
 	@Query(value = """
 			SELECT COUNT(*)
-			FROM designinfo d
-			CROSS JOIN colorinfo c
-			LEFT JOIN stockinfo s ON s.design_id = d.id AND s.color_id = c.id
-			WHERE d.description LIKE :designName
-			  AND c.colorname LIKE :colorName
+			FROM
+			    design_info d
+			CROSS JOIN
+			    color_info c
+			CROSS JOIN
+			    quality_info q
+			LEFT JOIN
+			    stock_info s ON s.design_id = d.id AND s.color_id = c.id AND s.quality_id = q.id
+			WHERE
+			    d.design LIKE :designName
+			    AND
+			    c.color_name LIKE :colorName
+			    AND
+			    q.quality_name LIKE :qualityName
 			""", nativeQuery = true)
-	public int getDesignStockCount(@Param("designName") String designName, @Param("colorName") String colorName);
+	int getDesignStockCount(
+			@Param("qualityName") String qualityName,
+			@Param("designName") String designName,
+			@Param("colorName") String colorName);
 
 	@Query(value = """
 			SELECT
+			    UPPER(q.quality_name) AS qualityName,
 			    UPPER(d.design) AS designName,
-			    UPPER(c.colorname) AS colorName,
+			    UPPER(c.color_name) AS colorName,
 			    COALESCE(s.balance, 0) AS stockBalance
 			FROM
-			    designinfo d
+			    design_info d
 			CROSS JOIN
-			    colorinfo c
+			    color_info c
+			CROSS JOIN
+			    quality_info q
 			LEFT JOIN
-			    stockinfo s ON s.design_id = d.id AND s.color_id = c.id
+			    stock_info s ON s.design_id = d.id AND s.color_id = c.id
 			WHERE
-			    d.description LIKE :designName
+			    d.design LIKE :designName
 			    AND
-			    c.colorname LIKE :colorName
+			    c.color_name LIKE :colorName
+			    AND
+			    q.quality_name LIKE :qualityName 
 			LIMIT :pageSize OFFSET :pageCount
 			""", nativeQuery = true)
-	public List<DesignStockReportVo> getDesignStockReport(@Param("designName") String designName,
-			@Param("colorName") String colorName, @Param("pageSize") Integer pageSize,
+	List<DesignStockReportVo> getDesignStockReport(
+			@Param("qualityName") String qualityName,
+			@Param("designName") String designName,
+			@Param("colorName") String colorName,
+			@Param("pageSize") Integer pageSize,
 			@Param("pageCount") Integer pageCount);
 
 }

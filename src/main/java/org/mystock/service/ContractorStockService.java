@@ -1,31 +1,39 @@
 package org.mystock.service;
 
+import org.mystock.vo.ContractorStockVo;
+
 import java.util.List;
 import java.util.Set;
 
-import org.mystock.vo.ContractorStockVo;
-
 public interface ContractorStockService {
 
-	public ContractorStockVo save(ContractorStockVo stockVo);
+	ContractorStockVo save(ContractorStockVo stockVo);
 
-	public ContractorStockVo getById(Long id);
+	ContractorStockVo getById(Long id);
 
-	public List<ContractorStockVo> getAll();
+	List<ContractorStockVo> getAll();
 
-	public List<ContractorStockVo> getAll(Long contractorId);
+//	List<ContractorStockVo> getAll(Long contractorId);
 
-	public List<ContractorStockVo> getAll(Long contractorId, Long designId);
+//	List<ContractorStockVo> getAll(Long contractorId, Long designId);
 
-	public ContractorStockVo get(Long contractorId, Long designId, Long colorId);
+//	ContractorStockVo get(Long contractorId, Long designId, Long colorId);
 
-	public List<ContractorStockVo> getAllDesignAndColor(Long designId, Long colorId);
+	ContractorStockVo get(Long contractorId, Long designId, Long colorId, Long qualityId);
 
-	public int increaseBalance(Long contractorId, Long designId, Long colorId, Integer quantity);
+//	List<ContractorStockVo> getAllDesignAndColor(Long designId, Long colorId);
 
-	public int reduceBalance(Long contractorId, Long designId, Long colorId, Integer quantity);
+//	int increaseBalance(Long contractorId, Long designId, Long colorId, Integer quantity);
 
-	public ContractorStockVo addOpenningBalance(Long contractorId, Long designId, Long colorId, Integer quantity);
+//	int reduceBalance(Long contractorId, Long designId, Long colorId, Integer quantity);
 
-	public List<ContractorStockVo> addOpenningBalance(Set<ContractorStockVo> vos);
+//	ContractorStockVo addOpenningBalance(Long contractorId, Long designId, Long colorId, Integer quantity);
+
+	List<ContractorStockVo> addOpenningBalance(Set<ContractorStockVo> vos);
+
+	int increaseBalance(Long contractorId, Long designId, Long colorId, Long qualityId, Integer quantity);
+
+	int reduceBalance(Long contractorId, Long designId, Long colorId, Long qualityId, Integer quantity);
+
+	ContractorStockVo addOpenningBalance(Long contractorId, Long designId, Long colorId, Long qualityId, Integer quantity);
 }

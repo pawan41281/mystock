@@ -1,23 +1,15 @@
 package org.mystock.entity;
 
-import java.time.LocalDateTime;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Entity
-@Table(name = "contractorstockinfo", uniqueConstraints = @UniqueConstraint(columnNames = {"contractor_id", "design_id", "color_id"}))
+@Table(name = "contractor_stock_info", uniqueConstraints = @UniqueConstraint(columnNames = {"contractor_id", "design_id", "color_id", "quality_id"}))
 @Getter
 @Setter
 @AllArgsConstructor
@@ -40,15 +32,19 @@ public class ContractorStockEntity {
 	@JoinColumn(name = "color_id", nullable = false)
 	private ColorEntity color;
 
+	@ManyToOne
+	@JoinColumn(name = "quality_id", nullable = false)
+	private QualityEntity quality;
+
 	@Column(name = "balance", nullable = false)
 	private Integer balance = 0;
 
 	@Column(name = "obalance", nullable = false)
 	private Integer openingBalance = 0;
 	
-	@Column(name = "updatedon")
+	@Column(name = "updated_on")
 	private LocalDateTime updatedOn = LocalDateTime.now();
 	
-	@Column(name = "createdon", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
+	@Column(name = "created_on", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
 	private LocalDateTime createdOn;
 }

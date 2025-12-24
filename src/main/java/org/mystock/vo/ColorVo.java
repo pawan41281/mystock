@@ -1,13 +1,10 @@
 package org.mystock.vo;
 
-import java.time.LocalDateTime;
-
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -20,9 +17,16 @@ public class ColorVo {
 	@NotNull
 	private String colorName;
 	private Boolean active;
+
+	//This allows input but hides it in responses
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private LocalDateTime createdOn;
 	
 	public String getColorName() {
 		return colorName!=null?colorName.toUpperCase():"";
 	}
+
+	//This allows input but hides it in responses
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	private UserVo user;
 }

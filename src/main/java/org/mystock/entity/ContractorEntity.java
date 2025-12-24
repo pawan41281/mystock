@@ -1,20 +1,15 @@
 package org.mystock.entity;
 
-import java.time.LocalDateTime;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Entity
-@Table(name = "contractorinfo")
+@Table(name = "contractor_info")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -25,7 +20,7 @@ public class ContractorEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@Column(name = "contractorname", length = 100, nullable = false)
+	@Column(name = "contractor_name", length = 100, nullable = false)
 	private String contractorName;
 
 	@Column(name = "address", length = 240)
@@ -46,12 +41,23 @@ public class ContractorEntity {
 	@Column(name = "mobile", length = 10)
 	private String mobile;
 
-	@Column(name = "gstno", length = 15)
+	@Column(name = "gst_no", length = 15)
 	private String gstNo;
 
 	@Column(name = "active", columnDefinition = "BOOLEAN DEFAULT TRUE", nullable = false)
-	private boolean active;
+	private boolean active=true;
 
-    @Column(name = "createdon", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
+    @Column(name = "created_on", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
     private LocalDateTime createdOn;
+
+	@ManyToOne
+	@JoinColumn(name = "created_by", nullable = false)
+	private UserEntity user;
+
+	public ContractorEntity(Long id, String contractorName, String mobile, UserEntity user){
+		this.id=id;
+		this.contractorName=contractorName;
+		this.mobile=mobile;
+		this.user=user;
+	}
 }

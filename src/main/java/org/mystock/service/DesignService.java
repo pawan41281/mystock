@@ -1,27 +1,29 @@
 package org.mystock.service;
 
+import org.mystock.vo.DesignVo;
+
 import java.util.List;
 import java.util.Set;
 
-import org.mystock.vo.DesignVo;
-
 public interface DesignService {
 
-	public DesignVo save(DesignVo vo);
+	DesignVo save(DesignVo vo);
 	
-	public Set<DesignVo> saveAll(Set<DesignVo> vos);
+	Set<DesignVo> saveAll(Set<DesignVo> vos);
 
-	public DesignVo getById(Long id);
+	DesignVo getById(Long id);
 	
-	public List<DesignVo> getAllByName(String name);
+	List<DesignVo> getAllByName(String name);
 	
-	public DesignVo getByName(String name);
+	DesignVo getByName(String name);
 	
-	public List<DesignVo> getByStatus(boolean status);
+	List<DesignVo> getByStatus(boolean status);
 
-	public List<DesignVo> getAll();
+	List<DesignVo> getAll();
 
-	public DesignVo updateStatus(Long id, boolean status);
+	List<DesignVo> getAll(Boolean active);
+
+	DesignVo updateStatus(Long id, boolean status);
 
 
 }

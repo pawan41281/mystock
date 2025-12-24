@@ -1,17 +1,12 @@
 package org.mystock.vo;
 
-import java.time.LocalDateTime;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -32,10 +27,19 @@ public class ClientOrderItemVo {
 	
 	@NotNull
 	private ColorVo color;
+
+	@NotNull
+	private QualityVo quality;
+
+	@NotNull
+	@Min(0)
+	private Float rate=0f;
 	
 	@NotNull
 	@Min(0)
 	private Integer quantity;
-	
+
+	//This allows input but hides it in responses
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private LocalDateTime createdOn;
 }

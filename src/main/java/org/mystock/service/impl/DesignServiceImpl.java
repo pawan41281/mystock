@@ -1,12 +1,6 @@
 package org.mystock.service.impl;
 
-import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
+import lombok.AllArgsConstructor;
 import org.mystock.entity.DesignEntity;
 import org.mystock.exception.BusinessException;
 import org.mystock.exception.ResourceNotFoundException;
@@ -16,7 +10,12 @@ import org.mystock.service.DesignService;
 import org.mystock.vo.DesignVo;
 import org.springframework.stereotype.Service;
 
-import lombok.AllArgsConstructor;
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -90,7 +89,7 @@ public class DesignServiceImpl implements DesignService {
 	public DesignVo getByName(String name) {
 		DesignEntity entity = designRepository.findByDesignNameIgnoreCase(name);
 		if(entity==null)
-			throw new ResourceNotFoundException("Design not exists :: "+name);
+			return null;
 		return designMapper.toVo(entity);
 	}
 
@@ -103,6 +102,14 @@ public class DesignServiceImpl implements DesignService {
 	@Override
 	public List<DesignVo> getAll() {
 		List<DesignEntity> entities = designRepository.findAll();
+		return entities.stream().map(designMapper::toVo).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<DesignVo> getAll(Boolean active) {
+		List<DesignEntity> entities = designRepository.findAll();
+		if(active!=null && (active.equals(true) || active.equals(false)))
+			entities = entities.stream().filter(d -> d.isActive()==active).collect(Collectors.toUnmodifiableList());
 		return entities.stream().map(designMapper::toVo).collect(Collectors.toList());
 	}
 

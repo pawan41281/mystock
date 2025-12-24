@@ -16,7 +16,7 @@ services:
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root
     volumes:
-      - /c/mslogs:/c/mslogs   # 👈 bind mount to C:\mslogs on Windows
+      - /c:/mslogs:/c/mslogs   # 👈 bind mount to C:\mslogs on Windows
     depends_on:
       mysqldb:
         condition: service_healthy

@@ -8,6 +8,8 @@ public interface ContractorStockReportVo {
 
 	String getColorName();
 
+	String getQualityName();
+
 	Integer getOpeningBalance();
 
 	Integer getClosingBalance();

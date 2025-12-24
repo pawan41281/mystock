@@ -14,6 +14,7 @@ WORKDIR /app
 RUN mvn clean package -DskipTests
 
 # Stage 2: Run
-FROM openjdk:17-jdk-slim
+#FROM openjdk:17-jdk-slim
+FROM eclipse-temurin:17-jre-jammy
 COPY --from=builder /app/target/mystock.jar app.jar
 ENTRYPOINT ["java", "-Dspring.profiles.active=docker", "-jar", "app.jar"]

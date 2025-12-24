@@ -1,15 +1,11 @@
 package org.mystock.service.impl;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
+import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
 import org.mystock.entity.StockEntity;
 import org.mystock.mapper.ColorMapper;
 import org.mystock.mapper.DesignMapper;
+import org.mystock.mapper.QualityMapper;
 import org.mystock.mapper.StockMapper;
 import org.mystock.repository.StockRepository;
 import org.mystock.service.ColorService;
@@ -18,8 +14,12 @@ import org.mystock.service.StockService;
 import org.mystock.vo.StockVo;
 import org.springframework.stereotype.Service;
 
-import jakarta.transaction.Transactional;
-import lombok.AllArgsConstructor;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -31,6 +31,7 @@ public class StockServiceImpl implements StockService {
 	private final StockMapper stockMapper;
 	private final DesignMapper designMapper;
 	private final ColorMapper colorMapper;
+	private final QualityMapper qualityMapper;
 
 	@Override
 	public StockVo save(StockVo stockVo) {
@@ -61,8 +62,8 @@ public class StockServiceImpl implements StockService {
 	}
 
 	@Override
-	public StockVo get(Long designId, Long colorId) {
-		StockEntity stockEntity = stockRepository.findByDesign_IdAndColor_Id(designId, colorId);
+	public StockVo get(Long designId, Long colorId, Long qualityId) {
+		StockEntity stockEntity = stockRepository.findByDesign_IdAndColor_IdAndQuality_Id(designId, colorId, qualityId);
 		if (stockEntity != null)
 			return stockMapper.toVo(stockEntity);
 
@@ -70,19 +71,19 @@ public class StockServiceImpl implements StockService {
 	}
 
 	@Override
-	public int increaseBalance(Long designId, Long colorId, Integer quantity) {
-		return stockRepository.increaseBalance(designId, colorId, quantity);
+	public int increaseBalance(Long designId, Long colorId, Long qualityId, Integer quantity) {
+		return stockRepository.increaseBalance(designId, colorId, qualityId, quantity);
 	}
 
 	@Override
-	public int reduceBalance(Long designId, Long colorId, Integer quantity) {
-		return stockRepository.reduceBalance(designId, colorId, quantity);
+	public int reduceBalance(Long designId, Long colorId, Long qualityId, Integer quantity) {
+		return stockRepository.reduceBalance(designId, colorId, qualityId, quantity);
 	}
 
 	@Override
 	@Transactional
-	public StockVo addOpenningBalance(Long designId, Long colorId, Integer quantity) {
-		StockVo existingStockVo = get(designId, colorId);// design id + color id - should be unique
+	public StockVo addOpenningBalance(Long designId, Long colorId, Long qualityId, Integer quantity) {
+		StockVo existingStockVo = get(designId, colorId, qualityId);// design id + color id - should be unique
 		if (existingStockVo == null) {
 			StockVo stockVo = new StockVo();
 			stockVo.setOpeningBalance(quantity);
@@ -105,9 +106,9 @@ public class StockServiceImpl implements StockService {
 	@Transactional
 	public List<StockVo> addOpenningBalance(Set<StockVo> vos) {
 		List<StockEntity> entities = new ArrayList<>();
-		vos.stream().forEach(vo -> {
-			StockEntity entity = stockRepository.findByDesign_IdAndColor_Id(vo.getDesign().getId(),
-					vo.getColor().getId());
+		vos.forEach(vo -> {
+			StockEntity entity = stockRepository.findByDesign_IdAndColor_IdAndQuality_Id(vo.getDesign().getId(),
+					vo.getColor().getId(), vo.getQuality().getId());
 			if (entity == null) {
 				entity = new StockEntity();
 				entity.setBalance(vo.getOpeningBalance());
@@ -118,6 +119,7 @@ public class StockServiceImpl implements StockService {
 			}
 
 			entity.setOpeningBalance(vo.getOpeningBalance());
+			entity.setQuality(qualityMapper.toEntity(vo.getQuality()));
 			entity.setDesign(designMapper.toEntity(vo.getDesign()));
 			entity.setColor(colorMapper.toEntity(vo.getColor()));
 			entity.setUpdatedOn(LocalDateTime.now());

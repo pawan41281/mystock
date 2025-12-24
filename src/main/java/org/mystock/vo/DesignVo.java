@@ -1,13 +1,10 @@
 package org.mystock.vo;
 
-import java.time.LocalDateTime;
-
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -29,5 +26,11 @@ public class DesignVo {
 
 	private Boolean active;
 
+	//This allows input but hides it in responses
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private LocalDateTime createdOn = LocalDateTime.now();
+
+	//This allows input but hides it in responses
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	private UserVo user;
 }
